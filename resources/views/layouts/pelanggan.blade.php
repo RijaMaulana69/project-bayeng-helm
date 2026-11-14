@@ -143,53 +143,31 @@
         </a>
     </nav>
 
-    {{-- Footer --}}
-    <footer class="hidden pt-16 pb-10 bg-white border-t border-slate-100 md:block mt-12">
-        <div class="px-8 mx-auto max-w-7xl grid grid-cols-12 gap-12">
-            <div class="col-span-4 space-y-6">
-                <div class="flex items-center gap-2.5">
-                    <div class="flex items-center justify-center w-8 h-8 text-white bg-blue-600 rounded-lg shadow-sm">
-                        <i class="text-sm fa-solid fa-helmet-safety"></i>
-                    </div>
-                    <span class="text-lg font-extrabold tracking-tighter text-slate-900 uppercase">Bayeng Putra</span>
+    {{-- Footer (Ultra-Minimalist 1 Baris - Uniqlo/Apple Style) --}}
+    <footer class="hidden md:block bg-white border-t border-slate-100 py-6 mt-16">
+        <div class="max-w-6xl mx-auto px-5 flex items-center justify-between">
+            {{-- Brand Left --}}
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center text-[10px]">
+                    <i class="fa-solid fa-helmet-safety"></i>
                 </div>
-                <p class="text-sm font-medium leading-relaxed text-slate-500">
-                    Retailer helm terkemuka di Kuningan. Kami memastikan setiap helm yang Anda pesan pas dan nyaman saat digunakan.
-                </p>
-                <div class="flex gap-3">
-                    <a href="#" class="flex items-center justify-center w-8 h-8 text-slate-400 transition-colors bg-slate-50 rounded-full hover:bg-blue-600 hover:text-white"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="flex items-center justify-center w-8 h-8 text-slate-400 transition-colors bg-slate-50 rounded-full hover:bg-emerald-600 hover:text-white"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
+                <span class="text-xs font-black tracking-tight text-slate-800">BAYENG PUTRA</span>
             </div>
-            <div class="col-span-2 space-y-5">
-                <h4 class="text-[10px] font-bold tracking-[0.2em] text-slate-900 uppercase">Navigasi</h4>
-                <ul class="space-y-3 text-xs font-bold text-slate-500">
-                    <li><a href="{{ route('katalog') }}" class="transition-colors hover:text-blue-600">Katalog Helm</a></li>
-                    <li><a href="#" class="transition-colors hover:text-blue-600">Panduan Ukuran</a></li>
-                    <li><a href="{{ route('pelanggan.pesanan') }}" class="transition-colors hover:text-blue-600">Status Pesanan</a></li>
-                </ul>
-            </div>
-            <div class="col-span-2 space-y-5">
-                <h4 class="text-[10px] font-bold tracking-[0.2em] text-slate-900 uppercase">Legal</h4>
-                <ul class="space-y-3 text-xs font-bold text-slate-500">
-                    <li><a href="#" class="transition-colors hover:text-blue-600">Syarat & Ketentuan</a></li>
-                    <li><a href="#" class="transition-colors hover:text-blue-600">Kebijakan Privasi</a></li>
-                    <li><a href="{{ route('admin.login') }}" class="transition-colors hover:text-blue-600 opacity-40">Admin</a></li>
-                </ul>
-            </div>
-            <div class="col-span-4 space-y-5">
-                <h4 class="text-[10px] font-bold tracking-[0.2em] text-slate-900 uppercase">Hubungi Kami</h4>
-                <div class="p-5 space-y-3 bg-slate-50 border border-slate-100 rounded-xl">
-                    <div class="flex gap-3 text-xs font-bold text-slate-600">
-                        <i class="fa-solid fa-location-dot text-blue-600"></i>
-                        <p>Jl. RE Martadinata No.49, Kuningan</p>
-                    </div>
-                    <div class="flex gap-3 text-xs font-bold text-slate-600">
-                        <i class="fa-solid fa-clock text-blue-600"></i>
-                        <p>Buka 08:00 - 21:00 WIB</p>
-                    </div>
-                </div>
-            </div>
+
+            {{-- Nav Links Center --}}
+            <nav class="flex items-center gap-6 text-[11px] font-medium text-slate-500">
+                <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Beranda</a>
+                <a href="{{ route('katalog') }}" class="hover:text-blue-600 transition-colors">Katalog</a>
+                <a href="{{ route('pelanggan.pesanan') }}" class="hover:text-blue-600 transition-colors">Cek Tiket</a>
+                <a href="#lokasi-gerai" class="hover:text-blue-600 transition-colors">Lokasi Gerai</a>
+                <a href="{{ route('admin.login') }}" class="hover:text-slate-700 transition-colors text-slate-300">Staff</a>
+            </nav>
+
+            {{-- Action Right --}}
+            <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span>Hubungi Toko</span>
+            </a>
         </div>
     </footer>
 
