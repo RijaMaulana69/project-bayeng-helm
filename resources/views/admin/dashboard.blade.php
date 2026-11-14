@@ -186,40 +186,40 @@
                         $extraCount = $pesanan->details->count() - 1;
                         $isPaid = $pesanan->status === 'ready';
                     @endphp
-                    <div class="p-3 sm:p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors"
-                         x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="font-mono font-bold text-xs sm:text-sm text-slate-900 tracking-wide">
-                                    {{ $pesanan->kode_pickup }}
-                                </span>
+                    <form action="{{ route('admin.pickup.validasi') }}" method="POST"
+                          x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
+                        @csrf
+                        <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
+                        <button type="submit" class="w-full text-left p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group cursor-pointer">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 truncate">
+                                    <span class="font-mono font-bold text-xs text-slate-900 group-hover:text-blue-600 transition-colors tracking-wide shrink-0">
+                                        {{ $pesanan->kode_pickup }}
+                                    </span>
+                                    <span class="text-slate-300 text-xs shrink-0">•</span>
+                                    <span class="text-xs font-medium text-slate-700 truncate">
+                                        {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }}
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                                    {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}
+                                </p>
+                            </div>
+
+                            <div class="text-right shrink-0 flex items-center gap-2">
                                 @if($isPaid)
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                                         Lunas
                                     </span>
                                 @else
-                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/70">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80 font-mono">
                                         {{ format_rupiah($pesanan->grand_total) }}
                                     </span>
                                 @endif
+                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-blue-600 transition-colors"></i>
                             </div>
-
-                            <p class="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5">
-                                {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }} &bull; {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}
-                            </p>
-                        </div>
-
-                        <div class="text-right shrink-0">
-                            <form action="{{ route('admin.pickup.validasi') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
-                                <button type="submit" class="h-8 px-3 rounded-lg bg-slate-900 hover:bg-blue-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
-                                    <span>Proses</span>
-                                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                        </button>
+                    </form>
                 @empty
                     <div class="p-8 text-center text-xs text-slate-400">
                         Tidak ada antrean pickup yang siap saat ini.
