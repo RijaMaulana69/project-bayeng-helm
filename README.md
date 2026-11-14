@@ -168,7 +168,7 @@ Untuk keperluan demonstrasi dan pengujian oleh Dosen Penguji:
 | :--- | :--- | :--- | :--- |
 | **Owner (Pemilik)** | `owner` | `owner123` | Akses penuh dashboard, kelola karyawan, ekspor laporan penjualan PDF/CSV, audit log, dan pengaturan. |
 | **Karyawan (Kasir)** | `karyawan` | `karyawan123` | Akses menu validasi pickup, kelola pesanan masuk, dan manajemen produk/stok. |
-| **Pelanggan (Demo)** | `budi@gmail.com` | `password` | Akses belanja, checkout ambil di toko, e-tiket pickup, dan riwayat pesanan. |
+| **Pelanggan (Demo)** | `budi@gmail.com` | `Password123` | Akses belanja, checkout ambil di toko, e-tiket pickup, dan riwayat pesanan. |
 
 ---
 

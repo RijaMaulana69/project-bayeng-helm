@@ -179,4 +179,15 @@ class CustomerAuthTest extends TestCase
         $response->assertSessionHasErrors(['email']);
         $this->assertGuest('pelanggan');
     }
+
+    public function test_demo_customer_budi_can_login_with_password123(): void
+    {
+        $response = $this->post('/pelanggan/login', [
+            'email' => 'budi@gmail.com',
+            'password' => 'Password123',
+        ]);
+
+        $response->assertRedirect('/katalog');
+        $this->assertAuthenticated('pelanggan');
+    }
 }
