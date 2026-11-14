@@ -1,85 +1,99 @@
 @extends('layouts.pelanggan')
-
-@section('title', 'Pesanan Saya')
+@section('title', 'Riwayat Pesanan & e-Tiket')
 
 @section('content')
-<div class="container py-5">
-    {{-- Breadcrumb --}}
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb" style="font-size: 0.9rem;">
-            <li class="breadcrumb-item">
-                <a href="{{ route('pelanggan.beranda') }}" class="text-decoration-none" style="color: var(--primary);">Beranda</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page" style="color: var(--muted);">Pesanan Saya</li>
-        </ol>
-    </nav>
+<div class="bg-slate-50 min-h-screen py-10">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {{-- Breadcrumb --}}
+        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 font-medium">
+            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Beranda</a>
+            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+            <span class="text-slate-800 font-semibold">Pesanan Saya</span>
+        </nav>
 
-    <h2 class="fw-bold mb-4" style="color: var(--dark);">
-        <i class="fa-solid fa-box me-2" style="color: var(--primary);"></i>
-        Pesanan Saya
-    </h2>
+        {{-- Heading --}}
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <i class="fa-solid fa-receipt text-blue-600"></i>
+                    <span>Riwayat Pesanan & e-Tiket Pickup</span>
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    Pantau status pesanan, lihat e-Tiket pengambilan, dan unggah bukti pembayaran.
+                </p>
+            </div>
+            <a href="{{ route('katalog') }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-colors self-start sm:self-auto">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>Pesan Helm Baru</span>
+            </a>
+        </div>
 
-    @forelse($pesanans as $pesanan)
-        <div class="card border-0 shadow-sm rounded-4 mb-3 overflow-hidden">
-            <div class="card-body p-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
-                    {{-- Left: Order Info --}}
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="fw-bold" style="color: var(--dark);">{{ $pesanan->no_pesanan }}</span>
-                            {!! $pesanan->status_badge !!}
-                        </div>
-
-                        <p class="mb-2" style="color: var(--muted); font-size: 0.875rem;">
-                            <i class="fa-regular fa-calendar me-1"></i>
+        {{-- Orders List --}}
+        @forelse($pesanans as $pesanan)
+            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-6 mb-4 hover:border-blue-300 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="font-mono text-sm font-black text-slate-900">{{ $pesanan->no_pesanan }}</span>
+                        <span class="text-slate-300">&bull;</span>
+                        <span class="text-xs text-slate-500 flex items-center gap-1">
+                            <i class="fa-regular fa-calendar text-[11px]"></i>
                             {{ $pesanan->created_at->format('d M Y, H:i') }}
-                        </p>
-
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="fw-bold" style="color: var(--primary); font-size: 1.15rem;">
-                                Rp{{ number_format($pesanan->grand_total, 0, ',', '.') }}
-                            </span>
-
-                            @if($pesanan->kode_pickup)
-                                <span class="badge rounded-pill px-3 py-2" style="background-color: #f1f5f9; color: var(--dark); font-size: 0.8rem;">
-                                    <i class="fa-solid fa-key me-1"></i>
-                                    Kode: <strong>{{ $pesanan->kode_pickup }}</strong>
-                                </span>
-                            @endif
-                        </div>
+                        </span>
                     </div>
 
-                    {{-- Right: Action --}}
-                    <div class="flex-shrink-0">
-                        <a href="{{ route('pelanggan.pesanan.detail', $pesanan->id_pesanan) }}"
-                           class="btn btn-outline-bayeng rounded-3 fw-semibold">
-                            <i class="fa-solid fa-arrow-right me-1"></i>
-                            Detail
+                    {{-- Status Badge --}}
+                    <div>
+                        {!! $pesanan->status_badge !!}
+                    </div>
+                </div>
+
+                <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        {{-- Pickup Code Highlight Pill --}}
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-200 text-xs">
+                            <i class="fa-solid fa-ticket text-blue-600"></i>
+                            <span class="text-slate-600 font-medium">Kode Pickup:</span>
+                            <span class="font-mono font-black text-blue-700 tracking-wider select-all">{{ $pesanan->kode_pickup }}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Batas Ambil: <strong class="text-slate-800">{{ $pesanan->batas_ambil ? $pesanan->batas_ambil->format('d M Y') : '-' }}</strong> di Gerai Kuningan
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-5">
+                        <div class="text-left sm:text-right">
+                            <span class="text-[10px] text-slate-400 font-medium block">Total Belanja</span>
+                            <span class="text-base font-black text-slate-900">{{ format_rupiah($pesanan->grand_total) }}</span>
+                        </div>
+                        <a href="{{ route('pelanggan.pesanan.detail', $pesanan->id_pesanan) }}" 
+                           class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-colors shadow-sm">
+                            <span>Buka e-Tiket</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
-    @empty
-        {{-- Empty State --}}
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-5 text-center">
-                <i class="fa-solid fa-box-open fa-3x mb-3" style="color: #cbd5e1;"></i>
-                <h5 class="fw-bold mb-2" style="color: var(--dark);">Belum Ada Pesanan</h5>
-                <p class="mb-4" style="color: var(--muted);">Anda belum memiliki pesanan. Mulai belanja sekarang!</p>
-                <a href="{{ route('pelanggan.katalog') }}" class="btn btn-primary-bayeng rounded-3 px-4 fw-semibold">
-                    <i class="fa-solid fa-bag-shopping me-2"></i>
-                    Mulai Belanja
-                </a>
+        @empty
+            <div class="bg-white rounded-3xl p-12 sm:p-16 text-center border border-slate-200/80 shadow-sm space-y-4">
+                <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-2xl">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Belum Ada Transaksi</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                        Anda belum pernah melakukan pemesanan helm di Bayeng Putra Helm.
+                    </p>
+                </div>
+                <div class="pt-2">
+                    <a href="{{ route('katalog') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all">
+                        <i class="fa-solid fa-helmet-safety"></i>
+                        <span>Lihat Katalog Helm</span>
+                    </a>
+                </div>
             </div>
-        </div>
-    @endforelse
+        @endforelse
 
-    {{-- Pagination --}}
-    @if($pesanans->hasPages())
-        <div class="d-flex justify-content-center mt-4">
-            {{ $pesanans->links() }}
-        </div>
-    @endif
+    </div>
 </div>
 @endsection

@@ -1,131 +1,182 @@
 <div>
-    {{-- Flash Messages --}}
+    {{-- Toast Alerts --}}
     @if(session()->has('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                <span>{{ session('success') }}</span>
+            </div>
         </div>
     @endif
     @if(session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fa fa-exclamation-circle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm"></i>
+                <span>{{ session('error') }}</span>
+            </div>
         </div>
     @endif
 
     @if($this->carts->count() > 0)
-        <div class="row g-4">
-            {{-- Cart Items --}}
-            <div class="col-12 col-lg-8">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                    <div class="card-header bg-white border-bottom py-3" style="border-radius: 12px 12px 0 0;">
-                        <h5 class="mb-0 fw-bold" style="color: #0f172a;">
-                            <i class="fa fa-shopping-cart me-2" style="color: #2563eb;"></i>Keranjang Belanja
-                            <span class="badge bg-primary ms-2">{{ $this->cartCount }} item</span>
-                        </h5>
-                    </div>
-                    <div class="card-body p-0">
-                        @foreach($this->carts as $item)
-                            <div class="d-flex align-items-center p-3 {{ !$loop->last ? 'border-bottom' : '' }}" wire:key="cart-{{ $item->id_cart }}">
-                                {{-- Product Image --}}
-                                <div class="flex-shrink-0 me-3" style="width: 80px; height: 80px; background: #f8f9fa; border-radius: 8px; overflow: hidden;">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {{-- Cart Items Column --}}
+            <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>Daftar Helm</span>
+                        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-extrabold">
+                            {{ $this->cartCount }} item
+                        </span>
+                    </h2>
+                    <span class="text-xs text-slate-400">Harga Satuan</span>
+                </div>
+
+                <div class="divide-y divide-slate-100">
+                    @foreach($this->carts as $item)
+                        <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors" wire:key="cart-{{ $item->id_cart }}">
+                            
+                            {{-- Product Details with Image --}}
+                            <div class="flex items-center gap-4 flex-1">
+                                <div class="w-20 h-20 rounded-2xl bg-slate-100 border border-slate-200/60 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
                                     @if($item->helm)
-                                        <img src="{{ $item->helm->gambar_url }}" alt="{{ $item->helm->nama_helm }}" class="w-100 h-100" style="object-fit: contain; padding: 0.5rem;">
+                                        <img src="{{ $item->helm->gambar_url }}" 
+                                             alt="{{ $item->helm->nama_helm }}" 
+                                             class="w-full h-full object-cover rounded-xl">
                                     @endif
                                 </div>
-
-                                {{-- Product Info --}}
-                                <div class="flex-grow-1 me-3">
-                                    <h6 class="fw-bold mb-1" style="color: #0f172a;">
-                                        {{ $item->helm->nama_helm ?? 'Produk tidak ditemukan' }}
-                                    </h6>
+                                <div class="space-y-1">
+                                    <h3 class="font-bold text-sm text-slate-900 line-clamp-1">
+                                        {{ $item->helm->nama_helm ?? 'Helm' }}
+                                    </h3>
                                     @if($item->varian)
-                                        <span class="badge bg-light text-dark border mb-1">
-                                            {{ $item->varian->warna }} &bull; {{ $item->varian->ukuran }}
-                                        </span>
+                                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold">
+                                            <span>Warna: {{ $item->varian->warna }}</span>
+                                            <span>&bull;</span>
+                                            <span>Ukuran: {{ $item->varian->ukuran }}</span>
+                                        </div>
                                     @endif
-                                    <div class="fw-semibold" style="color: #2563eb;">
+                                    <p class="text-xs font-bold text-blue-600 sm:hidden">
                                         {{ format_rupiah($item->helm->harga_jual ?? 0) }}
-                                    </div>
+                                    </p>
                                 </div>
+                            </div>
 
+                            {{-- Price & Quantity & Actions --}}
+                            <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                                
                                 {{-- Quantity Control --}}
-                                <div class="d-flex align-items-center me-3">
-                                    <button wire:click="updateQty({{ $item->id_cart }}, {{ $item->qty - 1 }})" class="btn btn-outline-secondary btn-sm" {{ $item->qty <= 1 ? 'disabled' : '' }} style="border-radius: 8px 0 0 8px;">
-                                        <i class="fa fa-minus"></i>
+                                <div class="flex items-center border border-slate-200 rounded-xl bg-white p-0.5 shadow-sm">
+                                    <button wire:click="updateQty({{ $item->id_cart }}, {{ $item->qty - 1 }})" 
+                                            {{ $item->qty <= 1 ? 'disabled' : '' }}
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-xs">
+                                        <i class="fa-solid fa-minus"></i>
                                     </button>
-                                    <input type="number" value="{{ $item->qty }}" wire:change="updateQty({{ $item->id_cart }}, $event.target.value)" class="form-control form-control-sm text-center border-start-0 border-end-0" style="width: 50px; border-radius: 0;" min="1">
-                                    <button wire:click="updateQty({{ $item->id_cart }}, {{ $item->qty + 1 }})" class="btn btn-outline-secondary btn-sm" style="border-radius: 0 8px 8px 0;">
-                                        <i class="fa fa-plus"></i>
+                                    <span class="w-9 text-center text-xs font-bold text-slate-800">
+                                        {{ $item->qty }}
+                                    </span>
+                                    <button wire:click="updateQty({{ $item->id_cart }}, {{ $item->qty + 1 }})" 
+                                            class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors text-xs">
+                                        <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
 
                                 {{-- Subtotal --}}
-                                <div class="text-end me-3 d-none d-md-block" style="min-width: 110px;">
-                                    <small class="text-muted d-block">Subtotal</small>
-                                    <span class="fw-bold" style="color: #0f172a;">
+                                <div class="text-right min-w-[100px]">
+                                    <p class="text-[10px] text-slate-400 font-medium hidden sm:block">Subtotal</p>
+                                    <p class="text-sm font-extrabold text-slate-900">
                                         {{ format_rupiah(($item->helm->harga_jual ?? 0) * $item->qty) }}
-                                    </span>
+                                    </p>
                                 </div>
 
-                                {{-- Remove Button --}}
-                                <button wire:click="removeFromCart({{ $item->id_cart }})" wire:confirm="Hapus produk ini dari keranjang?" class="btn btn-outline-danger btn-sm" style="border-radius: 8px;">
-                                    <i class="fa fa-trash"></i>
+                                {{-- Remove Item --}}
+                                <button wire:click="removeFromCart({{ $item->id_cart }})" 
+                                        wire:confirm="Yakin ingin menghapus helm ini dari keranjang?"
+                                        class="w-8 h-8 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors text-xs"
+                                        title="Hapus dari Keranjang">
+                                    <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
-                        @endforeach
+
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Checkout Summary (Right Column) --}}
+            <div class="lg:col-span-4 sticky top-28 space-y-4">
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-5">
+                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-900">Ringkasan Pesanan</h3>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between text-slate-500">
+                            <span>Total Jumlah Barang</span>
+                            <span class="font-bold text-slate-800">{{ $this->cartCount }} unit helm</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500">
+                            <span>Metode Pemenuhan</span>
+                            <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Ambil di Toko Fisik</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500">
+                            <span>Biaya Pengiriman</span>
+                            <span class="font-bold text-emerald-600">GRATIS (Rp 0)</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex items-baseline justify-between">
+                        <span class="text-xs font-bold text-slate-800">Total Pembayaran</span>
+                        <span class="text-xl font-black text-blue-600">
+                            {{ format_rupiah($this->cartTotal) }}
+                        </span>
+                    </div>
+
+                    {{-- Store Pickup Notice --}}
+                    <div class="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200/60 text-[11px] text-blue-900 space-y-1">
+                        <p class="font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-store text-blue-600"></i>
+                            <span>Gerai Bayeng Putra Helm Kuningan</span>
+                        </p>
+                        <p class="text-blue-700 leading-relaxed">
+                            Setelah checkout, Anda akan langsung mendapatkan e-Tiket dengan kode unik untuk serah terima barang.
+                        </p>
+                    </div>
+
+                    {{-- CTA Buttons --}}
+                    <div class="space-y-2 pt-1">
+                        <a href="{{ route('pelanggan.checkout') }}" 
+                           class="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 active:scale-98 transition-all">
+                            <span>Lanjut ke Checkout Ambil di Toko</span>
+                            <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                        </a>
+                        <a href="{{ route('katalog') }}" 
+                           class="w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors">
+                            <i class="fa-solid fa-plus text-[10px]"></i>
+                            <span>Tambah Helm Lain</span>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            {{-- Cart Summary --}}
-            <div class="col-12 col-lg-4">
-                <div class="card border-0 shadow-sm" style="border-radius: 12px; position: sticky; top: 1rem;">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3" style="color: #0f172a;">Ringkasan Belanja</h5>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Total Item</span>
-                            <span class="fw-semibold">{{ $this->cartCount }} produk</span>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="fw-bold fs-6" style="color: #0f172a;">Total Harga</span>
-                            <span class="fw-bold fs-5" style="color: #2563eb;">{{ format_rupiah($this->cartTotal) }}</span>
-                        </div>
-
-                        <div class="alert alert-info border-0 small mb-3" style="border-radius: 8px; background-color: #eff6ff; color: #1e40af;">
-                            <i class="fa fa-store me-1"></i>
-                            Pengambilan di toko — gratis ongkir!
-                        </div>
-
-                        <a href="{{ route('checkout') }}" class="btn w-100 text-white fw-bold py-2" style="background-color: #2563eb; border-radius: 8px; font-size: 1rem;">
-                            <i class="fa fa-arrow-right me-1"></i> Lanjut Checkout
-                        </a>
-                        <a href="{{ route('katalog') }}" class="btn btn-outline-secondary w-100 mt-2" style="border-radius: 8px;">
-                            <i class="fa fa-arrow-left me-1"></i> Lanjut Belanja
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     @else
         {{-- Empty Cart State --}}
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i class="fa fa-cart-shopping fa-4x text-muted" style="opacity: 0.3;"></i>
+        <div class="bg-white rounded-3xl p-12 sm:p-16 text-center border border-slate-200/80 shadow-sm max-w-lg mx-auto space-y-4">
+            <div class="w-20 h-20 rounded-3xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-3xl">
+                <i class="fa-solid fa-basket-shopping"></i>
             </div>
-            <h4 class="fw-bold" style="color: #0f172a;">Keranjang Belanja Kosong</h4>
-            <p class="text-muted mb-4">Belum ada produk di keranjang Anda. Yuk mulai belanja!</p>
-            <a href="{{ route('katalog') }}" class="btn text-white fw-semibold px-4 py-2" style="background-color: #2563eb; border-radius: 8px;">
-                <i class="fa fa-helmet-safety me-1"></i> Mulai Belanja
-            </a>
+            <div>
+                <h3 class="text-lg font-bold text-slate-900">Keranjang Masih Kosong</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
+                    Anda belum memilih helm apapun. Temukan helm idaman Anda dari berbagai brand ternama di katalog kami.
+                </p>
+            </div>
+            <div class="pt-2">
+                <a href="{{ route('katalog') }}" 
+                   class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition-all active:scale-95">
+                    <i class="fa-solid fa-helmet-safety"></i>
+                    <span>Mulai Belanja Helm</span>
+                </a>
+            </div>
         </div>
     @endif
-
-    {{-- Loading Overlay --}}
-    <div wire:loading wire:target="removeFromCart, updateQty" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.7); z-index: 9999;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Memproses...</span>
-        </div>
-    </div>
 </div>

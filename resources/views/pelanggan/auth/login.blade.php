@@ -1,102 +1,109 @@
 @extends('layouts.pelanggan')
-
-@section('title', 'Login')
+@section('title', 'Masuk ke Akun Pelanggan')
 
 @section('content')
-<div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <div class="w-100" style="max-width: 450px;">
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-body p-4 p-md-5">
-                {{-- Logo --}}
-                <div class="text-center mb-4">
-                    <a href="{{ route('pelanggan.beranda') }}">
-                        <img src="{{ asset('images/logo.png') }}" alt="Bayeng Putra Helm" height="48">
-                    </a>
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        
+        {{-- Header Card --}}
+        <div class="text-center space-y-2">
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5">
+                <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl shadow-lg shadow-blue-500/25">
+                    <i class="fa-solid fa-helmet-safety"></i>
+                </div>
+            </a>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Selamat Datang Kembali</h1>
+            <p class="text-xs text-slate-500">
+                Masuk untuk mengakses keranjang, riwayat pesanan, dan e-Tiket pickup Anda.
+            </p>
+        </div>
+
+        {{-- Form Card --}}
+        <div class="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xl shadow-slate-200/40">
+            <form method="POST" action="{{ route('pelanggan.login') }}" class="space-y-4" x-data="{ showPassword: false }">
+                @csrf
+
+                {{-- Email Field --}}
+                <div>
+                    <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Alamat Email <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-envelope text-xs"></i>
+                        </div>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               value="{{ old('email') }}" 
+                               required 
+                               autofocus
+                               placeholder="nama@email.com"
+                               class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+                    @error('email')
+                        <p class="text-rose-500 text-[11px] mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <h4 class="fw-bold text-center mb-1" style="color: var(--dark);">Masuk ke Akun Anda</h4>
-                <p class="text-center mb-4" style="color: var(--muted); font-size: 0.9rem;">
-                    Selamat datang kembali! Silakan masuk untuk melanjutkan.
-                </p>
-
-                <form method="POST" action="{{ route('pelanggan.login') }}">
-                    @csrf
-
-                    {{-- Email --}}
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold" style="font-size: 0.875rem;">Email</label>
-                        <input type="email"
-                               id="email"
-                               name="email"
-                               class="form-control form-control-lg rounded-3 @error('email') is-invalid @enderror"
-                               value="{{ old('email') }}"
-                               placeholder="nama@email.com"
-                               required
-                               autofocus>
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Password --}}
-                    <div class="mb-3">
-                        <label for="password" class="form-label fw-semibold" style="font-size: 0.875rem;">Password</label>
-                        <div class="input-group">
-                            <input type="password"
-                                   id="password"
-                                   name="password"
-                                   class="form-control form-control-lg rounded-start-3 @error('password') is-invalid @enderror"
-                                   placeholder="••••••••"
-                                   required>
-                            <button class="btn btn-outline-secondary rounded-end-3 border-start-0" type="button" id="togglePassword" style="border-color: #dee2e6;">
-                                <i class="fa-regular fa-eye" id="togglePasswordIcon"></i>
-                            </button>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                {{-- Password Field --}}
+                <div>
+                    <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Kata Sandi <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock text-xs"></i>
                         </div>
+                        <input :type="showPassword ? 'text' : 'password'" 
+                               id="password" 
+                               name="password" 
+                               required
+                               placeholder="••••••••"
+                               class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white focus:bg-white text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                        <button type="button" 
+                                @click="showPassword = !showPassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid text-xs" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                        </button>
                     </div>
+                    @error('password')
+                        <p class="text-rose-500 text-[11px] mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
-                    {{-- Lupa Password --}}
-                    <div class="d-flex justify-content-end mb-4">
-                        <a href="#" class="text-decoration-none fw-semibold" style="color: var(--primary); font-size: 0.875rem;">
-                            Lupa Password?
-                        </a>
-                    </div>
+                {{-- Remember Me & Forgot Password --}}
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-slate-600">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500">
+                        <span>Ingat Saya</span>
+                    </label>
+                    <span class="text-[11px] text-blue-600 font-semibold cursor-default">Demo: budi@gmail.com</span>
+                </div>
 
-                    {{-- Submit --}}
-                    <button type="submit" class="btn btn-primary-bayeng btn-lg w-100 rounded-3 fw-semibold">
-                        Masuk
-                    </button>
-                </form>
+                {{-- Submit Button --}}
+                <button type="submit" 
+                        class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 active:scale-98 transition-all">
+                    <span>Masuk ke Akun</span>
+                    <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                </button>
+            </form>
 
-                {{-- Register Link --}}
-                <p class="text-center mt-4 mb-0" style="color: var(--muted); font-size: 0.9rem;">
-                    Belum punya akun?
-                    <a href="{{ route('pelanggan.register') }}" class="text-decoration-none fw-semibold" style="color: var(--primary);">
-                        Daftar Sekarang
-                    </a>
-                </p>
+            {{-- Rate Limiter Security Notice --}}
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+                <i class="fa-solid fa-shield-halved text-emerald-600 text-xs"></i>
+                <span>Dilindungi Rate Limiter Anti-Brute Force Cyber Security</span>
             </div>
         </div>
+
+        {{-- Switch to Register --}}
+        <p class="text-center text-xs text-slate-500">
+            Belum memiliki akun pembeli? 
+            <a href="{{ route('pelanggan.register') }}" class="font-bold text-blue-600 hover:text-blue-700 underline">
+                Daftar Akun Baru
+            </a>
+        </p>
+
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password');
-        const icon = document.getElementById('togglePasswordIcon');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-</script>
-@endpush

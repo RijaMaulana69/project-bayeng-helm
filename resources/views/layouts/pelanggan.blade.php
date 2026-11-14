@@ -1,326 +1,349 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Bayeng Putra Helm') - Toko Helm Terpercaya</title>
+    <title>@yield('title', 'Bayeng Putra Helm') - E-Commerce Helm Click & Collect</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 6 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- AOS Animation -->
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    {{-- Google Fonts: Plus Jakarta Sans --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    {{-- Font Awesome 6 --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    {{-- Tailwind CSS & Assets via Vite & CDN Fallback --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        bayeng: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #f59e0b;
-            --dark: #0f172a;
-            --muted: #64748b;
-            --light-bg: #f8fafc;
-            --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
-            --card-hover-shadow: 0 8px 30px rgba(37,99,235,.12);
-        }
-
-        * { box-sizing: border-box; }
-
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--dark);
-            background: var(--light-bg);
-            margin: 0;
         }
-
-        /* Navbar */
-        .navbar-bayeng {
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,.06);
-            padding: .75rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-        }
-        .navbar-bayeng .navbar-brand {
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: var(--primary);
-        }
-        .navbar-bayeng .navbar-brand img {
-            height: 36px;
-            margin-right: 8px;
-        }
-        .navbar-bayeng .nav-link {
-            font-weight: 500;
-            color: var(--dark);
-            padding: .5rem 1rem !important;
-            border-radius: 8px;
-            transition: all .2s;
-        }
-        .navbar-bayeng .nav-link:hover,
-        .navbar-bayeng .nav-link.active {
-            color: var(--primary);
-            background: rgba(37,99,235,.06);
-        }
-
-        /* Buttons */
-        .btn-primary-bayeng {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            padding: .6rem 1.5rem;
-            transition: all .2s;
-        }
-        .btn-primary-bayeng:hover {
-            background: var(--primary-dark);
-            color: #fff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37,99,235,.3);
-        }
-        .btn-outline-bayeng {
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            border-radius: 10px;
-            font-weight: 600;
-            padding: .55rem 1.4rem;
-            background: transparent;
-            transition: all .2s;
-        }
-        .btn-outline-bayeng:hover {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        /* Product Cards */
-        .product-card {
-            background: #fff;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            transition: all .3s ease;
-            height: 100%;
-        }
-        .product-card:hover {
-            border-color: var(--primary);
-            box-shadow: var(--card-hover-shadow);
-            transform: translateY(-4px);
-        }
-        .product-card .card-img-top {
-            height: 200px;
-            object-fit: cover;
-            background: #f1f5f9;
-        }
-        .product-card .card-body { padding: 1.25rem; }
-        .product-card .product-merk {
-            font-size: .72rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-        .product-card .product-name {
-            font-size: .95rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin: .25rem 0 .5rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .product-card .product-price {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        /* Footer */
-        .footer-bayeng {
-            background: var(--dark);
-            color: #94a3b8;
-            padding: 3rem 0 1.5rem;
-        }
-        .footer-bayeng h6 { color: #fff; font-weight: 700; }
-        .footer-bayeng a { color: #94a3b8; text-decoration: none; transition: color .2s; }
-        .footer-bayeng a:hover { color: var(--primary); }
-
-        /* Badge */
-        .badge-stock {
-            font-size: .7rem;
-            font-weight: 600;
-            padding: .3rem .6rem;
-            border-radius: 6px;
-        }
-
-        /* Section */
-        .section-title {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--dark);
-        }
-
-        /* Hero */
-        .hero-section {
-            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
-            padding: 5rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-section::after {
-            content: '';
+        .ticket-cutout-left {
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(37,99,235,.15) 0%, transparent 70%);
-            border-radius: 50%;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background-color: #f1f5f9;
+            border-radius: 9999px;
         }
-        .hero-section h1 {
-            font-size: 2.75rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1.2;
+        .ticket-cutout-right {
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background-color: #f1f5f9;
+            border-radius: 9999px;
         }
-        .hero-section .lead {
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 
     @livewireStyles
     @stack('styles')
 </head>
-<body>
-    {{-- Navbar --}}
-    <nav class="navbar navbar-expand-lg navbar-bayeng">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-                <img src="{{ asset('assets/logo.png') }}" alt="Logo">
-                <span>Bayeng Putra Helm</span>
-            </a>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen antialiased selection:bg-blue-600 selection:text-white" x-data="{ mobileMenu: false }">
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
-                            <i class="fa fa-home me-1"></i> Beranda
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('katalog*') ? 'active' : '' }}" href="{{ route('katalog') }}">
-                            <i class="fa fa-helmet-safety me-1"></i> Katalog
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center gap-3">
-                    @auth('pelanggan')
-                        <a href="{{ route('pelanggan.cart') }}" class="text-decoration-none text-dark position-relative" title="Keranjang">
-                            @livewire('cart-counter')
-                        </a>
-                        <div class="dropdown">
-                            <a class="btn btn-sm btn-light rounded-pill px-3 dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="fa fa-user-circle me-1"></i> {{ Auth::guard('pelanggan')->user()->nama }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li><a class="dropdown-item" href="{{ route('pelanggan.pesanan') }}"><i class="fa fa-receipt me-2"></i> Pesanan Saya</a></li>
-                                <li><a class="dropdown-item" href="{{ route('pelanggan.profil') }}"><i class="fa fa-user me-2"></i> Profil</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="{{ route('pelanggan.logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger"><i class="fa fa-sign-out-alt me-2"></i> Logout</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    @else
-                        <a href="{{ route('pelanggan.login') }}" class="btn btn-outline-bayeng btn-sm">
-                            <i class="fa fa-sign-in-alt me-1"></i> Login
-                        </a>
-                        <a href="{{ route('pelanggan.register') }}" class="btn btn-primary-bayeng btn-sm">
-                            <i class="fa fa-user-plus me-1"></i> Daftar
-                        </a>
-                    @endauth
-                </div>
+    {{-- Top Announcement Bar --}}
+    <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-2 text-center sm:text-left">
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold text-[10px] uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+                    Click & Collect
+                </span>
+                <span>Pesan Online, Ambil & Fitting Ukuran Langsung di Toko Fisik!</span>
+            </div>
+            <div class="flex items-center gap-4 text-[11px] text-slate-400">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-location-dot text-blue-400"></i> Jl. RE Martadinata No.49, Kuningan</span>
+                <span class="hidden md:inline text-slate-600">•</span>
+                <span class="hidden md:flex items-center gap-1"><i class="fa-solid fa-shield-halved text-emerald-400"></i> 100% Original & Bergaransi</span>
             </div>
         </div>
-    </nav>
-
-    {{-- Flash Messages --}}
-    @if(session('success'))
-    <div class="container mt-3">
-        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
-            <i class="fa fa-check-circle me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
     </div>
+
+    {{-- Sticky Glassmorphism Header --}}
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                {{-- Brand Logo --}}
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
+                        <i class="fa-solid fa-helmet-safety text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-extrabold text-lg text-slate-900 tracking-tight">BAYENG PUTRA</span>
+                            <span class="px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider">HELM</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 -mt-0.5 font-medium">Store Pick-up Experience</p>
+                    </div>
+                </a>
+
+                {{-- Desktop Navigation --}}
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="{{ route('home') }}" 
+                       class="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                        <i class="fa-solid fa-house-chimney text-xs mr-1.5 opacity-70"></i> Beranda
+                    </a>
+                    <a href="{{ route('katalog') }}" 
+                       class="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 {{ request()->routeIs('katalog*') ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                        <i class="fa-solid fa-compass text-xs mr-1.5 opacity-70"></i> Katalog Helm
+                    </a>
+                </nav>
+
+                {{-- Action Buttons & Auth State --}}
+                <div class="flex items-center gap-3">
+                    @auth('pelanggan')
+                        {{-- Shopping Cart Button --}}
+                        <a href="{{ route('pelanggan.cart') }}" class="relative group" title="Keranjang Belanja">
+                            @livewire('cart-counter')
+                        </a>
+
+                        {{-- User Dropdown with Alpine.js --}}
+                        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                            <button @click="open = !open" 
+                                    class="flex items-center gap-2.5 p-1.5 pr-3 rounded-full border border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm transition-all text-left">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+                                    {{ substr(Auth::guard('pelanggan')->user()->nama, 0, 1) }}
+                                </div>
+                                <span class="hidden sm:inline font-semibold text-xs text-slate-800 max-w-[120px] truncate">
+                                    {{ Auth::guard('pelanggan')->user()->nama }}
+                                </span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform" :class="{'rotate-180': open}"></i>
+                            </button>
+
+                            {{-- Dropdown Panel --}}
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 py-2 z-50">
+                                
+                                <div class="px-4 py-2 border-b border-slate-100">
+                                    <p class="text-[11px] font-medium text-slate-400">Masuk sebagai</p>
+                                    <p class="text-xs font-bold text-slate-900 truncate">{{ Auth::guard('pelanggan')->user()->nama }}</p>
+                                    <p class="text-[11px] text-slate-500 truncate">{{ Auth::guard('pelanggan')->user()->email }}</p>
+                                </div>
+
+                                <a href="{{ route('pelanggan.pesanan') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                                    <i class="fa-solid fa-receipt text-slate-400 text-sm w-4"></i> Pesanan & E-Tiket
+                                </a>
+                                <a href="{{ route('pelanggan.profil') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                                    <i class="fa-solid fa-user-gear text-slate-400 text-sm w-4"></i> Pengaturan Akun
+                                </a>
+
+                                <div class="border-t border-slate-100 my-1"></div>
+
+                                <form action="{{ route('pelanggan.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors text-left">
+                                        <i class="fa-solid fa-arrow-right-from-bracket text-rose-400 text-sm w-4"></i> Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Guest Buttons --}}
+                        <a href="{{ route('pelanggan.login') }}" 
+                           class="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-600 hover:bg-slate-100/80 transition-all">
+                            Masuk
+                        </a>
+                        <a href="{{ route('pelanggan.register') }}" 
+                           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 active:scale-95 transition-all">
+                            <span>Daftar</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    @endauth
+
+                    {{-- Mobile Hamburger --}}
+                    <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid text-lg" :class="mobileMenu ? 'fa-xmark' : 'fa-bars'"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        {{-- Mobile Drawer --}}
+        <div x-show="mobileMenu" class="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
+            <a href="{{ route('home') }}" class="block px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-house-chimney text-xs mr-2 text-blue-600"></i> Beranda
+            </a>
+            <a href="{{ route('katalog') }}" class="block px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i class="fa-solid fa-compass text-xs mr-2 text-blue-600"></i> Katalog Helm
+            </a>
+            @guest('pelanggan')
+                <div class="pt-3 border-t border-slate-100 flex gap-2">
+                    <a href="{{ route('pelanggan.login') }}" class="flex-1 text-center py-2.5 rounded-xl text-xs font-bold border border-slate-200 text-slate-700">Masuk</a>
+                    <a href="{{ route('pelanggan.register') }}" class="flex-1 text-center py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white">Daftar</a>
+                </div>
+            @endguest
+        </div>
+    </header>
+
+    {{-- SweetAlert Flash Message Handler --}}
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+            });
+        </script>
     @endif
     @if(session('error'))
-    <div class="container mt-3">
-        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
-            <i class="fa fa-exclamation-circle me-2"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '{{ session('error') }}',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
     @endif
 
-    {{-- Main Content --}}
-    <main>
+    {{-- Main Page Content --}}
+    <main class="flex-grow">
         @yield('content')
     </main>
 
-    {{-- Footer --}}
-    <footer class="footer-bayeng mt-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <h6 class="mb-3"><i class="fa fa-helmet-safety me-2"></i> Bayeng Putra Helm</h6>
-                    <p class="small mb-0">Toko helm terpercaya dengan koleksi lengkap dari berbagai merk ternama. Pesan online, ambil langsung di toko!</p>
+    {{-- Modern Footer --}}
+    <footer class="bg-slate-950 text-slate-400 border-t border-slate-800 pt-16 pb-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                
+                {{-- Col 1: Brand & USP --}}
+                <div class="md:col-span-1 space-y-4">
+                    <div class="flex items-center gap-2.5 text-white">
+                        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-helmet-safety text-lg"></i>
+                        </div>
+                        <span class="font-extrabold text-base tracking-tight">BAYENG PUTRA HELM</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Pusat perlengkapan helm original berkualitas tinggi di Kuningan. Nikmati kemudahan pesan online dengan garansi pas fitting ukuran langsung di gerai fisik kami.
+                    </p>
+                    <div class="flex items-center gap-3 text-slate-400 text-sm pt-2">
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                    </div>
                 </div>
-                <div class="col-lg-4">
-                    <h6 class="mb-3">Menu</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="{{ route('home') }}"><i class="fa fa-chevron-right me-1" style="font-size:.6rem"></i> Beranda</a></li>
-                        <li class="mb-2"><a href="{{ route('katalog') }}"><i class="fa fa-chevron-right me-1" style="font-size:.6rem"></i> Katalog Helm</a></li>
+
+                {{-- Col 2: Alur Click & Collect --}}
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Alur Ambil di Toko</h4>
+                    <ul class="text-xs space-y-2.5">
+                        <li class="flex items-start gap-2">
+                            <span class="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">1</span>
+                            <span>Pilih varian warna & ukuran helm</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">2</span>
+                            <span>Checkout & dapatkan e-Tiket Pickup</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">3</span>
+                            <span>Kunjungi gerai toko & fitting helm</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="flex-shrink-0 w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px] flex items-center justify-center">4</span>
+                            <span>Kasir memvalidasi tiket & bawa pulang</span>
+                        </li>
                     </ul>
                 </div>
-                <div class="col-lg-4">
-                    <h6 class="mb-3">Hubungi Kami</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><i class="fa fa-map-marker-alt me-2 text-primary"></i> Jl. RE Martadinata No.49, Kuningan</li>
-                        <li class="mb-2"><i class="fa fa-phone me-2 text-primary"></i> 089664269624</li>
+
+                {{-- Col 3: Link Cepat --}}
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Navigasi</h4>
+                    <ul class="text-xs space-y-2">
+                        <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="{{ route('katalog') }}" class="hover:text-white transition-colors">Katalog Koleksi Helm</a></li>
+                        <li><a href="{{ route('pelanggan.cart') }}" class="hover:text-white transition-colors">Keranjang Belanja</a></li>
+                        <li><a href="{{ route('pelanggan.pesanan') }}" class="hover:text-white transition-colors">Lacak Pesanan Saya</a></li>
+                        <li><a href="{{ route('admin.login') }}" class="hover:text-blue-400 transition-colors text-[11px] text-slate-500">Portal Kasir / Owner</a></li>
                     </ul>
+                </div>
+
+                {{-- Col 4: Lokasi & Kontak Toko --}}
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Lokasi Toko Fisik</h4>
+                    <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="flex items-start gap-2 text-xs">
+                            <i class="fa-solid fa-location-dot text-blue-500 mt-0.5"></i>
+                            <div>
+                                <p class="font-semibold text-slate-200">Gerai Bayeng Putra Helm</p>
+                                <p class="text-[11px] text-slate-400">Jl. RE Martadinata No.49, Ancaran, Kuningan, Jawa Barat</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs pt-1 border-t border-slate-800">
+                            <i class="fa-solid fa-clock text-amber-400"></i>
+                            <span class="text-[11px] text-slate-300">Buka Setiap Hari: 08.00 - 21.00 WIB</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Bottom copyright --}}
+            <div class="border-t border-slate-800/80 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; {{ date('Y') }} Bayeng Putra Helm. Seluruh hak cipta dilindungi.</p>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-emerald-500 text-xs"></i> 256-Bit SSL Enkripsi Transaksi</span>
+                    <span>•</span>
+                    <span class="text-[11px]">Click & Collect System v2.0</span>
                 </div>
             </div>
-            <hr class="my-4" style="border-color:#334155">
-            <p class="text-center small mb-0">&copy; {{ date('Y') }} Bayeng Putra Helm. All rights reserved.</p>
         </div>
     </footer>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- AOS -->
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script>AOS.init({ duration: 600, once: true });</script>
 
     @livewireScripts
     @stack('scripts')
