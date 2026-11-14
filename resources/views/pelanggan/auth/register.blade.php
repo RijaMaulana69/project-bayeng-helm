@@ -51,7 +51,7 @@
                    value="{{ old('nama') }}" 
                    required 
                    autofocus
-                   placeholder="Contoh: Budi Pratama"
+                   placeholder="Masukkan Nama Lengkap"
                    class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
             @error('nama')
                 <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
@@ -61,7 +61,7 @@
         {{-- No. WhatsApp / Telepon --}}
         <div>
             <label for="telepon" class="block text-xs font-semibold text-slate-700 mb-1.5">
-                No. Handphone / WhatsApp <span class="text-rose-500">*</span>
+                No. Handphone<span class="text-rose-500">*</span>
             </label>
             <input type="tel" 
                    id="telepon" 
@@ -70,7 +70,7 @@
                    autocomplete="tel"
                    value="{{ old('telepon') }}" 
                    required 
-                   placeholder="Contoh: 08123456789"
+                   placeholder="Masukkan Nomor Handphone"
                    class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
             @error('telepon')
                 <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
