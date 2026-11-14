@@ -89,17 +89,21 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-5 py-6">
         
         {{-- Counter & Active Filter Tags Bar --}}
-        <div class="flex items-center justify-between mb-5 text-xs text-slate-500">
-            <div>
-                Menampilkan <strong class="text-slate-900 font-black">{{ $helms->total() }}</strong> helm tersedia di gerai
-            </div>
-            @if($search || $merk_filter || $kategori_filter || $price_min || $price_max)
-                <button wire:click="resetFilters" class="text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1">
-                    <i class="fa-solid fa-rotate-left text-[10px]"></i>
-                    <span>Reset Semua</span>
+        @if($search || $merk_filter || $kategori_filter || $price_min || $price_max)
+            <div class="flex items-center justify-between mb-5 px-3 py-2 bg-blue-50/60 border border-blue-100 rounded-xl text-xs">
+                <div class="flex items-center gap-2 text-slate-700 font-medium">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-blue-600">Filter Aktif:</span>
+                    <span class="text-slate-600">
+                        {{ $helms->total() }} helm ditemukan
+                    </span>
+                </div>
+                <button wire:click="resetFilters" 
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white text-[11px] font-bold transition-all shadow-2xs active:scale-95">
+                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                    <span>Hapus Semua Filter</span>
                 </button>
-            @endif
-        </div>
+            </div>
+        @endif
 
         {{-- Loading Indicator --}}
         <div wire:loading class="w-full text-center py-20">
@@ -163,8 +167,8 @@
                 </div>
 
                 {{-- Pagination Links --}}
-                <div class="mt-12 flex justify-center">
-                    {{ $helms->links() }}
+                <div class="mt-10 border-t border-slate-200/80 pt-4">
+                    {{ $helms->links('livewire.partials.pagination') }}
                 </div>
             @else
                 {{-- Empty State --}}
