@@ -208,8 +208,8 @@
                 </div>
                 <div class="pt-2">
                     <a href="{{ route('admin.login') }}" class="text-[10px] text-slate-600 hover:text-slate-400 transition-colors inline-flex items-center gap-1">
-                        <i class="fa-solid fa-lock text-[8px]"></i>
-                        <span>Portal Staf Kasir</span>
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span>Portal Admin</span>
                     </a>
                 </div>
             </div>
