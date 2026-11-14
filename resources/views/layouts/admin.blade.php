@@ -14,6 +14,9 @@
     {{-- Icons --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    {{-- SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {{-- CSS --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -104,15 +107,41 @@
                         <span>Update Stok</span>
                     </a>
 
+                    <a href="{{ route('admin.merk.index') }}" 
+                       class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg group {{ request()->routeIs('admin.merk*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-5 text-center fa-solid fa-tags"></i>
+                        <span>Merk</span>
+                    </a>
+
+                    <a href="{{ route('admin.kategori.index') }}" 
+                       class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg group {{ request()->routeIs('admin.kategori*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-5 text-center fa-solid fa-layer-group"></i>
+                        <span>Kategori</span>
+                    </a>
+
+                    <a href="{{ route('admin.warna.index') }}" 
+                       class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg group {{ request()->routeIs('admin.warna*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-5 text-center fa-solid fa-palette"></i>
+                        <span>Warna</span>
+                    </a>
+
                     @if(Auth::guard('web')->user()->isOwner())
                     <p class="px-3 mt-6 mb-2 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">Management</p>
-                    <a href="{{ route('admin.owner.user.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg text-slate-600 hover:bg-slate-50">
+                    <a href="{{ route('admin.owner.user.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg {{ request()->routeIs('admin.owner.user*') || request()->routeIs('admin.user*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="w-5 text-center fa-solid fa-user-gear"></i>
                         <span>Karyawan</span>
                     </a>
-                    <a href="{{ route('admin.owner.laporan.penjualan') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg text-slate-600 hover:bg-slate-50">
+                    <a href="{{ route('admin.owner.laporan.penjualan') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg {{ request()->routeIs('admin.owner.laporan*') || request()->routeIs('admin.laporan*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="w-5 text-center fa-solid fa-file-invoice-dollar"></i>
                         <span>Laporan</span>
+                    </a>
+                    <a href="{{ route('admin.owner.activity-log') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg {{ request()->routeIs('admin.owner.activity-log*') || request()->routeIs('admin.activity-log*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-5 text-center fa-solid fa-clock-rotate-left"></i>
+                        <span>Activity Log</span>
+                    </a>
+                    <a href="{{ route('admin.owner.pengaturan') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded-lg {{ request()->routeIs('admin.owner.pengaturan*') || request()->routeIs('admin.pengaturan*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-5 text-center fa-solid fa-gear"></i>
+                        <span>Pengaturan</span>
                     </a>
                     @endif
                 </nav>

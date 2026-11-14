@@ -54,7 +54,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            @foreach ($pesanan->items as $item)
+                            @foreach ($pesanan->details as $item)
                             <tr>
                                 <td class="px-6 py-4 text-xs font-bold text-slate-900">
                                     {{ $item->helm->nama_helm ?? $item->nama_helm ?? '-' }}
