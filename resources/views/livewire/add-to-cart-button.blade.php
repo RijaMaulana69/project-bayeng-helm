@@ -41,32 +41,20 @@
         </button>
     </div>
 
-    {{-- Mobile Sticky Action Bottom Bar (Shopee / Blibli Style, at bottom-0) --}}
-    <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-3 py-2 flex items-center gap-2.5 shadow-lg">
+    {{-- Mobile Sticky Action Bottom Bar (Only Chat & Masukkan Keranjang) --}}
+    <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-3 shadow-lg">
         {{-- Chat Mobile --}}
         <button type="button"
                 @click="$dispatch('open-store-chat')"
-                class="w-12 h-10 flex flex-col items-center justify-center text-slate-600 hover:text-blue-600 active:scale-95 transition-transform cursor-pointer shrink-0">
+                class="w-14 h-11 flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-blue-600 active:scale-95 transition-all cursor-pointer shrink-0">
             <i class="fa-regular fa-comment-dots text-base leading-none"></i>
-            <span class="text-[9px] font-bold mt-0.5 leading-none">Chat</span>
+            <span class="text-[10px] font-bold mt-1 leading-none">Chat</span>
         </button>
-
-        <div class="h-6 w-[1px] bg-slate-200 shrink-0"></div>
-
-        {{-- Cart Shortcut Mobile --}}
-        <a href="{{ route('pelanggan.cart') }}" 
-           class="w-12 h-10 flex flex-col items-center justify-center text-slate-600 hover:text-blue-600 active:scale-95 transition-transform relative shrink-0">
-            <div class="relative leading-none">
-                <i class="fa-solid fa-cart-shopping text-base leading-none"></i>
-                @livewire('cart-counter')
-            </div>
-            <span class="text-[9px] font-bold mt-0.5 leading-none">Keranjang</span>
-        </a>
 
         {{-- CTA Button Mobile (No + sign) --}}
         <button type="button"
                 @click="variantSheetOpen = true"
-                class="flex-1 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer">
+                class="flex-1 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-98 transition-all cursor-pointer">
             <i class="fa-solid fa-bag-shopping text-xs"></i>
             <span>Masukkan Keranjang</span>
         </button>

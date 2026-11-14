@@ -26,6 +26,14 @@ class KatalogFilter extends Component
         'sort' => ['except' => 'terbaru'],
     ];
 
+    public function mount()
+    {
+        $this->search = (string) request('search', $this->search);
+        $this->merk_filter = (string) request('merk_filter', $this->merk_filter);
+        $this->kategori_filter = (string) request('kategori_filter', $this->kategori_filter);
+        $this->sort = (string) request('sort', $this->sort);
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
