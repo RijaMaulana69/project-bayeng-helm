@@ -166,7 +166,7 @@
                     <li><a href="{{ route('katalog') }}" class="hover:text-white transition-colors">Katalog Helm</a></li>
                     <li><a href="{{ route('pelanggan.pesanan') }}" class="hover:text-white transition-colors">Cek Status E-Tiket</a></li>
                     <li><a href="#lokasi-gerai" class="hover:text-white transition-colors">Panduan Ambil di Toko</a></li>
-                    <li><a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition-colors">Bantuan Kasir via WA</a></li>
+                    <li><a href="{{ route('home') }}#lokasi-gerai" class="hover:text-white transition-colors">Jam Operasional Gerai</a></li>
                 </ul>
             </div>
 

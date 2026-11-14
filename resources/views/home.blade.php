@@ -134,7 +134,7 @@
                     <div class="flex-1 space-y-4 text-center md:text-left">
                         <h2 class="text-2xl md:text-4xl font-black tracking-tighter leading-none">KUNJUNGI GERAI KAMI</h2>
                         <p class="text-xs md:text-sm text-slate-400 font-medium leading-relaxed max-w-md">
-                            Pusat helm resmi berstandar SNI & DOT di Kuningan. Tersedia berbagai merk ternama dan varian ukuran lengkap.
+                            Pusat helm resmi berstandar SNI & DOT di Kuningan. Amankan stok favoritmu di website, coba langsung fitting ukuran pas di gerai.
                         </p>
                         <div class="pt-4 flex flex-col sm:flex-row gap-3">
                             <div class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
@@ -142,15 +142,15 @@
                                 <span class="text-[10px] font-bold text-slate-300">Jl. RE Martadinata No.49, Kuningan</span>
                             </div>
                             <div class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
-                                <i class="fa-brands fa-whatsapp text-emerald-500"></i>
-                                <span class="text-[10px] font-bold text-slate-300">+62 812 3456 7890</span>
+                                <i class="fa-solid fa-clock text-blue-400"></i>
+                                <span class="text-[10px] font-bold text-slate-300">08:00 - 21:00 WIB (Buka Setiap Hari)</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="https://wa.me/6281234567890" target="_blank" class="w-full h-16 px-8 bg-blue-600 text-white font-black text-xs md:text-sm rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest">
-                            <i class="fa-brands fa-whatsapp text-lg"></i>
-                            <span>CHAT ADMIN TOKO</span>
+                        <a href="{{ route('katalog') }}" class="w-full h-14 px-8 bg-blue-600 text-white font-black text-xs md:text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase tracking-widest">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>JELAJAHI KATALOG</span>
                         </a>
                     </div>
                 </div>

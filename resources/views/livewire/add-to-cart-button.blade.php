@@ -95,30 +95,25 @@
         </button>
 
         {{-- Chat Admin Desktop Button --}}
-        @php
-            $waText = urlencode("Halo Admin Bayeng Putra Helm, saya mau tanya ketersediaan helm *{$helm->nama_helm}* (ID: {$helm->id_helm}). Apakah stoknya ready di toko Kuningan?");
-        @endphp
-        <a href="https://wa.me/6281234567890?text={{ $waText }}" 
-           target="_blank" 
-           title="Chat Admin Toko"
-           class="h-11 px-4 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs">
-            <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
+        <button type="button"
+                @click="$dispatch('open-store-chat')"
+                title="Chat Staf Toko"
+                class="h-11 px-4 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer">
+            <i class="fa-solid fa-headset text-blue-600 text-base"></i>
             <span>Chat</span>
-        </a>
+        </button>
     </div>
 
     {{-- Sticky Mobile Action Bottom Bar (Tokopedia Style) --}}
     <div class="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-lg flex items-center gap-3">
         
         {{-- Chat Button Mobile --}}
-        @php
-            $waTextMob = urlencode("Halo Admin Bayeng Putra Helm, saya tertarik helm *{$helm->nama_helm}*. Apakah ready di toko?");
-        @endphp
-        <a href="https://wa.me/6281234567890?text={{ $waTextMob }}" 
-           target="_blank" 
-           class="w-10 h-10 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-600 bg-white shadow-2xs active:scale-95 shrink-0">
-            <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i>
-        </a>
+        <button type="button"
+                @click="$dispatch('open-store-chat')"
+                title="Chat Toko"
+                class="w-10 h-10 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-blue-600 bg-white shadow-2xs active:scale-95 shrink-0 cursor-pointer">
+            <i class="fa-solid fa-headset text-base"></i>
+        </button>
 
         {{-- Price preview --}}
         <div class="flex-1 overflow-hidden">
