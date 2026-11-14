@@ -45,7 +45,7 @@ class CartManagerTest extends TestCase
     {
         $pelanggan = Pelanggan::create([
             'nama' => 'Toggle Tester',
-            'email' => 'toggle_' . rand(1000, 9999) . '@test.com',
+            'email' => 'toggle_' . uniqid() . '@test.com',
             'telepon' => '081299992222',
             'password' => bcrypt('password'),
         ]);

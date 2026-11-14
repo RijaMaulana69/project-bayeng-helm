@@ -1,23 +1,352 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard')
-@section('page-title', 'Ringkasan Toko')
+@section('title', $isOwner ? 'Dashboard Bisnis' : 'Meja Kasir')
+@section('page-title', $isOwner ? 'Ringkasan Toko' : 'Meja Kasir Operasional')
 
 @section('content')
+
+{{-- ========================================================================= --}}
+{{-- A. TAMPILAN KHUSUS KARYAWAN (Kasir & Staf Gerai - Frontline Operations)   --}}
+{{-- ========================================================================= --}}
+@if(!$isOwner)
+<div class="space-y-6">
+
+    {{-- 1. Header Kasir & Fast Verification Tool --}}
+    <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                        Halo, {{ $user->nama_lengkap }}
+                    </h1>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                        Kasir Gerai
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200/80">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Meja Kasir Siap Melayani</span>
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500">
+                    Operasional Toko &bull; {{ now()->translatedFormat('l, d F Y') }} &bull; Fokus: Layanan Ambil di Toko (BOPIS)
+                </p>
+            </div>
+
+            <a href="{{ route('admin.pickup.index') }}" 
+               class="h-9 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold inline-flex items-center justify-center gap-2 shadow-2xs transition-colors shrink-0">
+                <i class="fa-solid fa-qrcode text-xs"></i>
+                <span>Buka Layar Kasir Pickup</span>
+            </a>
+        </div>
+
+        {{-- Big Prominent Voucher Pickup Validator --}}
+        <div class="pt-4 border-t border-slate-100">
+            <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="p-4 rounded-xl bg-blue-50/60 border border-blue-100 flex flex-col sm:flex-row sm:items-center gap-3">
+                @csrf
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shrink-0">
+                    <i class="fa-solid fa-barcode"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <label for="pickup_input_karyawan" class="text-xs font-bold text-slate-900 block">
+                        Cek Voucher Pickup Pelanggan
+                    </label>
+                    <p class="text-[11px] text-slate-500">
+                        Ketik atau scan kode pickup voucher pelanggan (contoh: <span class="font-mono font-medium text-blue-600">PKP-...</span>)
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <input type="text" 
+                           id="pickup_input_karyawan"
+                           name="kode_pickup" 
+                           placeholder="Ketik kode (PKP-...)" 
+                           required 
+                           autocomplete="off"
+                           class="flex-1 sm:w-56 h-10 px-3.5 text-xs bg-white border border-slate-300 rounded-xl focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
+                    <button type="submit" 
+                            class="h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors shrink-0">
+                        <span>Cek Voucher</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- 2. Tugas Operasional Kasir (Prioritas Meja Kasir) --}}
+    <div>
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Antrean Tindakan Kasir
+                </h2>
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
+                    Tugas Hari Ini
+                </span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium">Prioritas Serah Terima & Persiapan</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {{-- 1. Siap Diambil di Gerai --}}
+            <a href="{{ route('admin.pickup.index') }}" 
+               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-700">Antrean Ambil di Toko</span>
+                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-box-open"></i>
+                        </span>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline gap-2">
+                        <span class="text-2xl font-bold text-slate-900">{{ $pesanan_siap_ambil }}</span>
+                        <span class="text-xs text-slate-500 font-normal">pelanggan</span>
+                    </div>
+                    <div class="mt-2 flex items-center gap-1.5 flex-wrap">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                            {{ $pickup_ready_count }} Lunas
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
+                            {{ $pickup_unpaid_count }} Bayar Kasir
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
+                    <span>Layani Pelanggan</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+
+            {{-- 2. Perlu Disiapkan di Rak --}}
+            <a href="{{ route('admin.pesanan.index', ['status' => 'processing']) }}" 
+               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-sky-400 hover:shadow-xs transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-700">Perlu Disiapkan di Rak</span>
+                        <span class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-dolly"></i>
+                        </span>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline gap-2">
+                        <span class="text-2xl font-bold text-slate-900">{{ $pesanan_perlu_disiapkan }}</span>
+                        <span class="text-xs text-slate-500 font-normal">paket</span>
+                    </div>
+                    <p class="mt-2 text-[11px] text-slate-500">
+                        Ambil helm dari kardus gudang ke etalase kasir.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sky-600">
+                    <span>Siapkan Barang</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+
+            {{-- 3. Verifikasi Bukti Transfer --}}
+            <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" 
+               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-700">Verifikasi Transfer</span>
+                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </span>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline gap-2">
+                        <span class="text-2xl font-bold {{ $pesanan_pending_count > 0 ? 'text-amber-600' : 'text-slate-900' }}">
+                            {{ $pesanan_pending_count }}
+                        </span>
+                        <span class="text-xs text-slate-500 font-normal">menunggu cek</span>
+                    </div>
+                    <p class="mt-2 text-[11px] text-slate-500">
+                        {{ $pesanan_pending_count > 0 ? 'Ada bukti bayar bank yang perlu dicek.' : 'Semua transfer sudah diverifikasi.' }}
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
+                    <span>Cek Pembayaran</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+
+            {{-- 4. Stok Fisik Habis di Rak --}}
+            <a href="{{ route('admin.stok.index') }}" 
+               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-rose-400 hover:shadow-xs transition-all group flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-700">Stok Habis di Rak</span>
+                        <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                        </span>
+                    </div>
+                    <div class="mt-2.5 flex items-baseline gap-2">
+                        <span class="text-2xl font-bold {{ $varian_habis_count > 0 ? 'text-rose-600' : 'text-slate-900' }}">
+                            {{ $varian_habis_count }}
+                        </span>
+                        <span class="text-xs text-slate-500 font-normal">varian kosong (0)</span>
+                    </div>
+                    <p class="mt-2 text-[11px] text-slate-500">
+                        {{ $varian_menipis_count }} varian helm sisa 1-3 unit.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">
+                    <span>Input Stok Masuk</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    {{-- 3. Meja Kasir: Antrean Pelanggan & Cek Fisik Helm --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        {{-- Antrean Siap Diserahkan (7 Cols) --}}
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Siap Diserahkan</h3>
+                    <p class="text-[11px] text-slate-400">Pesanan yang menunggu pembeli datang ke gerai toko</p>
+                </div>
+                <a href="{{ route('admin.pickup.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                    <span>Buka Kasir Pickup</span>
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="divide-y divide-slate-100">
+                @php
+                    $pickupQueue = $pesanan_terbaru->filter(fn($p) => in_array($p->status, ['ready', 'unpaid_pickup']))->take(6);
+                @endphp
+                @forelse ($pickupQueue as $pesanan)
+                    @php
+                        $firstDetail = $pesanan->details->first();
+                        $itemsSummary = $firstDetail ? ($firstDetail->helm->nama_helm ?? 'Helm') : 'Item Helm';
+                        $extraCount = $pesanan->details->count() - 1;
+                        $isPaid = $pesanan->status === 'ready';
+                    @endphp
+                    <div class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors">
+                        <div class="min-w-0 space-y-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-mono font-bold text-xs text-slate-900">
+                                    #{{ $pesanan->no_pesanan }}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ $isPaid ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80' }}">
+                                    {{ $isPaid ? 'Lunas (Tinggal Serah)' : 'Bayar Kasir: ' . format_rupiah($pesanan->grand_total) }}
+                                </span>
+                            </div>
+
+                            <p class="text-xs text-slate-800 font-medium truncate">
+                                {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }}
+                                <span class="text-slate-400 font-normal">&bull; {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}</span>
+                            </p>
+
+                            <p class="text-[11px] text-slate-500">
+                                Kode Pickup: <span class="font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60">{{ $pesanan->kode_pickup }}</span>
+                            </p>
+                        </div>
+
+                        <div class="text-right shrink-0">
+                            <form action="{{ route('admin.pickup.validasi') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
+                                <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                                    <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+                                    <span>Serahkan</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-xs text-slate-400">
+                        Tidak ada antrean pickup yang siap saat ini.
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        {{-- Stok Kritis di Rak Toko (5 Cols) --}}
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Periksa Rak Etalase</h3>
+                    <p class="text-[11px] text-slate-400">Varian helm habis / menipis di toko fisik</p>
+                </div>
+                <a href="{{ route('admin.stok.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                    <span>+ Restok</span>
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <div class="divide-y divide-slate-100">
+                @forelse ($stok_kritis_varian as $varian)
+                    @php
+                        $helm = $varian->helm;
+                        $isZero = $varian->stok === 0;
+                    @endphp
+                    <div class="p-3 sm:p-3.5 flex items-center gap-3 hover:bg-slate-50/70 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0">
+                            @if($helm && $helm->gambar_url)
+                                <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                    <i class="fa-solid fa-helmet-safety text-xs"></i>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs font-semibold text-slate-900 truncate">
+                                {{ $helm->nama_helm ?? 'Helm' }}
+                            </h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5 truncate">
+                                <span class="font-medium text-slate-700">{{ $varian->warna }}</span> &bull; Ukuran {{ $varian->ukuran }}
+                            </p>
+                        </div>
+
+                        <div class="text-right shrink-0 flex items-center gap-1.5">
+                            <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold {{ $isZero ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200/80' }}">
+                                {{ $isZero ? 'Habis (0)' : 'Sisa ' . $varian->stok }}
+                            </span>
+                            <a href="{{ route('admin.stok.index') }}" 
+                               class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center text-xs transition-colors"
+                               title="Input Stok">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-xs text-slate-400">
+                        Seluruh stok varian di rak aman.
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span>{{ $varian_habis_count }} varian habis &bull; {{ $varian_menipis_count }} menipis</span>
+                <a href="{{ route('admin.stok.index') }}" class="font-semibold text-blue-600 hover:underline">
+                    Input Stok Masuk &rarr;
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{{-- ========================================================================= --}}
+{{-- B. TAMPILAN KHUSUS OWNER (Pemilik Toko - Financial & Executive Control)    --}}
+{{-- ========================================================================= --}}
+@else
 <div class="space-y-6" x-data="dashboardHub()">
 
-    {{-- 1. Merchant Header & Quick Pickup Input --}}
+    {{-- 1. Merchant Header & Period Selector --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             
-            {{-- User greeting & store status --}}
             <div class="space-y-1">
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                         Halo, {{ $user->nama_lengkap }}
                     </h1>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
-                        {{ $user->isOwner() ? 'Pemilik Toko' : 'Kasir & Staf' }}
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+                        Pemilik Toko (Executive)
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -29,7 +358,7 @@
                 </p>
             </div>
 
-            {{-- Quick Pickup Code Validator (In-Dashboard Cashier Tool) --}}
+            {{-- Quick Pickup Code Validator --}}
             <div class="flex flex-col sm:flex-row sm:items-center gap-2.5">
                 <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="flex items-center gap-1.5">
                     @csrf
@@ -40,10 +369,10 @@
                                placeholder="Scan / Kode Pickup (PKP-...)" 
                                required 
                                autocomplete="off"
-                               class="w-52 sm:w-60 h-9 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
+                               class="w-52 sm:w-60 h-9 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
                     </div>
                     <button type="submit" 
-                            class="h-9 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0">
+                            class="h-9 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0">
                         <span>Cek</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
@@ -51,23 +380,16 @@
 
                 <div class="flex items-center gap-2">
                     <a href="{{ route('admin.pickup.index') }}" 
-                       class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-colors shrink-0"
-                       title="Buka Kasir Pickup">
+                       class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-colors shrink-0">
                         <i class="fa-solid fa-store text-xs text-slate-500"></i>
                         <span class="hidden sm:inline">Kasir Pickup</span>
-                    </a>
-                    <a href="{{ route('home') }}" target="_blank" 
-                       class="h-9 px-3 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 transition-colors shrink-0"
-                       title="Buka Toko Online">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
-                        <span class="hidden sm:inline">Lihat Toko</span>
                     </a>
                 </div>
             </div>
 
         </div>
 
-        {{-- Dynamic Period Filter Tabs --}}
+        {{-- Dynamic Period Filter Tabs for Owner --}}
         <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-1.5 text-xs text-slate-500">
                 <span class="font-medium text-slate-400 text-[11px] uppercase tracking-wider">Filter Periode:</span>
@@ -98,7 +420,7 @@
         </div>
     </div>
 
-    {{-- 2. Penting Hari Ini (Action Required Cards) --}}
+    {{-- 2. Penting Hari Ini (Action Required) --}}
     <div>
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
@@ -113,7 +435,7 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            {{-- Antrean Siap Diambil di Toko (BOPIS) --}}
+            {{-- Antrean Siap Diambil di Toko --}}
             <a href="{{ route('admin.pickup.index') }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
@@ -136,15 +458,14 @@
                         </span>
                     </div>
                 </div>
-
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-emerald-600">
                     <span>Buka Kasir Pickup</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
-            {{-- Pesanan Masuk Hari Ini & Pending --}}
-            <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" 
+            {{-- Pesanan Masuk Hari Ini --}}
+            <a href="{{ route('admin.pesanan.index') }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -169,14 +490,13 @@
                         @endif
                     </div>
                 </div>
-
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-blue-600">
                     <span>Lihat Semua Pesanan</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
-            {{-- Stok Kritis (< 5) & Varian Habis --}}
+            {{-- Stok Kritis (< 5) --}}
             <a href="{{ route('admin.stok.index') }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
@@ -203,7 +523,6 @@
                         </span>
                     </div>
                 </div>
-
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-amber-600">
                     <span>Update Stok Masuk</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
@@ -212,9 +531,8 @@
         </div>
     </div>
 
-    {{-- 3. Ringkasan Finansial & Katalog Toko (Dynamic Period KPIs) --}}
+    {{-- 3. Ringkasan Finansial Toko --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {{-- Omzet Selesai --}}
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-slate-500">Omzet Selesai Hari Ini</span>
@@ -231,7 +549,6 @@
             </div>
         </div>
 
-        {{-- Total Pesanan Masuk Periode Ini --}}
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-slate-500">Total Transaksi</span>
@@ -245,7 +562,6 @@
             </div>
         </div>
 
-        {{-- Rata-rata Nilai Pesanan (AOV) --}}
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-slate-500">Rata-rata Order (AOV)</span>
@@ -255,11 +571,10 @@
                 {{ format_rupiah($period_aov) }}
             </p>
             <div class="mt-1 text-[11px] text-slate-400">
-                <span>Nilai rata-rata per transaksi selesai</span>
+                <span>Nilai rata-rata belanja per transaksi</span>
             </div>
         </div>
 
-        {{-- Total Katalog Helm & SKU --}}
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-medium text-slate-500">Katalog & SKU Aktif</span>
@@ -274,7 +589,7 @@
         </div>
     </div>
 
-    {{-- 4. Tren Penjualan Bulanan (Interactive Dynamic Chart.js) --}}
+    {{-- 4. Tren Penjualan Bulanan (Interactive Chart.js) --}}
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -283,13 +598,11 @@
                     <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600" x-text="activeMetric === 'omzet' ? 'Omzet (Rp)' : 'Volume (Qty)'"></span>
                 </div>
                 <p class="text-[11px] text-slate-500 mt-0.5">
-                    Data transaksi selesai &bull; Klik tombol untuk beralih antara nilai Rupiah dan volume order
+                    Data transaksi selesai &bull; Beralih antara nilai Rupiah dan volume order
                 </p>
             </div>
 
-            {{-- Chart Controls: Switch Metric & Timeframe --}}
             <div class="flex items-center gap-2 flex-wrap">
-                {{-- Metric Switcher --}}
                 <div class="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200/80 text-xs">
                     <button type="button" 
                             @click="switchMetric('omzet')" 
@@ -305,7 +618,6 @@
                     </button>
                 </div>
 
-                {{-- Timeframe Switcher --}}
                 <div class="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200/80 text-xs">
                     <button type="button" 
                             @click="switchTimeframe('monthly')" 
@@ -321,17 +633,14 @@
                     </button>
                 </div>
 
-                @if(Auth::guard('web')->user()->isOwner())
-                    <a href="{{ route('admin.owner.laporan.penjualan') }}" 
-                       class="h-7 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1 transition-colors">
-                        <span>Laporan Detail</span>
-                        <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
-                    </a>
-                @endif
+                <a href="{{ route('admin.owner.laporan.penjualan') }}" 
+                   class="h-7 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1 transition-colors">
+                    <span>Laporan Detail</span>
+                    <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
+                </a>
             </div>
         </div>
 
-        {{-- Canvas --}}
         <div class="h-64 sm:h-72 w-full">
             <canvas id="salesChart"></canvas>
         </div>
@@ -340,7 +649,6 @@
     {{-- 5. Dua Kolom: Pesanan Masuk Terbaru & Peringatan Stok Menipis --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
-        {{-- Pesanan Masuk Terbaru (7 Cols) --}}
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ orderFilter: 'all' }">
             <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
@@ -348,7 +656,6 @@
                     <p class="text-[11px] text-slate-400">Daftar transaksi pelanggan terkini di gerai</p>
                 </div>
 
-                {{-- Status Filter Tabs --}}
                 <div class="flex items-center gap-2">
                     <div class="inline-flex rounded-lg bg-slate-100 p-0.5 text-[11px]">
                         <button type="button" @click="orderFilter = 'all'" :class="orderFilter === 'all' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-600'" class="px-2 py-1 rounded transition-all">
@@ -409,11 +716,6 @@
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border {{ $statusBadgeClass }}">
                                     {{ $statusBadgeLabel }}
                                 </span>
-                                @if($pesanan->metode_bayar === 'bayar_di_toko')
-                                    <span class="text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">
-                                        Tunai di Kasir
-                                    </span>
-                                @endif
                             </div>
 
                             <p class="text-xs text-slate-800 font-medium truncate">
@@ -430,18 +732,10 @@
                             <span class="text-xs sm:text-sm font-bold text-slate-900 block tracking-tight">
                                 {{ format_rupiah($pesanan->grand_total) }}
                             </span>
-                            @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']))
-                                <a href="{{ route('admin.pickup.index') }}" 
-                                   class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold inline-flex items-center gap-1 shadow-2xs transition-colors">
-                                    <i class="fa-solid fa-hand-holding-dollar text-[10px]"></i>
-                                    <span>Serahkan</span>
-                                </a>
-                            @else
-                                <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="text-[11px] font-medium text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center gap-1">
-                                    <span>Detail</span>
-                                    <i class="fa-solid fa-chevron-right text-[8px]"></i>
-                                </a>
-                            @endif
+                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="text-[11px] font-medium text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center gap-1">
+                                <span>Detail</span>
+                                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            </a>
                         </div>
                     </div>
                 @empty
@@ -452,7 +746,6 @@
             </div>
         </div>
 
-        {{-- Peringatan Stok Menipis (5 Cols) - Variant SKU Level & Helm Level --}}
         <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
@@ -472,7 +765,6 @@
                         $isZero = $varian->stok === 0;
                     @endphp
                     <div class="p-3 sm:p-3.5 flex items-center gap-3 hover:bg-slate-50/70 transition-colors">
-                        {{-- Thumbnail --}}
                         <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0">
                             @if($helm && $helm->gambar_url)
                                 <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
@@ -483,7 +775,6 @@
                             @endif
                         </div>
 
-                        {{-- Details --}}
                         <div class="flex-1 min-w-0">
                             <h4 class="text-xs font-semibold text-slate-900 truncate">
                                 {{ $helm->nama_helm ?? 'Helm' }}
@@ -493,7 +784,6 @@
                             </p>
                         </div>
 
-                        {{-- Stock Pill & Quick Add --}}
                         <div class="text-right shrink-0 flex items-center gap-2">
                             <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold {{ $isZero ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200/80' }}">
                                 {{ $isZero ? 'Habis (0)' : 'Sisa ' . $varian->stok }}
@@ -514,7 +804,6 @@
                 @endforelse
             </div>
 
-            {{-- Footer Summary --}}
             <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Total {{ $varian_habis_count }} varian stok 0 &bull; {{ $varian_menipis_count }} menipis</span>
                 <a href="{{ route('admin.stok.index') }}" class="font-semibold text-blue-600 hover:underline">
@@ -526,18 +815,20 @@
     </div>
 
 </div>
+@endif
+
 @endsection
 
+@if($isOwner)
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     function dashboardHub() {
         return {
-            activeMetric: 'omzet',     // 'omzet' | 'orders'
-            activeTimeframe: 'monthly', // 'monthly' | 'daily'
+            activeMetric: 'omzet',
+            activeTimeframe: 'monthly',
             chartInstance: null,
 
-            // Raw Datasets from Server
             chartData: {
                 monthly: {
                     labels: {!! json_encode($chart_labels) !!},
@@ -674,3 +965,4 @@
     }
 </script>
 @endpush
+@endif

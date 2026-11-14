@@ -17,7 +17,7 @@ class CustomerAuthTest extends TestCase
 
     public function test_customer_can_register_with_valid_data(): void
     {
-        $uniqueEmail = 'rider_' . rand(1000, 9999) . '@test.com';
+        $uniqueEmail = 'rider_' . uniqid() . '@test.com';
 
         $response = $this->post('/pelanggan/register', [
             'nama' => 'budi pratama', // Should be normalized to Title Case "Budi Pratama"

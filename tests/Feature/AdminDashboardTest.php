@@ -72,4 +72,56 @@ class AdminDashboardTest extends TestCase
             $response->assertSee('Ringkasan Toko');
         }
     }
+
+    public function test_karyawan_sees_operational_cashier_dashboard_without_financial_data(): void
+    {
+        $karyawan = User::firstOrCreate(
+            ['username' => 'karyawan_test'],
+            [
+                'nama_lengkap' => 'Kasir Operasional Testing',
+                'password' => Hash::make('Admin123!'),
+                'id_role' => 2, // role karyawan
+            ]
+        );
+
+        $response = $this->actingAs($karyawan, 'web')->get(route('admin.dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Meja Kasir Operasional');
+        $response->assertSee('Halo, Kasir Operasional Testing');
+        $response->assertSee('Kasir Gerai');
+        $response->assertSee('Cek Voucher Pickup Pelanggan');
+        $response->assertSee('Antrean Ambil di Toko');
+        $response->assertSee('Perlu Disiapkan di Rak');
+
+        // Security check: Karyawan must NOT see financial turnover, profit metrics, or financial charts
+        $response->assertDontSee('Omzet Selesai Hari Ini');
+        $response->assertDontSee('Rata-rata Order (AOV)');
+        $response->assertDontSee('Tren Penjualan Bulanan');
+        $response->assertDontSee('salesChart');
+
+        // Navigation check: Karyawan must NOT see Owner management links in sidebar/nav
+        $response->assertDontSee('Kelola Karyawan');
+        $response->assertDontSee('Laporan Penjualan');
+    }
+
+    public function test_mobile_bottom_navigation_bar_is_rendered(): void
+    {
+        $user = User::firstOrCreate(
+            ['username' => 'admin_dash_test'],
+            [
+                'nama_lengkap' => 'Admin Dashboard Tester',
+                'password' => Hash::make('Admin123!'),
+                'id_role' => 1,
+            ]
+        );
+
+        $response = $this->actingAs($user, 'web')->get(route('admin.dashboard'));
+
+        $response->assertStatus(200);
+        // Assert presence of mobile bottom navigation
+        $response->assertSee('lg:hidden fixed bottom-0 inset-x-0');
+        $response->assertSee('Kasir Pickup');
+        $response->assertSee('Stok');
+    }
 }
