@@ -90,7 +90,7 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Meja Kasir Operasional');
         $response->assertSee('Halo, Kasir Operasional Testing');
         $response->assertSee('Kasir Gerai');
-        $response->assertSee('Cek Voucher Pickup Pelanggan');
+        $response->assertSee('Masukkan kode pickup');
         $response->assertSee('Antrean Ambil di Toko');
         $response->assertSee('Perlu Disiapkan di Rak');
 

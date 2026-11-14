@@ -35,7 +35,7 @@
                     <input type="text" 
                            id="pickup_input_karyawan"
                            name="kode_pickup" 
-                           placeholder="Cek Voucher Pickup Pelanggan (PKP-...)" 
+                           placeholder="Masukkan kode pickup" 
                            required 
                            autocomplete="off"
                            class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
@@ -143,10 +143,10 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
         {{-- Antrean Siap Ambil (7 Cols) --}}
-        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ pickupFilter: 'all' }">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Pesanan Siap Ambil</h3>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Ambil Pesanan</h3>
                 </div>
                 <a href="{{ route('admin.pickup.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Lihat Semua</span>
@@ -154,26 +154,52 @@
                 </a>
             </div>
 
+            {{-- Tab Filter: Rekomendasi C (Bayar di Toko vs Sudah Lunas) --}}
+            <div class="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto">
+                <button type="button" 
+                        @click="pickupFilter = 'all'"
+                        :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
+                    Semua ({{ $pesanan_siap_ambil }})
+                </button>
+                <button type="button" 
+                        @click="pickupFilter = 'unpaid'"
+                        :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
+                    Bayar di Toko ({{ $pickup_unpaid_count }})
+                </button>
+                <button type="button" 
+                        @click="pickupFilter = 'ready'"
+                        :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
+                    Sudah Lunas ({{ $pickup_ready_count }})
+                </button>
+            </div>
+
             <div class="divide-y divide-slate-100">
-                @php
-                    $pickupQueue = $pesanan_terbaru->filter(fn($p) => in_array($p->status, ['ready', 'unpaid_pickup']))->take(6);
-                @endphp
-                @forelse ($pickupQueue as $pesanan)
+                @forelse ($pesanan_pickup as $pesanan)
                     @php
                         $firstDetail = $pesanan->details->first();
                         $itemsSummary = $firstDetail ? ($firstDetail->helm->nama_helm ?? 'Helm') : 'Item Helm';
                         $extraCount = $pesanan->details->count() - 1;
                         $isPaid = $pesanan->status === 'ready';
                     @endphp
-                    <div class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors">
+                    <div class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors"
+                         x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
                         <div class="min-w-0 space-y-1">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="font-mono font-bold text-xs text-slate-900">
-                                    #{{ $pesanan->no_pesanan }}
+                                <span class="font-mono font-bold text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/80">
+                                    {{ $pesanan->kode_pickup }}
                                 </span>
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ $isPaid ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80' }}">
-                                    {{ $isPaid ? 'Lunas' : 'Bayar Kasir: ' . format_rupiah($pesanan->grand_total) }}
-                                </span>
+                                @if($isPaid)
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                                        Lunas
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                        Tagihan: {{ format_rupiah($pesanan->grand_total) }}
+                                    </span>
+                                @endif
                             </div>
 
                             <p class="text-xs text-slate-800 font-medium truncate">
@@ -181,8 +207,8 @@
                                 <span class="text-slate-400 font-normal">&bull; {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}</span>
                             </p>
 
-                            <p class="text-[11px] text-slate-500">
-                                Kode Pickup: <span class="font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/60">{{ $pesanan->kode_pickup }}</span>
+                            <p class="text-[11px] font-mono text-slate-400">
+                                #{{ $pesanan->no_pesanan }}
                             </p>
                         </div>
 
@@ -190,9 +216,9 @@
                             <form action="{{ route('admin.pickup.validasi') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
-                                <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
-                                    <i class="fa-solid fa-circle-check text-xs"></i>
-                                    <span>Serahkan</span>
+                                <button type="submit" class="h-8 px-3 rounded-xl bg-slate-900 hover:bg-blue-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                                    <span>Proses</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                                 </button>
                             </form>
                         </div>

@@ -64,7 +64,13 @@ class DashboardController extends Controller
         // Helmet-level low stock for test assertions
         $stok_menipis = Helm::where('stok', '<', 5)->orderBy('stok')->take(5)->get();
 
-        // 3. Recent Orders
+        // 3. Recent Orders & Operational Pickup Queue
+        $pesanan_pickup = Pesanan::with(['pelanggan', 'details.helm.merk'])
+            ->whereIn('status', ['ready', 'unpaid_pickup'])
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
         $pesanan_terbaru = Pesanan::with(['pelanggan', 'details.helm.merk'])
             ->orderBy('created_at', 'desc')
             ->take(8)
@@ -198,7 +204,8 @@ class DashboardController extends Controller
             'daily_labels',
             'daily_values',
             'daily_orders',
-            'pesanan_terbaru'
+            'pesanan_terbaru',
+            'pesanan_pickup'
         ));
     }
 }
