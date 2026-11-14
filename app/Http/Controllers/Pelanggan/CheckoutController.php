@@ -19,10 +19,13 @@ class CheckoutController extends Controller
     public function index()
     {
         $pelanggan = Auth::guard('pelanggan')->user();
-        $carts = Cart::with(['helm', 'varian'])->where('id_pelanggan', $pelanggan->id_pelanggan)->get();
+        $carts = Cart::with(['helm', 'varian'])
+            ->where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('selected', 1)
+            ->get();
 
         if ($carts->isEmpty()) {
-            return redirect()->route('pelanggan.cart')->with('error', 'Keranjang belanja kosong!');
+            return redirect()->route('pelanggan.cart')->with('error', 'Pilih minimal 1 helm untuk checkout.');
         }
 
         $total = $carts->sum(function ($item) {
@@ -41,10 +44,13 @@ class CheckoutController extends Controller
         ]);
 
         $pelanggan = Auth::guard('pelanggan')->user();
-        $carts = Cart::with(['helm', 'varian'])->where('id_pelanggan', $pelanggan->id_pelanggan)->get();
+        $carts = Cart::with(['helm', 'varian'])
+            ->where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('selected', 1)
+            ->get();
 
         if ($carts->isEmpty()) {
-            return redirect()->route('pelanggan.cart')->with('error', 'Keranjang belanja kosong!');
+            return redirect()->route('pelanggan.cart')->with('error', 'Pilih minimal 1 helm untuk checkout.');
         }
 
         try {
@@ -106,8 +112,8 @@ class CheckoutController extends Controller
                 'diubah_oleh' => 'pelanggan',
             ]);
 
-            // Kosongkan keranjang
-            Cart::where('id_pelanggan', $pelanggan->id_pelanggan)->delete();
+            // Kosongkan barang yang sudah dicheckout dari keranjang
+            Cart::where('id_pelanggan', $pelanggan->id_pelanggan)->where('selected', 1)->delete();
 
             ActivityLog::log('checkout', "Pesanan baru {$pesanan->no_pesanan} oleh {$pelanggan->nama} (total: " . format_rupiah($pesanan->grand_total) . ")", 'pelanggan', $pelanggan->id_pelanggan, $pelanggan->nama);
 

@@ -11,10 +11,24 @@ use Livewire\Attributes\Computed;
 
 class CartManager extends Component
 {
+    public array $selectedItems = [];
+
     public function mount()
     {
         if (! Auth::guard('pelanggan')->check()) {
             return redirect()->route('pelanggan.login');
+        }
+
+        $userCarts = Cart::where('id_pelanggan', Auth::guard('pelanggan')->id())->get();
+
+        $selectedIds = $userCarts->where('selected', 1)->pluck('id_cart')->map(fn($id) => (int) $id)->all();
+
+        // If none is selected or newly visited, select all by default
+        if (empty($selectedIds) && $userCarts->isNotEmpty()) {
+            Cart::where('id_pelanggan', Auth::guard('pelanggan')->id())->update(['selected' => 1]);
+            $this->selectedItems = $userCarts->pluck('id_cart')->map(fn($id) => (int) $id)->all();
+        } else {
+            $this->selectedItems = $selectedIds;
         }
     }
 
@@ -25,109 +39,132 @@ class CartManager extends Component
             return collect();
         }
 
-        return Cart::with(['helm', 'varian'])
+        return Cart::with(['helm.merk', 'varian'])
             ->where('id_pelanggan', Auth::guard('pelanggan')->id())
             ->get();
     }
 
     #[Computed]
-    public function cartCount()
+    public function selectedCarts()
     {
-        return $this->carts->sum('qty');
-    }
-
-    #[Computed]
-    public function cartTotal()
-    {
-        return $this->carts->sum(function ($item) {
-            return $item->helm->harga_jual * $item->qty;
+        return $this->carts->filter(function ($item) {
+            return in_array((int) $item->id_cart, $this->selectedItems);
         });
     }
 
-    public function addToCart($id_helm, $id_varian, $qty = 1)
+    #[Computed]
+    public function selectedCount(): int
     {
-        if (! Auth::guard('pelanggan')->check()) {
-            return redirect()->route('pelanggan.login');
+        return $this->selectedCarts->sum('qty');
+    }
+
+    #[Computed]
+    public function selectedTotal(): int
+    {
+        return $this->selectedCarts->sum(function ($item) {
+            return ($item->helm->harga_jual ?? 0) * $item->qty;
+        });
+    }
+
+    #[Computed]
+    public function isAllSelected(): bool
+    {
+        if ($this->carts->isEmpty()) {
+            return false;
+        }
+        return count($this->selectedItems) === $this->carts->count();
+    }
+
+    public function toggleSelectAll()
+    {
+        $allIds = $this->carts->pluck('id_cart')->map(fn($id) => (int) $id)->all();
+
+        if (count($this->selectedItems) === count($allIds)) {
+            $this->selectedItems = [];
+            Cart::where('id_pelanggan', Auth::guard('pelanggan')->id())->update(['selected' => 0]);
+        } else {
+            $this->selectedItems = $allIds;
+            Cart::where('id_pelanggan', Auth::guard('pelanggan')->id())->update(['selected' => 1]);
         }
 
-        $varian = VarianHelm::findOrFail($id_varian);
+        unset($this->selectedCarts, $this->selectedCount, $this->selectedTotal);
+    }
 
-        if ($varian->stok < $qty) {
-            session()->flash('error', 'Stok tidak mencukupi.');
+    public function toggleSelectItem($id_cart)
+    {
+        $id_cart = (int) $id_cart;
+
+        if (in_array($id_cart, $this->selectedItems)) {
+            $this->selectedItems = array_values(array_diff($this->selectedItems, [$id_cart]));
+            Cart::where('id_cart', $id_cart)->update(['selected' => 0]);
+        } else {
+            $this->selectedItems[] = $id_cart;
+            Cart::where('id_cart', $id_cart)->update(['selected' => 1]);
+        }
+
+        unset($this->selectedCarts, $this->selectedCount, $this->selectedTotal);
+    }
+
+    public function incrementQty($id_cart)
+    {
+        $cart = Cart::with('varian')->findOrFail($id_cart);
+        if ($cart->id_pelanggan !== Auth::guard('pelanggan')->id()) {
             return;
         }
 
-        $pelangganId = Auth::guard('pelanggan')->id();
-
-        $cart = Cart::where('id_pelanggan', $pelangganId)
-            ->where('id_helm', $id_helm)
-            ->where('id_varian', $id_varian)
-            ->first();
-
-        if ($cart) {
-            $newQty = $cart->qty + $qty;
-            if ($newQty > $varian->stok) {
-                session()->flash('error', 'Jumlah melebihi stok tersedia.');
-                return;
-            }
-            $cart->update(['qty' => $newQty]);
+        $maxStock = $cart->varian ? $cart->varian->stok : 999;
+        if ($cart->qty < $maxStock) {
+            $cart->increment('qty');
+            unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
+            $this->dispatch('cart-updated');
         } else {
-            Cart::create([
-                'id_pelanggan' => $pelangganId,
-                'id_helm'      => $id_helm,
-                'id_varian'    => $id_varian,
-                'qty'          => $qty,
-            ]);
+            session()->flash('warning', "Maksimal pembelian varian ini adalah {$maxStock} unit.");
+        }
+    }
+
+    public function decrementQty($id_cart)
+    {
+        $cart = Cart::findOrFail($id_cart);
+        if ($cart->id_pelanggan !== Auth::guard('pelanggan')->id()) {
+            return;
         }
 
-        unset($this->carts, $this->cartCount, $this->cartTotal);
-
-        $this->dispatch('cart-updated');
-
-        session()->flash('success', 'Helm berhasil masuk ke keranjang.');
+        if ($cart->qty > 1) {
+            $cart->decrement('qty');
+            unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
+            $this->dispatch('cart-updated');
+        }
     }
 
     public function removeFromCart($id_cart)
     {
         $cart = Cart::findOrFail($id_cart);
-
         if ($cart->id_pelanggan !== Auth::guard('pelanggan')->id()) {
-            session()->flash('error', 'Akses tidak diizinkan.');
             return;
         }
 
         $cart->delete();
+        $this->selectedItems = array_values(array_diff($this->selectedItems, [(int) $id_cart]));
 
-        unset($this->carts, $this->cartCount, $this->cartTotal);
-
+        unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
         $this->dispatch('cart-updated');
-
-        session()->flash('success', 'Produk dihapus dari keranjang.');
+        session()->flash('success', 'Helm dihapus dari keranjang.');
     }
 
-    public function updateQty($id_cart, $qty)
+    public function removeSelected()
     {
-        $cart = Cart::findOrFail($id_cart);
-
-        if ($cart->id_pelanggan !== Auth::guard('pelanggan')->id()) {
-            session()->flash('error', 'Akses tidak diizinkan.');
+        if (empty($this->selectedItems)) {
             return;
         }
 
-        $qty = max(1, (int) $qty);
+        Cart::where('id_pelanggan', Auth::guard('pelanggan')->id())
+            ->whereIn('id_cart', $this->selectedItems)
+            ->delete();
 
-        $varian = VarianHelm::findOrFail($cart->id_varian);
-
-        if ($qty > $varian->stok) {
-            session()->flash('error', "Stok tersedia hanya {$varian->stok} unit.");
-            return;
-        }
-
-        $cart->update(['qty' => $qty]);
-
-        unset($this->carts, $this->cartCount, $this->cartTotal);
-
+        $this->selectedItems = [];
+        unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
         $this->dispatch('cart-updated');
+        session()->flash('success', 'Helm yang dipilih berhasil dihapus.');
     }
 
     public function render()

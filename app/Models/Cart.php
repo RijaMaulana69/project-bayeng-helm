@@ -15,6 +15,7 @@ class Cart extends Model
         'id_helm',
         'id_varian',
         'qty',
+        'selected',
     ];
 
     public function pelanggan()
