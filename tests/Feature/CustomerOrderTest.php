@@ -23,11 +23,11 @@ class CustomerOrderTest extends TestCase
         $helm = Helm::first();
 
         $pesanan = Pesanan::create([
-            'no_pesanan' => 'ORD-TEST-' . rand(1000, 9999),
+            'no_pesanan' => 'ORD-TEST-' . strtoupper(uniqid()),
             'id_pelanggan' => $pelanggan->id_pelanggan,
             'penerima' => $pelanggan->nama,
             'telepon' => $pelanggan->telepon,
-            'kode_pickup' => 'PKP-' . rand(1000, 9999),
+            'kode_pickup' => 'PKP-' . strtoupper(substr(uniqid(), -6)),
             'total_belanja' => 450000,
             'grand_total' => 450000,
             'metode_bayar' => 'tunai',
@@ -82,11 +82,11 @@ class CustomerOrderTest extends TestCase
         $helm = Helm::first();
 
         $pesanan = Pesanan::create([
-            'no_pesanan' => 'ORD-DETAIL-' . rand(1000, 9999),
+            'no_pesanan' => 'ORD-DETAIL-' . strtoupper(uniqid()),
             'id_pelanggan' => $pelanggan->id_pelanggan,
             'penerima' => $pelanggan->nama,
             'telepon' => $pelanggan->telepon,
-            'kode_pickup' => 'PKP-' . rand(1000, 9999),
+            'kode_pickup' => 'PKP-' . strtoupper(substr(uniqid(), -6)),
             'total_belanja' => 450000,
             'grand_total' => 450000,
             'metode_bayar' => 'tunai',
