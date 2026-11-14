@@ -44,6 +44,23 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
+        // Critical distinct helmets with low stock variants (for structured cashier overview)
+        $stok_kritis_helm = Helm::whereHas('varians', function ($q) {
+            $q->where('stok', '<=', 3);
+        })->with(['varians' => function ($q) {
+            $q->where('stok', '<=', 3)->orderBy('stok');
+        }])->withCount([
+            'varians as varian_habis_count' => function ($q) {
+                $q->where('stok', 0);
+            },
+            'varians as varian_menipis_count' => function ($q) {
+                $q->where('stok', '>', 0)->where('stok', '<=', 3);
+            }
+        ])->orderByDesc('varian_habis_count')
+          ->orderByDesc('varian_menipis_count')
+          ->take(5)
+          ->get();
+
         // Helmet-level low stock for test assertions
         $stok_menipis = Helm::where('stok', '<', 5)->orderBy('stok')->take(5)->get();
 
@@ -173,6 +190,7 @@ class DashboardController extends Controller
             'varian_menipis_count',
             'total_stok_kritis',
             'stok_kritis_varian',
+            'stok_kritis_helm',
             'stok_menipis',
             'chart_labels',
             'chart_values',

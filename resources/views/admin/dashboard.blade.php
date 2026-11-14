@@ -217,35 +217,32 @@
                 </a>
             </div>
 
-            <div class="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between text-[11px] font-medium text-slate-400">
-                <span>Helm &amp; Varian</span>
-                <span>Sisa</span>
-            </div>
-
             <div class="divide-y divide-slate-100">
-                @forelse ($stok_kritis_varian as $varian)
+                @forelse ($stok_kritis_helm as $helm)
                     @php
-                        $helm = $varian->helm;
-                        $isZero = $varian->stok === 0;
+                        $habisCount = $helm->varian_habis_count;
+                        $menipisCount = $helm->varian_menipis_count;
+                        $sampleVarians = $helm->varians->take(2)->map(fn($v) => $v->warna . ' (' . $v->ukuran . ')')->join(', ');
+                        $extraVariansCount = $helm->varians->count() - 2;
                     @endphp
-                    <a href="{{ route('admin.stok.index') }}" class="px-4 py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
+                    <a href="{{ route('admin.stok.index') }}" class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
                         <div class="min-w-0 flex-1">
-                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
-                                {{ $helm->nama_helm ?? 'Helm' }}
-                            </p>
+                            <h4 class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                                {{ $helm->nama_helm }}
+                            </h4>
                             <p class="text-[11px] text-slate-500 truncate mt-0.5">
-                                {{ $varian->warna }} &bull; Ukuran {{ $varian->ukuran }}
+                                {{ $sampleVarians }}{{ $extraVariansCount > 0 ? ' +' . $extraVariansCount . ' varian' : '' }}
                             </p>
                         </div>
 
                         <div class="text-right shrink-0">
-                            @if($isZero)
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80 font-mono">
-                                    0 unit
+                            @if($habisCount > 0)
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80">
+                                    {{ $habisCount }} Habis
                                 </span>
                             @else
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80 font-mono">
-                                    {{ $varian->stok }} unit
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                    {{ $menipisCount }} Menipis
                                 </span>
                             @endif
                         </div>
