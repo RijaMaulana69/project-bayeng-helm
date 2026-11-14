@@ -64,7 +64,7 @@
     </div>
 
     {{-- Centered Main Content Area --}}
-    <main class="w-full max-w-md mx-auto relative z-10 my-auto">
+    <main class="w-full @yield('container-width', 'max-w-md') mx-auto relative z-10 my-auto">
         @yield('content')
     </main>
 
