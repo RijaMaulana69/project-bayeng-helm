@@ -26,7 +26,7 @@ class AdminAuthTest extends TestCase
         $response->assertSee('Username');
         $response->assertSee('Password');
         $response->assertSee('Masuk');
-        $response->assertSee('Kembali ke toko');
+        $response->assertSee('Kembali ke Katalog Toko');
         $response->assertDontSee('linear-gradient(135deg, var(--dark)');
         $response->assertDontSee('bootstrap.min.css');
         $response->assertDontSee('Portal Internal');
