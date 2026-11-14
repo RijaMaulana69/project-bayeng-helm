@@ -4,19 +4,13 @@
 @section('content')
 <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-8 space-y-5">
     
-    {{-- Brand Header inside Card --}}
+    {{-- Brand Header inside Card (Clean logo without blue badge or subtitle) --}}
     <div class="text-center space-y-2 pb-1">
         <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
             <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
                 <i class="fa-solid fa-helmet-safety text-lg"></i>
             </div>
-            <div class="text-left">
-                <div class="flex items-center gap-1">
-                    <span class="font-black text-base tracking-tight text-slate-900">BAYENG PUTRA</span>
-                    <span class="px-1 py-0.2 rounded bg-blue-100 text-blue-700 text-[9px] font-black uppercase">HELM</span>
-                </div>
-                <p class="text-[10px] text-slate-400 font-medium -mt-1">Click & Collect Store</p>
-            </div>
+            <span class="font-black text-lg tracking-tight text-slate-900">BAYENG PUTRA HELM</span>
         </a>
 
         <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight pt-2">
@@ -33,6 +27,9 @@
 
         {{-- Email / Username Input --}}
         <div>
+            <label for="email" class="block text-xs font-bold text-slate-700 mb-1">
+                Email / Username <span class="text-rose-500">*</span>
+            </label>
             <div class="relative">
                 <input type="email" 
                        id="email" 
@@ -55,13 +52,16 @@
 
         {{-- Password Input with Eye Toggle --}}
         <div>
+            <label for="password" class="block text-xs font-bold text-slate-700 mb-1">
+                Password <span class="text-rose-500">*</span>
+            </label>
             <div class="relative">
                 <input :type="showPass ? 'text' : 'password'" 
                        id="password" 
                        name="password" 
                        autocomplete="current-password"
                        required
-                       placeholder="Password"
+                       placeholder="Password Anda"
                        class="w-full h-11 sm:h-12 pl-3.5 pr-11 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
                 <button type="button" 
                         @click="showPass = !showPass" 
