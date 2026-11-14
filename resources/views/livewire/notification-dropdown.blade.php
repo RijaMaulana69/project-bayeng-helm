@@ -13,7 +13,7 @@
         @endif
     </button>
 
-    {{-- Dropdown Panel (E-Commerce List Style) --}}
+    {{-- Dropdown Panel (Opsi 1: Clean Tokopedia Style) --}}
     @if($isOpen)
         <div class="absolute right-0 sm:-right-8 mt-2 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 animate-scale-in">
             
@@ -22,8 +22,8 @@
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-bold text-slate-900">Notifikasi</span>
                     @if($activeCount > 0)
-                        <span class="px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-200/60">
-                            {{ $activeCount }} pesanan aktif
+                        <span class="px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100">
+                            {{ $activeCount }}
                         </span>
                     @endif
                 </div>
@@ -37,48 +37,44 @@
                 @forelse($recentOrders as $order)
                     @php
                         $firstItem = $order->details->first();
-                        $info = match($order->status) {
-                            'ready' => [
-                                'title' => 'Pesanan Siap Diambil',
-                                'desc' => ($firstItem ? $firstItem->nama_helm : 'Helm') . ' sudah siap. Tunjukkan Kode: ' . $order->kode_pickup,
-                            ],
-                            'unpaid_pickup' => [
-                                'title' => 'Menunggu Diambil di Gerai',
-                                'desc' => ($firstItem ? $firstItem->nama_helm : 'Helm') . ' • Kode Pickup: ' . $order->kode_pickup,
-                            ],
-                            'pending' => [
-                                'title' => 'Menunggu Pembayaran',
-                                'desc' => 'Selesaikan pembayaran ' . format_rupiah($order->grand_total) . ' untuk pesanan #' . $order->no_pesanan,
-                            ],
-                            'paid' => [
-                                'title' => 'Pembayaran Dikonfirmasi',
-                                'desc' => 'Pembayaran diterima. Helm ' . ($firstItem ? $firstItem->nama_helm : '') . ' segera disiapkan staf.',
-                            ],
-                            'processing' => [
-                                'title' => 'Pesanan Sedang Disiapkan',
-                                'desc' => 'Staf toko sedang menyiapkan & memeriksa helm pesananmu.',
-                            ],
-                            'completed' => [
-                                'title' => 'Pesanan Selesai',
-                                'desc' => 'Helm telah diterima di gerai. Terima kasih telah berbelanja!',
-                            ],
-                            'cancelled' => [
-                                'title' => 'Pesanan Dibatalkan',
-                                'desc' => 'Pesanan #' . $order->no_pesanan . ' telah dibatalkan.',
-                            ],
-                            default => [
-                                'title' => 'Status Pesanan',
-                                'desc' => 'Pesanan #' . $order->no_pesanan . ' status: ' . $order->status_label,
-                            ],
+                        $otherCount = $order->details->count() - 1;
+
+                        $orderDate = $order->created_at;
+                        if ($orderDate->isToday()) {
+                            $timeString = 'Hari ini, ' . $orderDate->format('H:i');
+                        } elseif ($orderDate->isYesterday()) {
+                            $timeString = 'Kemarin, ' . $orderDate->format('H:i');
+                        } else {
+                            $timeString = $orderDate->format('d M, H:i');
+                        }
+
+                        $statusTitle = match($order->status) {
+                            'ready'         => 'Pesanan Siap Diambil',
+                            'unpaid_pickup' => 'Menunggu Diambil',
+                            'pending'       => 'Menunggu Pembayaran',
+                            'paid'          => 'Pembayaran Diterima',
+                            'processing'    => 'Pesanan Diproses',
+                            'completed'     => 'Pesanan Selesai',
+                            'cancelled'     => 'Pesanan Dibatalkan',
+                            default         => 'Status: ' . $order->status_label,
                         };
 
-                        $isActiveOrder = in_array($order->status, ['ready', 'unpaid_pickup', 'pending', 'processing']);
+                        $statusTitleColor = match($order->status) {
+                            'ready'              => 'text-emerald-600',
+                            'unpaid_pickup'      => 'text-blue-600',
+                            'pending'            => 'text-amber-600',
+                            'paid', 'processing' => 'text-sky-600',
+                            'completed'          => 'text-slate-800',
+                            'cancelled'          => 'text-rose-600',
+                            default              => 'text-slate-700',
+                        };
                     @endphp
+
                     <a href="{{ route('pelanggan.pesanan.detail', $order->id_pesanan) }}" 
-                       class="p-3 sm:p-3.5 flex items-start gap-3 hover:bg-slate-50 transition-colors block {{ $isActiveOrder ? 'bg-blue-50/20' : '' }}">
+                       class="p-3.5 flex items-start gap-3 hover:bg-slate-50/80 transition-colors block">
                         
-                        {{-- Product Thumbnail --}}
-                        <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                        {{-- Thumbnail Foto Helm --}}
+                        <div class="w-11 h-11 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
                             @if($firstItem && $firstItem->helm && $firstItem->helm->gambar_url)
                                 <img src="{{ $firstItem->helm->gambar_url }}" alt="{{ $firstItem->nama_helm }}" class="w-full h-full object-cover">
                             @else
@@ -86,33 +82,59 @@
                             @endif
                         </div>
 
-                        {{-- Details --}}
+                        {{-- Info Transaksi --}}
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-1.5">
-                                <h4 class="text-xs font-semibold text-slate-900 truncate">
-                                    {{ $info['title'] }}
-                                </h4>
-                                <span class="text-[10px] text-slate-400 shrink-0">
-                                    {{ $order->created_at->diffForHumans(null, true) }}
+                            {{-- Baris 1: Status & Waktu --}}
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs font-semibold {{ $statusTitleColor }} truncate">
+                                    {{ $statusTitle }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 shrink-0 font-normal">
+                                    {{ $timeString }}
                                 </span>
                             </div>
-                            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2 mt-0.5">
-                                {{ $info['desc'] }}
-                            </p>
-                        </div>
 
-                        {{-- Unread Dot Indicator --}}
-                        @if($isActiveOrder)
-                            <div class="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" title="Pesanan Aktif"></div>
-                        @endif
+                            {{-- Baris 2: Nama Helm & Varian --}}
+                            <p class="text-xs text-slate-900 font-medium truncate mt-0.5">
+                                {{ $firstItem ? $firstItem->nama_helm : 'Pesanan Helm' }}
+                                @if($firstItem && ($firstItem->warna || $firstItem->ukuran))
+                                    <span class="text-slate-400 font-normal text-[11px]">
+                                        ({{ $firstItem->warna ?? '' }}{{ $firstItem->warna && $firstItem->ukuran ? ', ' : '' }}{{ $firstItem->ukuran ?? '' }})
+                                    </span>
+                                @endif
+                                @if($otherCount > 0)
+                                    <span class="text-slate-400 font-normal text-[11px]">+{{ $otherCount }} lainnya</span>
+                                @endif
+                            </p>
+
+                            {{-- Baris 3: Info Kunci (Kode Pickup / Nominal) --}}
+                            <div class="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                                @if(in_array($order->status, ['ready', 'unpaid_pickup']))
+                                    <span>Kode Pickup: <span class="font-mono font-bold text-blue-600 tracking-wide">{{ $order->kode_pickup }}</span></span>
+                                @elseif($order->status === 'pending')
+                                    <span>Total: <span class="font-semibold text-slate-900">{{ format_rupiah($order->grand_total) }}</span></span>
+                                @elseif(in_array($order->status, ['paid', 'processing']))
+                                    <span>Ambil di Gerai Kuningan</span>
+                                @elseif($order->status === 'completed')
+                                    <span class="text-slate-400">Selesai diambil di gerai</span>
+                                @else
+                                    <span class="font-mono text-slate-400">{{ $order->no_pesanan }}</span>
+                                @endif
+
+                                <span class="text-[10px] text-blue-600 font-medium flex items-center gap-0.5">
+                                    <span>Detail</span>
+                                    <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                                </span>
+                            </div>
+                        </div>
                     </a>
                 @empty
                     <div class="py-10 px-4 text-center space-y-2">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-sm">
+                        <div class="w-11 h-11 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-base">
                             <i class="fa-regular fa-bell"></i>
                         </div>
                         <p class="text-xs font-medium text-slate-900">Belum ada notifikasi</p>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">Update status pesanan helm akan muncul di sini.</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Update status pesanan helm kamu akan muncul di sini.</p>
                     </div>
                 @endforelse
             </div>
