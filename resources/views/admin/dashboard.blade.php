@@ -168,15 +168,15 @@
     {{-- 3. Meja Kasir: Antrean Pelanggan & Cek Fisik Helm --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
-        {{-- Antrean Siap Diserahkan (7 Cols) --}}
+        {{-- Antrean Siap Ambil (7 Cols) --}}
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Siap Diserahkan</h3>
-                    <p class="text-[11px] text-slate-400">Pesanan yang menunggu pembeli datang ke gerai toko</p>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Pesanan Siap Ambil</h3>
+                    <p class="text-[11px] text-slate-400">Menunggu pelanggan datang ke gerai toko</p>
                 </div>
                 <a href="{{ route('admin.pickup.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
-                    <span>Buka Kasir Pickup</span>
+                    <span>Lihat Semua</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
             </div>
@@ -199,7 +199,7 @@
                                     #{{ $pesanan->no_pesanan }}
                                 </span>
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-bold {{ $isPaid ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-blue-50 text-blue-700 border border-blue-200/80' }}">
-                                    {{ $isPaid ? 'Lunas (Tinggal Serah)' : 'Bayar Kasir: ' . format_rupiah($pesanan->grand_total) }}
+                                    {{ $isPaid ? 'Lunas' : 'Bayar Kasir: ' . format_rupiah($pesanan->grand_total) }}
                                 </span>
                             </div>
 
@@ -218,7 +218,7 @@
                                 @csrf
                                 <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
                                 <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
-                                    <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+                                    <i class="fa-solid fa-circle-check text-xs"></i>
                                     <span>Serahkan</span>
                                 </button>
                             </form>
@@ -236,11 +236,11 @@
         <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Periksa Rak Etalase</h3>
-                    <p class="text-[11px] text-slate-400">Varian helm habis / menipis di toko fisik</p>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok</h3>
+                    <p class="text-[11px] text-slate-400">Varian habis atau menipis di toko fisik</p>
                 </div>
                 <a href="{{ route('admin.stok.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
-                    <span>+ Restok</span>
+                    <span>Kelola Stok</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
             </div>
@@ -292,7 +292,7 @@
             <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>{{ $varian_habis_count }} varian habis &bull; {{ $varian_menipis_count }} menipis</span>
                 <a href="{{ route('admin.stok.index') }}" class="font-semibold text-blue-600 hover:underline">
-                    Input Stok Masuk &rarr;
+                    Kelola Stok &rarr;
                 </a>
             </div>
         </div>
