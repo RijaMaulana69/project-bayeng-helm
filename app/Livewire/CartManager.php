@@ -84,7 +84,7 @@ class CartManager extends Component
 
         $this->dispatch('cart-updated');
 
-        session()->flash('success', 'Produk berhasil ditambahkan ke keranjang.');
+        session()->flash('success', 'Helm berhasil masuk ke keranjang.');
     }
 
     public function removeFromCart($id_cart)

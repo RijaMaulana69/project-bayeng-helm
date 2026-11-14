@@ -11,20 +11,103 @@ use Illuminate\Support\Facades\Auth;
 class AddToCartButton extends Component
 {
     public Helm $helm;
+    public $selectedWarna = null;
+    public $selectedUkuran = null;
     public $selectedVarian = null;
     public int $qty = 1;
     public $availableVariants = [];
+    public $availableColors = [];
+    public $availableSizes = [];
 
     public function mount(Helm $helm)
     {
         $this->helm = $helm->load('varians');
         $this->availableVariants = $helm->varians->toArray();
+
+        // Unique colors
+        $this->availableColors = collect($this->availableVariants)
+            ->pluck('warna')
+            ->unique()
+            ->filter()
+            ->values()
+            ->all();
+
+        // Unique sizes with standard order (XS, S, M, L, XL, XXL, All Size)
+        $standardSizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'All Size'];
+        $sizes = collect($this->availableVariants)
+            ->pluck('ukuran')
+            ->unique()
+            ->filter()
+            ->values()
+            ->all();
+
+        usort($sizes, function ($a, $b) use ($standardSizeOrder) {
+            $posA = array_search($a, $standardSizeOrder);
+            $posB = array_search($b, $standardSizeOrder);
+            if ($posA !== false && $posB !== false) {
+                return $posA <=> $posB;
+            }
+            if ($posA !== false) return -1;
+            if ($posB !== false) return 1;
+            return strcmp($a, $b);
+        });
+        $this->availableSizes = $sizes;
     }
 
-    public function selectVarian($id_varian)
+    public function selectWarna($warna)
     {
-        $this->selectedVarian = $id_varian;
+        $this->selectedWarna = ($this->selectedWarna === $warna) ? null : $warna;
+        $this->resolveSelectedVarian();
+    }
+
+    public function selectUkuran($ukuran)
+    {
+        $this->selectedUkuran = ($this->selectedUkuran === $ukuran) ? null : $ukuran;
+        $this->resolveSelectedVarian();
+    }
+
+    public function resolveSelectedVarian()
+    {
+        if ($this->selectedWarna && $this->selectedUkuran) {
+            $match = collect($this->availableVariants)->first(function ($v) {
+                return $v['warna'] === $this->selectedWarna && $v['ukuran'] === $this->selectedUkuran;
+            });
+
+            if ($match) {
+                $this->selectedVarian = $match['id_varian'];
+                $this->qty = 1;
+                return;
+            }
+        }
+
+        $this->selectedVarian = null;
         $this->qty = 1;
+    }
+
+    public function isColorOutOfStock($color): bool
+    {
+        if ($this->selectedUkuran) {
+            $match = collect($this->availableVariants)->first(function ($v) use ($color) {
+                return $v['warna'] === $color && $v['ukuran'] === $this->selectedUkuran;
+            });
+            return ! $match || $match['stok'] <= 0;
+        }
+
+        $totalStock = collect($this->availableVariants)->where('warna', $color)->sum('stok');
+        return $totalStock <= 0;
+    }
+
+    public function isSizeOutOfStock($size): bool
+    {
+        if ($this->selectedWarna) {
+            $match = collect($this->availableVariants)->first(function ($v) use ($size) {
+                return $v['warna'] === $this->selectedWarna && $v['ukuran'] === $size;
+            });
+            return ! $match || $match['stok'] <= 0;
+        }
+
+        $totalStock = collect($this->availableVariants)->where('ukuran', $size)->sum('stok');
+        return $totalStock <= 0;
     }
 
     public function incrementQty()
@@ -59,14 +142,22 @@ class AddToCartButton extends Component
         }
 
         if (! $this->selectedVarian) {
-            session()->flash('cart-error', 'Silakan pilih varian terlebih dahulu.');
+            if (! $this->selectedWarna && count($this->availableColors) > 0) {
+                $this->dispatch('cart-error', ['message' => 'Pilih varian warna dulu']);
+                return;
+            }
+            if (! $this->selectedUkuran && count($this->availableSizes) > 0) {
+                $this->dispatch('cart-error', ['message' => 'Pilih size helm dulu']);
+                return;
+            }
+            $this->dispatch('cart-error', ['message' => 'Pilih varian dan size helm dulu']);
             return;
         }
 
         $varian = VarianHelm::findOrFail($this->selectedVarian);
 
         if ($this->qty < 1 || $this->qty > $varian->stok) {
-            session()->flash('cart-error', 'Jumlah tidak valid atau melebihi stok.');
+            $this->dispatch('cart-error', ['message' => 'Stok helm tidak mencukupi']);
             return;
         }
 
@@ -80,7 +171,7 @@ class AddToCartButton extends Component
         if ($cart) {
             $newQty = $cart->qty + $this->qty;
             if ($newQty > $varian->stok) {
-                session()->flash('cart-error', "Stok tersedia hanya {$varian->stok} unit (sudah ada {$cart->qty} di keranjang).");
+                $this->dispatch('cart-error', ['message' => "Stok tersisa {$varian->stok} unit (sudah ada {$cart->qty} di keranjang kamu)"]);
                 return;
             }
             $cart->update(['qty' => $newQty]);
@@ -94,9 +185,7 @@ class AddToCartButton extends Component
         }
 
         $this->dispatch('cart-updated');
-        $this->dispatch('cart-added-success');
-
-        session()->flash('cart-success', 'Produk berhasil ditambahkan ke keranjang!');
+        $this->dispatch('cart-added-success', ['message' => 'Helm berhasil masuk ke keranjang']);
     }
 
     public function getSelectedVariantProperty()

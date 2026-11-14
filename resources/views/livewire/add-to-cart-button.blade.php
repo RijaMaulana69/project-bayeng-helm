@@ -1,25 +1,56 @@
-<div x-data="{ variantSheetOpen: false }"
+<div x-data="{ 
+         variantSheetOpen: false,
+         toastOpen: {{ session()->has('cart-success') || session()->has('cart-error') ? 'true' : 'false' }},
+         toastMessage: '{{ addslashes(session('cart-success') ?? session('cart-error') ?? '') }}',
+         toastType: '{{ session()->has('cart-error') ? 'error' : 'success' }}',
+         toastTimeout: null,
+         showToast(msg, type = 'success') {
+             this.toastMessage = msg;
+             this.toastType = type;
+             this.toastOpen = true;
+             clearTimeout(this.toastTimeout);
+             this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 3500);
+         },
+         init() {
+             if (this.toastOpen) {
+                 this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 3500);
+             }
+         }
+     }"
      @open-variant-sheet.window="variantSheetOpen = true"
-     @cart-added-success.window="variantSheetOpen = false">
+     @cart-added-success.window="variantSheetOpen = false; showToast($event.detail?.message || 'Helm berhasil masuk ke keranjang', 'success')"
+     @cart-error.window="showToast($event.detail?.message || 'Terjadi kesalahan', 'error')">
     
-    {{-- Toast Notification Feedback --}}
-    @if(session()->has('cart-success'))
-        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between gap-2 mb-4 animate-fade-in shadow-2xs">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
-                <span>{{ session('cart-success') }}</span>
+    {{-- Floating Notification at Top of Screen (Clean & Non-Intrusive) --}}
+    <div x-show="toastOpen"
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="-translate-y-full opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="translate-y-0 opacity-100"
+         x-transition:leave-end="-translate-y-full opacity-0"
+         x-cloak
+         class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] sm:w-auto sm:min-w-[340px] max-w-md pointer-events-auto">
+        <div class="px-4 py-3 rounded-2xl bg-slate-900/95 text-white shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 border border-slate-700/60">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <template x-if="toastType === 'success'">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm shrink-0"></i>
+                </template>
+                <template x-if="toastType === 'error'">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm shrink-0"></i>
+                </template>
+                <span class="text-xs font-semibold truncate" x-text="toastMessage"></span>
             </div>
-            <a href="{{ route('pelanggan.cart') }}" class="text-[11px] text-blue-600 hover:underline font-bold shrink-0">
-                Lihat Keranjang &rarr;
-            </a>
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="{{ route('pelanggan.cart') }}" class="text-xs font-bold text-blue-400 hover:text-blue-300 hover:underline">
+                    Lihat Keranjang
+                </a>
+                <button type="button" @click="toastOpen = false" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
         </div>
-    @endif
-    @if(session()->has('cart-error'))
-        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in shadow-2xs">
-            <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm"></i>
-            <span>{{ session('cart-error') }}</span>
-        </div>
-    @endif
+    </div>
 
     {{-- Desktop Action Buttons Panel (Hidden on Mobile) --}}
     <div class="hidden sm:flex items-center gap-3">
@@ -60,7 +91,7 @@
         </button>
     </div>
 
-    {{-- Variant Selection Bottom Sheet & Quantity Modal (Shopee/Blibli Style) --}}
+    {{-- Variant Selection Bottom Sheet & Quantity Modal --}}
     <div x-show="variantSheetOpen" 
          x-cloak
          class="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
@@ -85,13 +116,23 @@
                     <div class="mt-1 text-xs text-slate-500">
                         @if($selectedVariantObj)
                             <span>Stok: {{ $selectedVariantObj['stok'] }}</span>
-                        @else
+                        @elseif($selectedWarna && !$selectedUkuran)
+                            <span>Pilih size</span>
+                        @elseif(!$selectedWarna && $selectedUkuran)
                             <span>Pilih varian</span>
+                        @else
+                            <span>Pilih varian & size</span>
                         @endif
                     </div>
-                    @if($selectedVariantObj)
+                    @if($selectedWarna || $selectedUkuran)
                         <p class="text-xs text-slate-700 font-medium truncate mt-0.5">
-                            {{ $selectedVariantObj['warna'] }}, {{ $selectedVariantObj['ukuran'] }}
+                            @if($selectedWarna && $selectedUkuran)
+                                {{ $selectedWarna }}, {{ $selectedUkuran }}
+                            @elseif($selectedWarna)
+                                {{ $selectedWarna }}
+                            @else
+                                Size {{ $selectedUkuran }}
+                            @endif
                         </p>
                     @endif
                 </div>
@@ -103,21 +144,22 @@
             </div>
 
             {{-- Sheet Body (Scrollable) --}}
-            <div class="p-4 overflow-y-auto space-y-5 flex-1">
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
                 
-                {{-- Variant Chips --}}
+                {{-- 1. Pilih Varian (Warna) --}}
+                @if(count($availableColors) > 0)
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-800">
                         Pilih Varian
                     </label>
                     <div class="flex flex-wrap gap-2">
-                        @forelse($availableVariants as $v)
+                        @foreach($availableColors as $color)
                             @php
-                                $isSelected = ($selectedVarian == $v['id_varian']);
-                                $isOut = ($v['stok'] <= 0);
+                                $isSelected = ($selectedWarna === $color);
+                                $isOut = $this->isColorOutOfStock($color);
                             @endphp
                             <button type="button"
-                                    wire:click="selectVarian({{ $v['id_varian'] }})"
+                                    wire:click="selectWarna('{{ addslashes($color) }}')"
                                     @if($isOut) disabled @endif
                                     class="px-3 py-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer
                                     {{ $isSelected 
@@ -125,16 +167,46 @@
                                         : ($isOut 
                                             ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
                                             : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
-                                <span>{{ $v['warna'] }} - {{ $v['ukuran'] }}</span>
+                                <span>{{ $color }}</span>
                                 @if($isOut)
                                     <span class="text-[9px] text-rose-500 font-semibold">(Habis)</span>
                                 @endif
                             </button>
-                        @empty
-                            <p class="text-xs text-slate-400">Varian belum tersedia.</p>
-                        @endforelse
+                        @endforeach
                     </div>
                 </div>
+                @endif
+
+                {{-- 2. Pilih Size (Ukuran) --}}
+                @if(count($availableSizes) > 0)
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-800">
+                        Pilih Size
+                    </label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($availableSizes as $size)
+                            @php
+                                $isSelected = ($selectedUkuran === $size);
+                                $isOut = $this->isSizeOutOfStock($size);
+                            @endphp
+                            <button type="button"
+                                    wire:click="selectUkuran('{{ addslashes($size) }}')"
+                                    @if($isOut) disabled @endif
+                                    class="px-3.5 py-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer min-w-10 justify-center
+                                    {{ $isSelected 
+                                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30' 
+                                        : ($isOut 
+                                            ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
+                                            : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
+                                <span>{{ $size }}</span>
+                                @if($isOut)
+                                    <span class="text-[9px] text-rose-500 font-semibold">(Habis)</span>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
 
                 {{-- Quantity Stepper (- / +) --}}
                 <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between">
@@ -164,11 +236,17 @@
                 <button type="button"
                         wire:click="addToCart"
                         wire:loading.attr="disabled"
-                        {{ !$selectedVarian ? 'disabled' : '' }}
+                        {{ !$selectedVarian || ($selectedVariantObj['stok'] ?? 0) <= 0 ? 'disabled' : '' }}
                         class="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
                         <i class="fa-solid fa-bag-shopping text-sm"></i>
-                        <span>Masukkan Keranjang</span>
+                        <span>
+                            @if($selectedVariantObj && $selectedVariantObj['stok'] <= 0)
+                                Stok Habis
+                            @else
+                                Masukkan Keranjang
+                            @endif
+                        </span>
                     </span>
                     <span wire:loading wire:target="addToCart" class="flex items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>
