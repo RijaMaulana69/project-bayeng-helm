@@ -19,8 +19,8 @@ class StorePickupTest extends TestCase
             ['nama' => 'Pickup Customer', 'no_hp' => '081234567899', 'password' => Hash::make('Password123!')]
         );
 
-        $orderNumber = 'ORD-TEST-PKP-' . rand(1000, 9999);
-        $pickupCode  = 'PKP-' . rand(1000, 9999);
+        $orderNumber = 'ORD-TEST-PKP-' . uniqid();
+        $pickupCode  = strtoupper(substr(uniqid('PKP'), 0, 16));
 
         $pesanan = Pesanan::create([
             'no_pesanan'    => $orderNumber,

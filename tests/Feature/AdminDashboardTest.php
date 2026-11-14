@@ -41,11 +41,35 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Pesanan Masuk Terbaru');
         $response->assertSee('Peringatan Stok Menipis');
 
+        // Dynamic pickup verification tool & period filter presence
+        $response->assertSee(route('admin.pickup.validasi'));
+        $response->assertSee('Scan / Kode Pickup (PKP-...)');
+        $response->assertSee('Filter Periode:');
+        $response->assertSee('Bulan Ini');
+
         // Verify elimination of AI slop rainbow gradients & legacy classes
         $response->assertDontSee('linear-gradient(135deg, #2563eb, #1d4ed8)');
         $response->assertDontSee('linear-gradient(135deg, #f59e0b, #d97706)');
         $response->assertDontSee('linear-gradient(135deg, #10b981, #059669)');
         $response->assertDontSee('linear-gradient(135deg, #8b5cf6, #7c3aed)');
         $response->assertDontSee('card-bayeng');
+    }
+
+    public function test_admin_dashboard_supports_dynamic_period_switching(): void
+    {
+        $user = User::firstOrCreate(
+            ['username' => 'admin_dash_test'],
+            [
+                'nama_lengkap' => 'Admin Dashboard Tester',
+                'password' => Hash::make('Admin123!'),
+                'id_role' => 1,
+            ]
+        );
+
+        foreach (['today', '7days', '30days', 'this_month', 'all'] as $period) {
+            $response = $this->actingAs($user, 'web')->get(route('admin.dashboard', ['period' => $period]));
+            $response->assertStatus(200);
+            $response->assertSee('Ringkasan Toko');
+        }
     }
 }
