@@ -31,6 +31,7 @@
                    id="email" 
                    name="email" 
                    inputmode="email"
+                   maxlength="30"
                    autocomplete="username"
                    value="{{ old('email') }}" 
                    required 
@@ -51,6 +52,7 @@
                 <input :type="showPass ? 'text' : 'password'" 
                        id="password" 
                        name="password" 
+                       maxlength="12"
                        autocomplete="current-password"
                        required
                        placeholder="Masukkan password"

@@ -21,10 +21,11 @@ class AuthController extends Controller
     {
         // 1. Validasi input dasar
         $request->validate([
-            'email' => 'required|string',
+            'email' => 'required|string|max:30',
             'password' => 'required|string|max:12',
         ], [
             'email.required' => 'Alamat email atau No. WhatsApp wajib diisi.',
+            'email.max' => 'Alamat email atau No. WhatsApp maksimal 30 karakter.',
             'password.required' => 'Kata sandi wajib diisi.',
             'password.max' => 'Kata sandi melebihi batas maksimal 12 karakter.',
         ]);
@@ -118,10 +119,10 @@ class AuthController extends Controller
 
         $request->merge($input);
 
-        // 2. Validasi ketat (nama maksimal 30 karakter, password 8 - 12 karakter)
+        // 2. Validasi ketat (nama max 20, email max 30, telepon 10-15 digit angka, password 8-12 karakter)
         $request->validate([
-            'nama' => 'required|string|min:3|max:30',
-            'email' => 'required|email|max:100|unique:pelanggan,email',
+            'nama' => 'required|string|min:3|max:20',
+            'email' => 'required|email|max:30|unique:pelanggan,email',
             'telepon' => 'required|string|min:10|max:15|regex:/^[0-9]+$/',
             'password' => [
                 'required',
@@ -133,11 +134,11 @@ class AuthController extends Controller
         ], [
             'nama.required' => 'Nama lengkap wajib diisi.',
             'nama.min' => 'Nama lengkap minimal 3 karakter.',
-            'nama.max' => 'Nama lengkap maksimal 30 karakter.',
+            'nama.max' => 'Nama lengkap maksimal 20 karakter.',
             'email.required' => 'Alamat email wajib diisi.',
             'email.email' => 'Format alamat email tidak valid.',
             'email.unique' => 'Alamat email ini sudah terdaftar. Silakan masuk.',
-            'email.max' => 'Alamat email maksimal 100 karakter.',
+            'email.max' => 'Alamat email maksimal 30 karakter.',
             'telepon.required' => 'Nomor WhatsApp / HP wajib diisi.',
             'telepon.min' => 'Nomor WhatsApp minimal 10 digit angka.',
             'telepon.max' => 'Nomor WhatsApp maksimal 15 digit angka.',

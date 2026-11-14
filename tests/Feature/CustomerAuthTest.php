@@ -37,9 +37,9 @@ class CustomerAuthTest extends TestCase
         ]);
     }
 
-    public function test_customer_registration_fails_if_nama_exceeds_30_characters(): void
+    public function test_customer_registration_fails_if_nama_exceeds_20_characters(): void
     {
-        $longName = 'Muhammad Budi Pratama Santoso Wijaya Putra'; // > 30 chars
+        $longName = 'Budi Santoso Pratama Putra'; // 26 chars (> 20)
 
         $response = $this->from('/pelanggan/register')->post('/pelanggan/register', [
             'nama' => $longName,
@@ -51,6 +51,38 @@ class CustomerAuthTest extends TestCase
 
         $response->assertRedirect('/pelanggan/register');
         $response->assertSessionHasErrors(['nama']);
+    }
+
+    public function test_customer_registration_fails_if_email_exceeds_30_characters(): void
+    {
+        $longEmail = 'thisisverylongemailaddress123456789@test.com'; // > 30 chars
+
+        $response = $this->from('/pelanggan/register')->post('/pelanggan/register', [
+            'nama' => 'Budi Santoso',
+            'email' => $longEmail,
+            'telepon' => '081234567891',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
+        ]);
+
+        $response->assertRedirect('/pelanggan/register');
+        $response->assertSessionHasErrors(['email']);
+    }
+
+    public function test_customer_registration_fails_if_telepon_exceeds_15_digits(): void
+    {
+        $longPhone = '081234567890123456'; // 18 digits (> 15)
+
+        $response = $this->from('/pelanggan/register')->post('/pelanggan/register', [
+            'nama' => 'Budi Santoso',
+            'email' => 'phone1@test.com',
+            'telepon' => $longPhone,
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
+        ]);
+
+        $response->assertRedirect('/pelanggan/register');
+        $response->assertSessionHasErrors(['telepon']);
     }
 
     public function test_customer_registration_fails_if_password_is_under_8_characters(): void

@@ -49,6 +49,7 @@
                    name="nama" 
                    autocomplete="name"
                    value="{{ old('nama') }}" 
+                   maxlength="20"
                    required 
                    autofocus
                    placeholder="Masukkan Nama Lengkap"
@@ -66,7 +67,9 @@
             <input type="tel" 
                    id="telepon" 
                    name="telepon" 
-                   inputmode="tel"
+                   inputmode="numeric"
+                   maxlength="15"
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                    autocomplete="tel"
                    value="{{ old('telepon') }}" 
                    required 
@@ -86,6 +89,7 @@
                    id="email" 
                    name="email" 
                    inputmode="email"
+                   maxlength="30"
                    autocomplete="email"
                    value="{{ old('email') }}" 
                    required 
@@ -106,6 +110,8 @@
                        id="password" 
                        name="password" 
                        x-model="password"
+                       minlength="8"
+                       maxlength="12"
                        autocomplete="new-password"
                        required
                        placeholder="Masukkan password"
@@ -142,6 +148,8 @@
                 <input :type="showConfirmPass ? 'text' : 'password'" 
                        id="password_confirmation" 
                        name="password_confirmation" 
+                       minlength="8"
+                       maxlength="12"
                        autocomplete="new-password"
                        required
                        placeholder="Ulangi password"
