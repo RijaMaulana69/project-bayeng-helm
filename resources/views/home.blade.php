@@ -1,273 +1,180 @@
 @extends('layouts.pelanggan')
-@section('title', 'Toko Helm Click & Collect Terpercaya')
+@section('title', 'Pilih Online, Ambil di Toko - Bayeng Putra Helm')
 
 @section('content')
-{{-- Hero Section --}}
-<section class="relative overflow-hidden bg-slate-950 text-white pt-12 pb-20 lg:pt-16 lg:pb-28">
-    {{-- Decorative Background Elements --}}
-    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
-    <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+{{-- Hero Section (Interactive Immersive Background) --}}
+<section class="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden" 
+         x-data="{ y: 0 }" @scroll.window="y = window.pageYOffset">
+    
+    {{-- Parallax Background Image --}}
+    <div class="absolute inset-0 z-0 transition-transform duration-75 ease-out"
+         :style="`transform: translateY(${y * 0.4}px)`">
+        <img src="{{ asset('assets/home.jpeg') }}" 
+             alt="Gerai Bayeng Putra Helm" 
+             class="w-full h-full object-cover scale-110">
+        {{-- High-End Light Overlay --}}
+        <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white"></div>
+    </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {{-- Hero Left Content --}}
-            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/80 text-blue-400 text-xs font-semibold backdrop-blur-md">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                    <span>Pusat Helm Original & Bergaransi Resmi di Kuningan</span>
+    {{-- Hero Content --}}
+    <div class="relative z-10 max-w-7xl mx-auto px-4 text-center space-y-8"
+         :style="`opacity: ${1 - (y / 600)}; transform: translateY(${y * 0.15}px)`">
+        
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-600 text-white text-[11px] font-black tracking-widest shadow-lg shadow-blue-600/30 animate-bounce-slow">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>GERAI RESMI KUNINGAN</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tighter leading-[0.95]">
+            PESAN HELM ONLINE.<br>
+            <span class="text-blue-600 drop-shadow-sm">FITTING PAS DI TOKO.</span>
+        </h1>
+
+        <p class="text-base md:text-xl text-slate-700 font-medium leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
+            Amankan stok helm favorit dari rumah, pastikan ukuran lingkar kepala pas saat serah terima di gerai kami. Bebas risiko salah ukuran.
+        </p>
+
+        {{-- Action Buttons --}}
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <a href="{{ route('katalog') }}" 
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-blue-600 text-white font-black text-sm shadow-2xl shadow-blue-600/40 hover:bg-blue-700 hover:-translate-y-1 active:scale-95 transition-all">
+                <span>JELAJAHI KATALOG</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </a>
+            <a href="#lokasi-gerai" 
+               class="w-full sm:w-auto inline-flex items-center justify-center px-10 py-5 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200 text-slate-900 font-bold text-sm shadow-xl hover:bg-white transition-all">
+                <span>LOKASI GERAI</span>
+            </a>
+        </div>
+    </div>
+
+    {{-- Scroll Indicator --}}
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce text-slate-400"
+         x-show="y < 100" x-transition>
+        <i class="fa-solid fa-chevron-down text-2xl"></i>
+    </div>
+</section>
+
+{{-- Jaminan Toko Section (Layered Component) --}}
+<section class="bg-slate-50 py-16 md:py-20 relative z-20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-4 hover:shadow-xl hover:shadow-slate-200/50 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                    <i class="fa-solid fa-person-circle-check text-xl"></i>
                 </div>
-
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
-                    Pesan Helm Favorit Online, <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-amber-400">
-                        Fitting Pas & Ambil di Toko!
-                    </span>
-                </h1>
-
-                <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-                    Tak perlu khawatir helm kebesaran atau kekecilan. Pilih koleksi dari 
-                    <strong class="text-white">{{ $total_produk }}+ helm</strong> ternama, lakukan reservasi online, dan lakukan pengecekan ukuran kepala secara langsung di gerai kami.
-                </p>
-
-                {{-- Action Buttons --}}
-                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                    <a href="{{ route('katalog') }}" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-600/30 active:scale-95 transition-all">
-                        <i class="fa-solid fa-helmet-safety text-base"></i>
-                        <span>Eksplor Katalog Helm</span>
-                        <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
-                    </a>
-                    <a href="#alur-pickup" 
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm transition-all">
-                        <i class="fa-solid fa-circle-question text-slate-400"></i>
-                        <span>Cara Kerja Ambil di Toko</span>
-                    </a>
-                </div>
-
-                {{-- Social Proof Mini Stats --}}
-                <div class="pt-6 border-t border-slate-800/80 grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0 text-left">
-                    <div>
-                        <div class="text-xl font-extrabold text-white">{{ $total_produk }}+</div>
-                        <div class="text-[11px] text-slate-400 font-medium">Model Helm Tersedia</div>
-                    </div>
-                    <div>
-                        <div class="text-xl font-extrabold text-emerald-400">100%</div>
-                        <div class="text-[11px] text-slate-400 font-medium">SNI & Standar DOT</div>
-                    </div>
-                    <div>
-                        <div class="text-xl font-extrabold text-amber-400">0 Menit</div>
-                        <div class="text-[11px] text-slate-400 font-medium">Bebas Ongkir (Pickup)</div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Hero Right Card --}}
-            <div class="lg:col-span-5 relative">
-                <div class="relative mx-auto max-w-md lg:max-w-none">
-                    {{-- Decorative frame --}}
-                    <div class="absolute -inset-1.5 bg-gradient-to-tr from-blue-600 to-amber-500 rounded-3xl blur opacity-30"></div>
-                    
-                    <div class="relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl">
-                        <img src="{{ asset('assets/home.jpeg') }}" 
-                             alt="Gerai Bayeng Putra Helm" 
-                             class="w-full h-80 sm:h-96 object-cover object-center transform hover:scale-105 transition-transform duration-700">
-                        
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                        
-                        {{-- Floating Pickup Highlight Badge --}}
-                        <div class="absolute bottom-4 left-4 right-4 bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl border border-slate-700/80 shadow-lg">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
-                                    <i class="fa-solid fa-qrcode text-lg"></i>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <p class="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <span>Sistem Verifikasi Kode Tiket</span>
-                                        <span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[10px]">Cepat</span>
-                                    </p>
-                                    <p class="text-[11px] text-slate-400 truncate">Tunjukkan kode tiket unik ke kasir, helm langsung diserahkan.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">Garansi Fitting Pas</h3>
+                    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">Coba & rasakan ukuran helm langsung di gerai kami sebelum dibawa pulang.</p>
                 </div>
             </div>
-
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-4 hover:shadow-xl hover:shadow-slate-200/50 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">100% Produk Original</h3>
+                    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">Seluruh koleksi helm resmi berstandar SNI & DOT dari distributor resmi.</p>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-4 hover:shadow-xl hover:shadow-slate-200/50 transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 uppercase tracking-tight">Bayar Aman di Kasir</h3>
+                    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">Bisa bayar online atau bayar tunai/QRIS saat ambil barang di toko.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-{{-- Alur Ambil di Toko (Click & Collect 4-Step Process) --}}
-<section class="py-16 bg-white border-b border-slate-200" id="alur-pickup">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold tracking-wide uppercase mb-2">
-                Simpel & Tanpa Risiko
-            </span>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Alur Ambil di Toko (Click & Collect)
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                Empat langkah mudah bertransaksi aman tanpa cemas salah ukuran lingkar kepala.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            @php
-                $steps = [
-                    [
-                        'step' => '01',
-                        'icon' => 'fa-magnifying-glass',
-                        'color' => 'blue',
-                        'title' => 'Pilih Helm & Varian',
-                        'desc'  => 'Cari model favorit Anda, tentukan kombinasi warna dan perkiraan ukuran (M, L, XL).'
-                    ],
-                    [
-                        'step' => '02',
-                        'icon' => 'fa-bag-shopping',
-                        'color' => 'amber',
-                        'title' => 'Checkout Online',
-                        'desc'  => 'Masukkan keranjang, pilih metode bayar (Transfer, QRIS, atau bayar tunai saat ambil).'
-                    ],
-                    [
-                        'step' => '03',
-                        'icon' => 'fa-ticket',
-                        'color' => 'emerald',
-                        'title' => 'Terima e-Tiket Unik',
-                        'desc'  => 'Sistem menerbitkan e-Tiket dengan kode pickup unik (contoh: PKP-A1B2C3) ke akun Anda.'
-                    ],
-                    [
-                        'step' => '04',
-                        'icon' => 'fa-store',
-                        'color' => 'indigo',
-                        'title' => 'Fitting & Serah Terima',
-                        'desc'  => 'Datang ke toko fisik, fitting ukuran helm langsung, lalu kasir memvalidasi tiket Anda.'
-                    ]
-                ];
-            @endphp
-
-            @foreach($steps as $s)
-            <div class="relative bg-slate-50 hover:bg-white rounded-3xl p-6 border border-slate-200/80 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 group">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-2xl font-black text-slate-300 group-hover:text-blue-600 transition-colors">
-                        {{ $s['step'] }}
-                    </span>
-                    <div class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-200/60 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                        <i class="fa-solid {{ $s['icon'] }} text-lg"></i>
-                    </div>
-                </div>
-                <h3 class="font-bold text-base text-slate-900 mb-1.5">{{ $s['title'] }}</h3>
-                <p class="text-xs text-slate-500 leading-relaxed">{{ $s['desc'] }}</p>
+{{-- Kategori Cepat Section --}}
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-end justify-between mb-10">
+            <div class="space-y-1">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tighter">KATEGORI HELM</h2>
+                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Temukan gaya berkendara Anda</p>
             </div>
+        </div>
+        
+        <div class="flex items-center gap-4 overflow-x-auto hide-scrollbar pb-2">
+            @foreach($kategoris as $kat)
+                <a href="{{ route('katalog', ['kategori_filter' => $kat->id_kategori]) }}" 
+                   class="flex-shrink-0 px-6 py-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-500 hover:bg-white hover:text-blue-600 font-bold text-xs transition-all">
+                    {{ $kat->nama_kategori }}
+                </a>
             @endforeach
         </div>
-
     </div>
 </section>
 
 {{-- Produk Unggulan Section --}}
-<section class="py-16 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10">
-            <div>
-                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Koleksi Terpopuler</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-                    Helm Pilihan Terlaris
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1">Daftar helm paling diminati rider dengan ketersediaan stok fisik riil.</p>
-            </div>
-            <a href="{{ route('katalog') }}" 
-               class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-colors">
-                <span>Lihat Seluruh Koleksi</span>
-                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-            </a>
+<section class="py-16 md:py-24 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center md:text-left mb-12">
+            <h2 class="text-3xl font-black text-slate-900 tracking-tighter">KOLEKSI TERPOPULER</h2>
         </div>
 
-        {{-- Product Grid Cards --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach($produk_unggulan as $helm)
-            <div class="group bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-                
-                {{-- Product Thumbnail with Badge --}}
-                <div class="relative bg-slate-100/60 aspect-square overflow-hidden">
-                    <img src="{{ $helm->gambar_url }}" 
-                         alt="{{ $helm->nama_helm }}" 
-                         class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
-                    
-                    {{-- Merk Chip --}}
-                    @if($helm->merk)
-                    <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-md text-[10px] font-bold text-slate-800 shadow-sm border border-slate-100">
-                        {{ $helm->merk->nama_merk }}
-                    </div>
-                    @endif
-
-                    {{-- Stock Indicator Pill --}}
-                    <div class="absolute top-3 right-3">
-                        @if($helm->stok > 0)
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 text-[10px] font-bold border border-emerald-500/20 backdrop-blur-sm">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                Stok {{ $helm->stok }}
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-700 text-[10px] font-bold border border-rose-500/20">
-                                Habis
-                            </span>
-                        @endif
-                    </div>
+            <div class="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-slate-200/60 transition-all flex flex-col group">
+                <div class="aspect-square bg-slate-50 relative overflow-hidden">
+                    <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 </div>
 
-                {{-- Product Details --}}
-                <div class="p-4 sm:p-5 flex flex-col flex-grow justify-between space-y-3">
-                    <div>
-                        <p class="text-[11px] font-semibold text-blue-600 uppercase tracking-wide">
-                            {{ $helm->kategori->nama_kategori ?? 'Helm' }}
-                        </p>
-                        <h3 class="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 mt-0.5">
-                            {{ $helm->nama_helm }}
-                        </h3>
+                <div class="p-5 flex flex-col flex-grow justify-between gap-4">
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest">{{ $helm->merk->nama_merk }}</p>
+                        <h3 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">{{ $helm->nama_helm }}</h3>
                     </div>
 
-                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                        <div>
-                            <p class="text-[10px] text-slate-400 font-medium">Harga Toko</p>
-                            <p class="text-base font-extrabold text-slate-900">
-                                {{ format_rupiah($helm->harga_jual) }}
-                            </p>
-                        </div>
-                        <a href="{{ route('katalog.detail', $helm->id_helm) }}" 
-                           class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-sm"
-                           title="Lihat Detail & Varian">
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <div class="flex items-end justify-between pt-3 border-t border-slate-50">
+                        <p class="text-base font-black text-slate-900">{{ format_rupiah($helm->harga_jual) }}</p>
+                        <a href="{{ route('katalog.detail', $helm->id_helm) }}" class="w-9 h-9 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
                         </a>
                     </div>
                 </div>
-
             </div>
             @endforeach
         </div>
-
     </div>
 </section>
 
-{{-- Brand Partners Carousel/Pill Showcase --}}
-<section class="py-14 bg-white border-t border-slate-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
-            Merk Resmi Pilihan di Bayeng Putra Helm
-        </h2>
-        <div class="flex flex-wrap justify-center items-center gap-3">
-            @foreach($merks as $merk)
-            <a href="{{ route('katalog', ['merk_filter' => $merk->id_merk]) }}" 
-               class="px-5 py-2.5 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200/80 hover:border-blue-300 text-slate-700 hover:text-blue-700 font-bold text-xs tracking-tight transition-all shadow-sm flex items-center gap-2">
-                <i class="fa-solid fa-tag text-[10px] text-slate-400"></i>
-                <span>{{ $merk->nama_merk }}</span>
-            </a>
-            @endforeach
+{{-- Info Gerai & WhatsApp --}}
+<section class="py-20 bg-white" id="lokasi-gerai">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="bg-slate-900 rounded-[2rem] p-10 md:p-16 text-center space-y-8 relative overflow-hidden">
+            <div class="relative z-10 space-y-4">
+                <h2 class="text-3xl font-black text-white tracking-tighter">KUNJUNGI GERAI KAMI</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto">Datang ke lokasi fisik kami untuk mencoba helm secara langsung sebelum dibawa pulang.</p>
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 pt-4">
+                <div class="bg-white/5 px-6 py-4 rounded-xl border border-white/10 flex items-center gap-3 text-left w-full md:w-auto">
+                    <i class="fa-solid fa-location-dot text-blue-500"></i>
+                    <p class="text-xs font-bold text-slate-200">Jl. RE Martadinata No.49, Kuningan</p>
+                </div>
+                <div class="bg-white/5 px-6 py-4 rounded-xl border border-white/10 flex items-center gap-3 text-left w-full md:w-auto">
+                    <i class="fa-brands fa-whatsapp text-emerald-500"></i>
+                    <p class="text-xs font-bold text-slate-200">+62 812 3456 7890</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
+
+<style>
+    @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    .animate-bounce-slow {
+        animation: bounce-slow 2s infinite ease-in-out;
+    }
+</style>
 @endsection
