@@ -55,7 +55,7 @@
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Antrean Ambil di Toko</span>
+                        <span class="text-xs font-semibold text-slate-700">Ambil di Toko</span>
                         <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-box-open"></i>
                         </span>
@@ -76,7 +76,7 @@
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-sky-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Perlu Disiapkan di Rak</span>
+                        <span class="text-xs font-semibold text-slate-700">Perlu Disiapkan</span>
                         <span class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-dolly"></i>
                         </span>
@@ -97,7 +97,7 @@
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Verifikasi Transfer</span>
+                        <span class="text-xs font-semibold text-slate-700">Pembayaran</span>
                         <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-file-invoice"></i>
                         </span>
@@ -120,7 +120,7 @@
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-rose-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Stok Habis di Rak</span>
+                        <span class="text-xs font-semibold text-slate-700">Stok Habis</span>
                         <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
                             <i class="fa-solid fa-boxes-packing"></i>
                         </span>
@@ -129,7 +129,7 @@
                         <span class="text-2xl font-bold {{ $varian_habis_count > 0 ? 'text-rose-600' : 'text-slate-900' }}">
                             {{ $varian_habis_count }}
                         </span>
-                        <span class="text-xs text-slate-500 font-normal">varian kosong (0)</span>
+                        <span class="text-xs text-slate-500 font-normal">Stok menipis</span>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">

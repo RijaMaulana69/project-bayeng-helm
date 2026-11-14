@@ -91,8 +91,8 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Halo, Kasir Operasional Testing');
         $response->assertSee('Kasir Gerai');
         $response->assertSee('Masukkan kode pickup');
-        $response->assertSee('Antrean Ambil di Toko');
-        $response->assertSee('Perlu Disiapkan di Rak');
+        $response->assertSee('Ambil di Toko');
+        $response->assertSee('Perlu Disiapkan');
 
         // Security check: Karyawan must NOT see financial turnover, profit metrics, or financial charts
         $response->assertDontSee('Omzet Selesai Hari Ini');
