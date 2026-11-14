@@ -12,6 +12,17 @@ use Illuminate\Support\Facades\Route;
 // PUBLIK (Landing Page & Katalog)
 // ============================================================
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/beranda', fn() => redirect()->route('home'))->name('pelanggan.beranda');
+
+// Katalog (bisa diakses publik, tapi cart butuh login)
+Route::get('katalog', [\App\Http\Controllers\Pelanggan\KatalogController::class, 'index'])->name('katalog');
+Route::get('katalog-helm', fn() => redirect()->route('katalog'))->name('pelanggan.katalog');
+Route::get('katalog/{helm}', [\App\Http\Controllers\Pelanggan\KatalogController::class, 'show'])->name('katalog.detail');
+Route::get('katalog-helm/{helm}', fn($helm) => redirect()->route('katalog.detail', $helm))->name('pelanggan.katalog.detail');
+
+// Short aliases for customer pages
+Route::get('cart', fn() => redirect()->route('pelanggan.cart'))->name('cart');
+Route::get('checkout', fn() => redirect()->route('pelanggan.checkout'))->name('checkout');
 
 // ============================================================
 // AUTH PELANGGAN (Guard: pelanggan)
@@ -40,13 +51,10 @@ Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
         // Pesanan
         Route::get('pesanan', [\App\Http\Controllers\Pelanggan\PesananController::class, 'index'])->name('pesanan');
         Route::get('pesanan/{pesanan}', [\App\Http\Controllers\Pelanggan\PesananController::class, 'show'])->name('pesanan.show');
+        Route::get('pesanan/{pesanan}/detail', [\App\Http\Controllers\Pelanggan\PesananController::class, 'show'])->name('pesanan.detail');
         Route::post('pesanan/{pesanan}/upload-bukti', [\App\Http\Controllers\Pelanggan\PesananController::class, 'uploadBukti'])->name('pesanan.upload-bukti');
     });
 });
-
-// Katalog (bisa diakses publik, tapi cart butuh login)
-Route::get('katalog', [\App\Http\Controllers\Pelanggan\KatalogController::class, 'index'])->name('katalog');
-Route::get('katalog/{helm}', [\App\Http\Controllers\Pelanggan\KatalogController::class, 'show'])->name('katalog.detail');
 
 // ============================================================
 // AUTH ADMIN (Guard: web) - Owner & Karyawan
@@ -87,7 +95,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // ============================================================
         // OWNER ONLY
         // ============================================================
-        Route::middleware('role:owner')->prefix('owner')->name('owner.')->group(function () {
+        Route::middleware('role:owner')->group(function () {
+            // User / Karyawan (supports both admin.user.* and admin.owner.user.*)
             Route::resource('user', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
 
             // Laporan
@@ -96,11 +105,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('laporan-penjualan/export-csv', [\App\Http\Controllers\Admin\LaporanController::class, 'exportCsv'])->name('laporan.export-csv');
 
             // Activity Log
-            Route::get('activity-log', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log');
+            Route::get('activity-log', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-log.index');
+            Route::get('activity-log-alias', fn() => redirect()->route('admin.activity-log.index'))->name('activity-log');
 
             // Pengaturan Toko
             Route::get('pengaturan', [\App\Http\Controllers\Admin\PengaturanController::class, 'index'])->name('pengaturan');
+            Route::get('pengaturan-index', fn() => redirect()->route('admin.pengaturan'))->name('pengaturan.index');
             Route::put('pengaturan', [\App\Http\Controllers\Admin\PengaturanController::class, 'update'])->name('pengaturan.update');
+
+            // Owner prefix aliases to ensure complete compatibility
+            Route::prefix('owner')->name('owner.')->group(function () {
+                Route::get('user', fn() => redirect()->route('admin.user.index'))->name('user.index');
+                Route::get('laporan-penjualan', fn() => redirect()->route('admin.laporan.penjualan'))->name('laporan.penjualan');
+                Route::get('activity-log', fn() => redirect()->route('admin.activity-log.index'))->name('activity-log');
+                Route::get('pengaturan', fn() => redirect()->route('admin.pengaturan'))->name('pengaturan');
+            });
         });
     });
 });
