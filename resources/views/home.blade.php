@@ -4,30 +4,28 @@
 @section('content')
 <div class="bg-slate-50 min-h-screen">
 
-    {{-- Hero: High-Impact & Compact --}}
-    <section class="relative bg-[#0f172a] pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden border-b border-slate-800">
-        {{-- Ambient Accents --}}
-        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-600/5 blur-[100px] pointer-events-none"></div>
+    {{-- Hero: Photo Background --}}
+    <section class="relative overflow-hidden border-b border-slate-200">
+        {{-- Background Image --}}
+        <div class="absolute inset-0 z-0">
+            <img src="{{ asset('assets/home.jpeg') }}" alt="Gerai Bayeng Putra Helm" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-slate-900/60"></div>
+        </div>
 
-        <div class="max-w-6xl mx-auto px-5 relative z-10">
+        <div class="relative z-10 max-w-6xl mx-auto px-5 py-16 md:py-28">
             <div class="text-center space-y-4">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest mx-auto">
-                    <i class="fa-solid fa-bolt-lightning"></i>
-                    <span>Official Helm Store Kuningan</span>
-                </div>
                 <h1 class="text-3xl md:text-6xl font-black text-white tracking-tighter leading-none">
                     PESAN ONLINE. <br>
-                    <span class="text-blue-500">AMBIL DI TOKO.</span>
+                    <span class="text-blue-400">AMBIL DI TOKO.</span>
                 </h1>
-                <p class="text-xs md:text-base text-slate-400 font-medium max-w-xl mx-auto leading-relaxed">
+                <p class="text-xs md:text-base text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
                     Amankan helm incaranmu hari ini. Coba langsung di gerai kami untuk memastikan kenyamanan & ukuran yang sempurna.
                 </p>
                 <div class="flex flex-wrap items-center justify-center gap-3 pt-4">
                     <a href="{{ route('katalog') }}" class="px-6 py-3 bg-blue-600 text-white font-bold text-xs md:text-sm rounded-lg hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95">
                         MULAI BELANJA
                     </a>
-                    <a href="#lokasi-gerai" class="px-6 py-3 bg-slate-800 text-slate-300 font-bold text-xs md:text-sm rounded-lg border border-slate-700 hover:bg-slate-750 transition-all">
+                    <a href="#lokasi-gerai" class="px-6 py-3 bg-white/10 text-white font-bold text-xs md:text-sm rounded-lg border border-white/20 hover:bg-white/20 transition-all">
                         CEK LOKASI
                     </a>
                 </div>
