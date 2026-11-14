@@ -59,7 +59,7 @@
 
                             <div>
                                 <label for="telepon" class="block text-xs font-medium text-slate-700 mb-1">
-                                    No. WhatsApp / HP <span class="text-rose-500">*</span>
+                                    No. WhatsApp<span class="text-rose-500">*</span>
                                 </label>
                                 <input type="text" 
                                        id="telepon" 
@@ -119,7 +119,7 @@
                                 <div class="flex items-center gap-3">
                                     <input type="radio" name="metode_bayar" value="bayar_di_toko" x-model="metode" class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300">
                                     <div>
-                                        <p class="font-medium text-xs text-slate-900">Bayar di Toko (Kasir)</p>
+                                        <p class="font-medium text-xs text-slate-900">Bayar di Toko</p>
                                     </div>
                                 </div>
                             </label>

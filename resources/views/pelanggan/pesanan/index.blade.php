@@ -2,8 +2,8 @@
 @section('title', 'Pesanan Saya - Bayeng Putra Helm')
 
 @section('content')
-<div class="bg-[#f6f7f9] min-h-screen py-4 sm:py-6 pb-20 sm:pb-12">
-    <div class="max-w-4xl mx-auto px-3 sm:px-4 space-y-3.5">
+<div class="bg-[#f6f7f9] min-h-screen py-3 sm:py-6 pb-20 sm:pb-12">
+    <div class="max-w-3xl mx-auto px-3 sm:px-4 space-y-3">
         
         {{-- Flash Alerts --}}
         @if(session('success'))
@@ -21,7 +21,7 @@
 
         {{-- Page Header --}}
         <div class="flex items-center justify-between">
-            <h1 class="text-base sm:text-lg font-bold text-slate-900">Pesanan Saya</h1>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900">Pesanan Saya</h1>
             <a href="{{ route('katalog') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 <span>Belanja Helm</span>
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
@@ -29,7 +29,7 @@
         </div>
 
         {{-- Status Filter Tabs (Scrollable on Mobile) --}}
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
             @php
                 $tabs = [
                     'semua'          => ['label' => 'Semua', 'count' => $counts['semua'] ?? 0],
@@ -45,7 +45,7 @@
                     $isActive = ($activeTab === $key);
                 @endphp
                 <a href="{{ route('pelanggan.pesanan', $key === 'semua' ? [] : ['status' => $key]) }}"
-                   class="px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 {{ $isActive ? 'bg-blue-600 text-white font-medium shadow-2xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
+                   class="px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 {{ $isActive ? 'bg-blue-600 text-white font-medium shadow-2xs' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50' }}">
                     <span>{{ $tab['label'] }}</span>
                     @if($tab['count'] > 0 && $key !== 'semua')
                         <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $isActive ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700' }}">
@@ -60,7 +60,6 @@
         @forelse($pesanans as $pesanan)
             @php
                 $firstItem = $pesanan->details->first();
-                $totalQty = $pesanan->details->sum('qty');
                 $otherCount = $pesanan->details->count() - 1;
 
                 $badgeClass = match($pesanan->status) {
@@ -111,7 +110,7 @@
                                     Varian: {{ $firstItem->warna ?? '-' }}, Size {{ $firstItem->ukuran ?? '-' }} &bull; {{ $firstItem->qty }} barang
                                 </p>
                                 @if($otherCount > 0)
-                                    <p class="text-[11px] text-slate-400 mt-1">
+                                    <p class="text-[11px] text-slate-400 mt-0.5">
                                         +{{ $otherCount }} helm lainnya
                                     </p>
                                 @endif
@@ -120,26 +119,23 @@
                     @endif
                 </div>
 
-                {{-- Footer Row: Pickup Code / Note & Actions --}}
-                <div class="px-3.5 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-3 bg-white">
+                {{-- Footer Row: Pickup Code & Actions --}}
+                <div class="px-3.5 sm:px-4 py-2.5 flex items-center justify-between gap-3 bg-white">
                     <div>
                         @if(in_array($pesanan->status, ['ready', 'unpaid_pickup', 'paid']))
-                            <div class="flex items-center gap-1.5 text-xs">
-                                <span class="text-slate-500 text-[11px]">Kode Pickup:</span>
-                                <span class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/60 select-all">
-                                    {{ $pesanan->kode_pickup }}
-                                </span>
+                            <div class="text-[11px] text-slate-500">
+                                Kode Pickup: <span class="font-mono font-bold text-blue-600">{{ $pesanan->kode_pickup }}</span>
                             </div>
                         @else
                             <span class="text-[11px] text-slate-400">
-                                Batas Ambil: {{ $pesanan->batas_ambil ? $pesanan->batas_ambil->format('d M Y') : '-' }}
+                                {{ $pesanan->created_at->format('H:i') }} WIB
                             </span>
                         @endif
                     </div>
 
-                    <div class="flex items-center gap-3 ml-auto">
+                    <div class="flex items-center gap-3">
                         <div class="text-right">
-                            <span class="text-[10px] text-slate-400 block leading-tight">Total Belanja</span>
+                            <span class="text-[10px] text-slate-400 block leading-tight">Total</span>
                             <span class="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
                                 {{ format_rupiah($pesanan->grand_total) }}
                             </span>
@@ -147,13 +143,13 @@
 
                         @if($pesanan->status === 'pending' && in_array($pesanan->metode_bayar, ['transfer', 'qris']))
                             <a href="{{ route('pelanggan.pesanan.detail', $pesanan->id_pesanan) }}" 
-                               class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-2xs active:scale-98 transition-all">
-                                Bayar Sekarang
+                               class="h-8 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs flex items-center justify-center shadow-2xs active:scale-98 transition-all">
+                                Bayar
                             </a>
                         @else
                             <a href="{{ route('pelanggan.pesanan.detail', $pesanan->id_pesanan) }}" 
-                               class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs transition-colors shadow-2xs">
-                                Lihat Detail
+                               class="h-8 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs flex items-center justify-center transition-colors shadow-2xs">
+                                Detail
                             </a>
                         @endif
                     </div>
@@ -169,7 +165,7 @@
                 <div class="space-y-1">
                     <h2 class="text-sm font-semibold text-slate-900">Belum ada pesanan</h2>
                     <p class="text-xs text-slate-500 leading-relaxed">
-                        Pilih helm favoritmu dan amankan stoknya untuk diambil di gerai.
+                        Pilih helm favoritmu dan pesan sekarang.
                     </p>
                 </div>
                 <div class="pt-2">

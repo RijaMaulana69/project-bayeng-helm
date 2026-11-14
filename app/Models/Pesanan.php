@@ -65,7 +65,7 @@ class Pesanan extends Model
     {
         return match($this->status) {
             'pending' => 'Menunggu Pembayaran',
-            'unpaid_pickup' => 'Bayar di Toko',
+            'unpaid_pickup' => 'Menunggu Diambil',
             'paid' => 'Sudah Dibayar',
             'processing' => 'Sedang Disiapkan',
             'ready' => 'Siap Diambil',
@@ -96,7 +96,7 @@ class Pesanan extends Model
     {
         return match($this->status) {
             'pending' => '<span class="badge bg-warning text-dark"><i class="fa fa-clock me-1"></i> Menunggu Bayar</span>',
-            'unpaid_pickup' => '<span class="badge bg-info text-dark"><i class="fa fa-store me-1"></i> Bayar di Toko</span>',
+            'unpaid_pickup' => '<span class="badge bg-info text-dark"><i class="fa fa-clock me-1"></i> Menunggu Diambil</span>',
             'paid' => '<span class="badge bg-primary"><i class="fa fa-check-circle me-1"></i> Terbayar</span>',
             'processing' => '<span class="badge bg-info text-dark"><i class="fa fa-box me-1"></i> Disiapkan</span>',
             'ready' => '<span class="badge bg-success"><i class="fa fa-bell me-1"></i> Siap Diambil</span>',
