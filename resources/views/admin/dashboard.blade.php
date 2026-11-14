@@ -217,43 +217,39 @@
                 </a>
             </div>
 
+            <div class="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center justify-between text-[11px] font-medium text-slate-400">
+                <span>Helm &amp; Varian</span>
+                <span>Sisa</span>
+            </div>
+
             <div class="divide-y divide-slate-100">
                 @forelse ($stok_kritis_varian as $varian)
                     @php
                         $helm = $varian->helm;
                         $isZero = $varian->stok === 0;
                     @endphp
-                    <div class="p-3 sm:p-3.5 flex items-center gap-3 hover:bg-slate-50/70 transition-colors">
-                        <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0">
-                            @if($helm && $helm->gambar_url)
-                                <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-slate-400">
-                                    <i class="fa-solid fa-helmet-safety text-xs"></i>
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-xs font-semibold text-slate-900 truncate">
+                    <a href="{{ route('admin.stok.index') }}" class="px-4 py-3 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
                                 {{ $helm->nama_helm ?? 'Helm' }}
-                            </h4>
-                            <p class="text-[11px] text-slate-500 mt-0.5 truncate">
-                                <span class="font-medium text-slate-700">{{ $varian->warna }}</span> &bull; Ukuran {{ $varian->ukuran }}
+                            </p>
+                            <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                                {{ $varian->warna }} &bull; Ukuran {{ $varian->ukuran }}
                             </p>
                         </div>
 
-                        <div class="text-right shrink-0 flex items-center gap-1.5">
-                            <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold {{ $isZero ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200/80' }}">
-                                {{ $isZero ? 'Habis (0)' : 'Sisa ' . $varian->stok }}
-                            </span>
-                            <a href="{{ route('admin.stok.index') }}" 
-                               class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center text-xs transition-colors"
-                               title="Input Stok">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                            </a>
+                        <div class="text-right shrink-0">
+                            @if($isZero)
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80 font-mono">
+                                    0 unit
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80 font-mono">
+                                    {{ $varian->stok }} unit
+                                </span>
+                            @endif
                         </div>
-                    </div>
+                    </a>
                 @empty
                     <div class="p-8 text-center text-xs text-slate-400">
                         Seluruh stok varian di rak aman.

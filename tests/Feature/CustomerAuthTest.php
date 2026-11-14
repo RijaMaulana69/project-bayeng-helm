@@ -129,12 +129,12 @@ class CustomerAuthTest extends TestCase
 
     public function test_customer_can_login_with_email(): void
     {
-        $uniqueEmail = 'login_email_' . rand(1000, 9999) . '@test.com';
+        $uniqueEmail = 'u_' . substr(uniqid(), -6) . '_' . mt_rand(10, 99) . '@t.co';
 
         Pelanggan::create([
             'nama' => 'Rider Satu',
             'email' => $uniqueEmail,
-            'telepon' => '081987654321',
+            'telepon' => '0819' . rand(10000000, 99999999),
             'password' => 'Secret123',
         ]);
 
