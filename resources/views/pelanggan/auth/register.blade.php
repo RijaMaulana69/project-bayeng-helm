@@ -1,17 +1,34 @@
 @extends('layouts.auth')
-@section('title', 'Daftar Akun Pelanggan')
-@section('auth-heading', 'Daftar')
+@section('title', 'Daftar - Bayeng Putra Helm')
 
 @section('content')
-<div class="space-y-4">
+<div class="bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 sm:p-8 space-y-4">
     
-    {{-- Card Header --}}
-    <div class="flex items-center justify-between pb-1">
-        <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Daftar</h2>
+    {{-- Brand Header inside Card --}}
+    <div class="text-center space-y-2 pb-1">
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5 group">
+            <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-helmet-safety text-lg"></i>
+            </div>
+            <div class="text-left">
+                <div class="flex items-center gap-1">
+                    <span class="font-black text-base tracking-tight text-slate-900">BAYENG PUTRA</span>
+                    <span class="px-1 py-0.2 rounded bg-blue-100 text-blue-700 text-[9px] font-black uppercase">HELM</span>
+                </div>
+                <p class="text-[10px] text-slate-400 font-medium -mt-1">Click & Collect Store</p>
+            </div>
+        </a>
+
+        <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight pt-2">
+            Daftar
+        </h1>
+        <p class="text-xs text-slate-500">
+            Buat akun untuk pesan helm online & fitting di toko
+        </p>
     </div>
 
     {{-- Main Register Form --}}
-    <form method="POST" action="{{ route('pelanggan.register') }}" class="space-y-3.5" x-data="{ showPass: false }">
+    <form method="POST" action="{{ route('pelanggan.register') }}" class="space-y-3" x-data="{ showPass: false }">
         @csrf
 
         {{-- Nama Lengkap --}}
@@ -24,7 +41,7 @@
                    required 
                    autofocus
                    placeholder="Nama Lengkap"
-                   class="w-full h-11 sm:h-12 px-3.5 rounded-lg border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
+                   class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
             @error('nama')
                 <p class="text-rose-500 text-xs mt-1 font-medium flex items-center gap-1">
                     <i class="fa-solid fa-circle-exclamation text-[11px]"></i>
@@ -43,7 +60,7 @@
                    value="{{ old('email') }}" 
                    required 
                    placeholder="Alamat Email"
-                   class="w-full h-11 sm:h-12 px-3.5 rounded-lg border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
+                   class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
             @error('email')
                 <p class="text-rose-500 text-xs mt-1 font-medium flex items-center gap-1">
                     <i class="fa-solid fa-circle-exclamation text-[11px]"></i>
@@ -61,8 +78,8 @@
                    autocomplete="tel"
                    value="{{ old('telepon') }}" 
                    required 
-                   placeholder="No. Handphone / WhatsApp (contoh: 08123456789)"
-                   class="w-full h-11 sm:h-12 px-3.5 rounded-lg border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
+                   placeholder="No. Handphone / WhatsApp"
+                   class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
             @error('telepon')
                 <p class="text-rose-500 text-xs mt-1 font-medium flex items-center gap-1">
                     <i class="fa-solid fa-circle-exclamation text-[11px]"></i>
@@ -80,7 +97,7 @@
                        autocomplete="new-password"
                        required
                        placeholder="Password (min. 8 karakter, huruf besar & angka)"
-                       class="w-full h-11 sm:h-12 pl-3.5 pr-11 rounded-lg border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
+                       class="w-full h-11 sm:h-12 pl-3.5 pr-11 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
                 <button type="button" 
                         @click="showPass = !showPass" 
                         tabindex="-1"
@@ -105,22 +122,21 @@
                    autocomplete="new-password"
                    required
                    placeholder="Konfirmasi Password"
-                   class="w-full h-11 sm:h-12 px-3.5 rounded-lg border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition-colors">
+                   class="w-full h-11 sm:h-12 px-3.5 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
         </div>
 
-        {{-- Shopee-Style Terms Notice --}}
-        <p class="text-[11px] text-slate-500 leading-relaxed text-center px-2">
+        {{-- Terms Notice --}}
+        <p class="text-[11px] text-slate-500 leading-relaxed text-center px-1">
             Dengan mendaftar, Anda menyetujui 
-            <span class="text-blue-600">Syarat & Ketentuan</span> 
+            <span class="text-blue-600 font-semibold">Syarat & Ketentuan</span> 
             serta 
-            <span class="text-blue-600">Kebijakan Privasi</span> 
-            Bayeng Putra Helm.
+            <span class="text-blue-600 font-semibold">Kebijakan Privasi</span>.
         </p>
 
         {{-- Shopee-Style Prominent CTA Button --}}
         <div class="pt-1">
             <button type="submit" 
-                    class="w-full h-11 sm:h-12 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm tracking-wider uppercase shadow-md shadow-blue-600/20 flex items-center justify-center transition-all">
+                    class="w-full h-11 sm:h-12 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm tracking-wider uppercase shadow-md shadow-blue-600/20 flex items-center justify-center transition-all">
                 DAFTAR
             </button>
         </div>
@@ -133,11 +149,19 @@
         <div class="border-t border-slate-200 w-full"></div>
     </div>
 
-    {{-- Bottom Switch Link (Shopee exact format) --}}
-    <div class="text-center text-xs text-slate-500 pt-1">
+    {{-- Bottom Switch Link --}}
+    <div class="text-center text-xs text-slate-500">
         Punya akun? 
         <a href="{{ route('pelanggan.login') }}" class="font-bold text-blue-600 hover:underline ml-1">
             Log in
+        </a>
+    </div>
+
+    {{-- Back to Home --}}
+    <div class="pt-2 border-t border-slate-100 text-center">
+        <a href="{{ route('home') }}" class="text-xs text-slate-400 hover:text-slate-600 inline-flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+            <span>Kembali ke Beranda Toko</span>
         </a>
     </div>
 
