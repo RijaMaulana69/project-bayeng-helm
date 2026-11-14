@@ -53,10 +53,11 @@ class CheckoutTest extends TestCase
         ]);
 
         $helm = Helm::with('varians')->whereHas('varians', function ($q) {
-            $q->where('stok', '>', 5);
+            $q->where('stok', '>', 0);
         })->first();
 
-        $varian = $helm->varians->where('stok', '>', 5)->first();
+        $varian = $helm->varians->where('stok', '>', 0)->first();
+        $varian->increment('stok', 5);
 
         Cart::create([
             'id_pelanggan' => $pelanggan->id_pelanggan,

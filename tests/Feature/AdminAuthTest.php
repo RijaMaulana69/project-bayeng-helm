@@ -21,15 +21,16 @@ class AdminAuthTest extends TestCase
         $response = $this->get(route('admin.login'));
 
         $response->assertStatus(200);
-        $response->assertSee('BAYENG');
-        $response->assertSee('PRO');
-        $response->assertSee('Masuk ke Portal');
+        $response->assertSee('Login Admin');
+        $response->assertSee('Bayeng Putra Helm');
         $response->assertSee('Username');
-        $response->assertSee('Kata Sandi');
-        $response->assertSee('Masuk ke Dashboard');
-        $response->assertSee('Kembali ke Katalog Toko');
+        $response->assertSee('Password');
+        $response->assertSee('Masuk');
+        $response->assertSee('Kembali ke toko');
         $response->assertDontSee('linear-gradient(135deg, var(--dark)');
         $response->assertDontSee('bootstrap.min.css');
+        $response->assertDontSee('Portal Internal');
+        $response->assertDontSee('Sistem Operasional Toko');
     }
 
     public function test_admin_login_fails_with_invalid_credentials(): void
