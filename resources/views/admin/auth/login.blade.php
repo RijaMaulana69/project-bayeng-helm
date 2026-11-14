@@ -10,8 +10,8 @@
         <a href="{{ route('home') }}" class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors mb-3">
             <i class="fa-solid fa-helmet-safety text-xl"></i>
         </a>
-        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Login Admin & Kasir</h1>
-        <p class="text-xs text-slate-500 mt-1">Bayeng Putra Helm &bull; Kuningan</p>
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Login Admin</h1>
+        <p class="text-xs text-slate-500 mt-1">Bayeng Putra Helm</p>
     </div>
 
     {{-- Error & Session Alerts --}}
@@ -97,7 +97,7 @@
         {{-- Help footnote --}}
         <div class="pt-2 border-t border-slate-100 text-center">
             <span class="text-[11px] text-slate-400">
-                Lupa kata sandi? Hubungi akun pemilik (Owner).
+                Lupa kata sandi? Hubungi Owner
             </span>
         </div>
     </div>
