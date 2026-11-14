@@ -2,14 +2,14 @@
 @section('title', $helm->nama_helm . ' - Bayeng Putra Helm Kuningan')
 
 @section('content')
-<div class="bg-[#f6f7f9] min-h-screen py-4 pb-24 sm:pb-16" 
+<div class="bg-[#f6f7f9] min-h-screen py-4 pb-20 sm:pb-16" 
      x-data="{ 
          chatOpen: false,
          chatInput: '',
          messages: [
              { 
                  sender: 'bot', 
-                 text: 'Halo kak! Selamat datang di Bayeng Putra Helm Kuningan. Ada yang bisa kami bantu mengenai helm {{ addslashes($helm->nama_helm) }}? Mau cek ketersediaan varian warna atau konsultasi ukuran?', 
+                 text: 'Halo kak! Selamat datang di Bayeng Putra Helm Kuningan. Ada yang bisa kami bantu mengenai helm {{ addslashes($helm->nama_helm) }}?', 
                  time: 'Online' 
              }
          ],
@@ -23,28 +23,28 @@
                  if (box) box.scrollTop = box.scrollHeight;
              });
              setTimeout(() => {
-                 let reply = 'Terima kasih kak! Pesan seputar helm {{ addslashes($helm->nama_helm) }} sudah diteruskan ke staf kasir gerai Kuningan. Staf kami akan merespons pertanyaan kakak secepatnya.';
+                 let reply = 'Pesan kakak mengenai helm {{ addslashes($helm->nama_helm) }} sudah diteruskan ke staf gerai Kuningan. Kami akan membalas secepatnya kak.';
                  if (msg.includes('fitting') || msg.includes('coba')) {
-                     reply = 'Bisa banget kak! Helm ini bisa dicoba fitting langsung di gerai kami (Jl. RE Martadinata No.49 Kuningan) sebelum checkout pembayaran.';
+                     reply = 'Bisa banget kak! Helm ini bisa dicoba fitting langsung di gerai kami (Jl. RE Martadinata No.49 Kuningan).';
                  } else if (msg.includes('ready') || msg.includes('stok')) {
-                     reply = 'Untuk helm {{ addslashes($helm->nama_helm) }}, stok fisik di gerai saat ini tersedia {{ $helm->stok }} unit kak. Silakan amankan pesanan via website agar tidak keduluan pembeli lain.';
+                     reply = 'Untuk helm {{ addslashes($helm->nama_helm) }}, stok fisik di gerai saat ini ready {{ $helm->stok }} unit kak.';
                  } else if (msg.includes('jam') || msg.includes('alamat')) {
-                     reply = 'Gerai kami buka setiap hari jam 08:00 - 21:00 WIB di Jl. RE Martadinata No.49 Kuningan (dekat bundaran). Ditunggu kedatangannya kak!';
+                     reply = 'Gerai kami buka setiap hari jam 08:00 - 21:00 WIB di Jl. RE Martadinata No.49 Kuningan. Ditunggu kedatangannya kak!';
                  }
                  this.messages.push({ sender: 'bot', text: reply, time: 'Baru saja' });
                  this.$nextTick(() => {
                      let box = document.getElementById('chat-scroll-container');
                      if (box) box.scrollTop = box.scrollHeight;
                  });
-             }, 600);
+             }, 500);
          }
      }"
      @open-store-chat.window="chatOpen = true">
     
     <div class="max-w-6xl mx-auto px-3 sm:px-5">
         
-        {{-- Breadcrumb Clean & Subtle --}}
-        <nav class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-3 sm:mb-4 overflow-hidden">
+        {{-- Breadcrumb Clean & Compact --}}
+        <nav class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-3 overflow-hidden">
             <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Beranda</a>
             <span class="text-slate-300">/</span>
             <a href="{{ route('katalog') }}" class="hover:text-blue-600 transition-colors">Katalog Helm</a>
@@ -53,182 +53,136 @@
         </nav>
 
         {{-- Main PDP Canvas (Clean Minimalist E-Commerce) --}}
-        <div class="bg-white rounded-xl sm:rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-8 items-start">
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-6 items-start">
                 
-                {{-- Column 1: Image Showcase (Left 5 Cols) --}}
-                <div class="md:col-span-5 p-3 sm:p-5 md:p-6 md:sticky md:top-24">
-                    <div class="relative aspect-square rounded-xl bg-slate-50 border border-slate-200/90 overflow-hidden group">
-                        <img src="{{ $helm->gambar_url }}" 
-                             alt="{{ $helm->nama_helm }}" 
-                             class="w-full h-full object-cover">
-                        
-                        @if($helm->merk)
-                            <div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-slate-900/90 backdrop-blur-2xs text-white text-[9px] font-black uppercase tracking-wider">
-                                {{ $helm->merk->nama_merk }}
-                            </div>
-                        @endif
-
-                        {{-- Stock Status Tag --}}
-                        <div class="absolute top-2.5 right-2.5">
-                            @if($helm->stok > 0)
-                                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 shadow-2xs">
-                                    Stok Ready ({{ $helm->stok }})
-                                </span>
-                            @else
-                                <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 text-[10px] font-bold border border-rose-200 shadow-2xs">
-                                    Stok Habis
-                                </span>
+                {{-- Column 1: Image Showcase (Compact Retail Size) --}}
+                <div class="md:col-span-5 lg:col-span-4 p-4 sm:p-5 md:p-6 md:sticky md:top-24">
+                    <div class="max-w-[280px] sm:max-w-[320px] md:max-w-none mx-auto">
+                        <div class="relative aspect-square rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
+                            <img src="{{ $helm->gambar_url }}" 
+                                 alt="{{ $helm->nama_helm }}" 
+                                 class="w-full h-full object-cover">
+                            
+                            @if($helm->merk)
+                                <div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-slate-900/90 text-white text-[9px] font-black uppercase tracking-wider">
+                                    {{ $helm->merk->nama_merk }}
+                                </div>
                             @endif
-                        </div>
-                    </div>
 
-                    {{-- Store Trust Badges --}}
-                    <div class="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
-                        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <i class="fa-solid fa-store text-blue-600 text-xs"></i>
-                            <span class="truncate">Gerai Resmi Kuningan</span>
-                        </div>
-                        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <i class="fa-solid fa-shield-check text-emerald-600 text-xs"></i>
-                            <span class="truncate">100% Standar SNI/DOT</span>
+                            {{-- Stock Status Tag --}}
+                            <div class="absolute top-2.5 right-2.5">
+                                @if($helm->stok > 0)
+                                    <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200">
+                                        Stok {{ $helm->stok }}
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 text-[9px] font-bold border border-rose-200">
+                                        Habis
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Column 2: Product Data & Buying Engine (Right 7 Cols) --}}
-                <div class="md:col-span-7 p-4 sm:p-6 md:p-8 md:pl-0 space-y-5">
+                {{-- Column 2: Product Data & Purchase Engine --}}
+                <div class="md:col-span-7 lg:col-span-8 p-4 sm:p-5 md:p-6 md:pl-0 space-y-4">
                     
-                    {{-- Header: Category & Title --}}
+                    {{-- Category & Title --}}
                     <div>
-                        <div class="flex items-center gap-2 mb-1.5">
+                        <div class="mb-1">
                             <a href="{{ route('katalog', ['kategori_filter' => $helm->id_kategori]) }}" 
                                class="text-blue-600 text-xs font-bold uppercase tracking-wider hover:underline">
                                 {{ $helm->kategori->nama_kategori ?? 'Helm Motor' }}
                             </a>
-                            <span class="text-slate-300">&bull;</span>
-                            <span class="text-xs text-slate-400 font-medium">ID: #{{ $helm->id_helm }}</span>
                         </div>
-                        <h1 class="text-lg sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                        <h1 class="text-base sm:text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
                             {{ $helm->nama_helm }}
                         </h1>
                     </div>
 
-                    {{-- Price Display (Shopee / Blibli Style) --}}
-                    <div class="p-3.5 sm:p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                    {{-- Clean Minimalist Price Box --}}
+                    <div class="py-2.5 px-3.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
                         <div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Harga Gerai</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">Harga</span>
                             <span class="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight">
                                 {{ format_rupiah($helm->harga_jual) }}
                             </span>
                         </div>
-                        <div class="text-right">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
-                                <i class="fa-solid fa-handshake-simple text-xs"></i>
-                                <span>Bayar Saat Ambil di Toko</span>
-                            </span>
-                        </div>
                     </div>
 
-                    {{-- Add to Cart Component (Variant Teaser Strip + Bottom Sheet Flow) --}}
+                    {{-- Add to Cart Component (Desktop Buttons & Mobile Bottom Bar & Bottom Sheet) --}}
                     <livewire:add-to-cart-button :helm="$helm" />
 
-                    {{-- Divider --}}
-                    <div class="border-t border-slate-100 pt-5 space-y-4">
+                    {{-- Section: Deskripsi Produk & Ukuran --}}
+                    <div class="border-t border-slate-100 pt-4 space-y-4">
                         
-                        {{-- Deskripsi Produk Header --}}
+                        {{-- Header --}}
                         <div class="flex items-center justify-between">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-circle-info text-blue-600 text-xs"></i>
                                 <span>Deskripsi Produk</span>
                             </h2>
-                            <span class="text-[11px] text-slate-400 font-medium">Standar SNI & DOT</span>
+                            <span class="text-[10px] text-slate-400 font-medium">SNI & DOT</span>
                         </div>
 
-                        {{-- Description Content --}}
-                        <div class="text-xs text-slate-600 leading-relaxed space-y-2.5">
+                        {{-- Text Description --}}
+                        <div class="text-xs text-slate-600 leading-relaxed space-y-2">
                             <p>{{ $helm->deskripsi ?? 'Helm berkendara standar SNI & DOT dengan bahan shell berkualitas tinggi, busa dalam empuk dapat dilepas dan dicuci, serta sistem penguncian aman.' }}</p>
                         </div>
 
-                        {{-- Spesifikasi Ringkas (Shopee Table Style) --}}
+                        {{-- Spesifikasi Ringkas --}}
                         <div class="rounded-xl border border-slate-200 overflow-hidden text-xs">
-                            <div class="bg-slate-50 px-3.5 py-2 font-bold text-slate-700 text-[11px] border-b border-slate-200 uppercase tracking-wider">
+                            <div class="bg-slate-50 px-3.5 py-2 font-bold text-slate-700 text-[10px] sm:text-[11px] border-b border-slate-200 uppercase tracking-wider">
                                 Spesifikasi Helm
                             </div>
                             <div class="divide-y divide-slate-100 text-slate-700">
-                                <div class="px-3.5 py-2.5 grid grid-cols-3">
+                                <div class="px-3.5 py-2 grid grid-cols-3">
                                     <span class="text-slate-400 font-medium">Merk</span>
                                     <span class="col-span-2 font-bold text-slate-900">{{ $helm->merk->nama_merk ?? '-' }}</span>
                                 </div>
-                                <div class="px-3.5 py-2.5 grid grid-cols-3">
+                                <div class="px-3.5 py-2 grid grid-cols-3">
                                     <span class="text-slate-400 font-medium">Kategori</span>
                                     <span class="col-span-2 font-semibold text-slate-800">{{ $helm->kategori->nama_kategori ?? '-' }}</span>
                                 </div>
-                                <div class="px-3.5 py-2.5 grid grid-cols-3">
+                                <div class="px-3.5 py-2 grid grid-cols-3">
                                     <span class="text-slate-400 font-medium">Sertifikasi</span>
                                     <span class="col-span-2 font-semibold text-slate-800">SNI 1811-2007 & DOT Approved</span>
                                 </div>
-                                <div class="px-3.5 py-2.5 grid grid-cols-3">
+                                <div class="px-3.5 py-2 grid grid-cols-3">
                                     <span class="text-slate-400 font-medium">Busa / Padding</span>
                                     <span class="col-span-2 font-semibold text-slate-800">Removable & Washable (Dapat Dicuci)</span>
                                 </div>
-                                <div class="px-3.5 py-2.5 grid grid-cols-3">
+                                <div class="px-3.5 py-2 grid grid-cols-3">
                                     <span class="text-slate-400 font-medium">Total Stok</span>
-                                    <span class="col-span-2 font-bold text-emerald-700">{{ $helm->stok }} Unit Ready di Gerai</span>
+                                    <span class="col-span-2 font-bold text-emerald-700">{{ $helm->stok }} Unit Ready</span>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Informasi Ukuran & Panduan Fitting --}}
                         <div class="rounded-xl border border-slate-200 overflow-hidden text-xs">
-                            <div class="bg-slate-50 px-3.5 py-2 font-bold text-slate-700 text-[11px] border-b border-slate-200 uppercase tracking-wider flex items-center justify-between">
-                                <span>Informasi & Panduan Ukuran (Fitting)</span>
-                                <span class="text-[10px] text-blue-600 font-semibold normal-case">Bisa coba langsung di toko</span>
+                            <div class="bg-slate-50 px-3.5 py-2 font-bold text-slate-700 text-[10px] sm:text-[11px] border-b border-slate-200 uppercase tracking-wider">
+                                Informasi Ukuran (Fitting)
                             </div>
-                            <div class="p-3.5 space-y-3">
+                            <div class="p-3.5 space-y-2.5">
                                 <p class="text-[11px] text-slate-600">
-                                    Gunakan meteran kain dan lingkarkan di atas alis untuk mengetahui ukuran helm yang paling pas:
+                                    Panduan lingkar kepala untuk menentukan ukuran helm yang pas:
                                 </p>
                                 <div class="grid grid-cols-3 gap-2 text-center text-xs">
                                     <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                                        <p class="font-black text-slate-900">Ukuran M</p>
+                                        <p class="font-bold text-slate-900">Ukuran M</p>
                                         <p class="text-[11px] font-bold text-blue-600 mt-0.5">57 - 58 cm</p>
-                                        <p class="text-[10px] text-slate-400 mt-0.5">Kompak & pas</p>
                                     </div>
                                     <div class="p-2 rounded-lg bg-blue-50 border border-blue-200">
-                                        <p class="font-black text-blue-900">Ukuran L</p>
+                                        <p class="font-bold text-blue-900">Ukuran L</p>
                                         <p class="text-[11px] font-bold text-blue-600 mt-0.5">59 - 60 cm</p>
-                                        <p class="text-[10px] text-blue-600/80 mt-0.5">Standar umum</p>
                                     </div>
                                     <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                                        <p class="font-black text-slate-900">Ukuran XL</p>
+                                        <p class="font-bold text-slate-900">Ukuran XL</p>
                                         <p class="text-[11px] font-bold text-blue-600 mt-0.5">61 - 62 cm</p>
-                                        <p class="text-[10px] text-slate-400 mt-0.5">Kepala lebar/hijab</p>
                                     </div>
-                                </div>
-                                <p class="text-[10px] text-slate-400 italic">
-                                    *Catatan: Jika ukuran yang Anda pesan di website kurang pas saat diambil, Anda diperbolehkan menukar varian ukuran langsung di gerai selama stok tersedia.
-                                </p>
-                            </div>
-                        </div>
-
-                        {{-- Panduan Alur Ambil di Gerai (BOPIS) --}}
-                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                            <p class="font-bold text-slate-900 text-[11px] uppercase tracking-wider">
-                                Alur Belanja Ambil di Gerai (BOPIS):
-                            </p>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
-                                <div class="flex items-start gap-2">
-                                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center shrink-0">1</span>
-                                    <span class="text-slate-600">Pesan di website untuk kunci stok Anda.</span>
-                                </div>
-                                <div class="flex items-start gap-2">
-                                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center shrink-0">2</span>
-                                    <span class="text-slate-600">Datang ke gerai Jl. RE Martadinata No.49 Kuningan.</span>
-                                </div>
-                                <div class="flex items-start gap-2">
-                                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[10px] flex items-center justify-center shrink-0">3</span>
-                                    <span class="text-slate-600">Fitting ukuran pas & selesaikan pembayaran di kasir.</span>
                                 </div>
                             </div>
                         </div>
@@ -240,34 +194,33 @@
             </div>
         </div>
 
-        {{-- Helm Terkait Lainnya (Grid 100% Selaras dengan Katalog) --}}
+        {{-- Helm Terkait Lainnya (Clean & Selaras dengan Katalog) --}}
         @if(isset($related) && $related->count() > 0)
-        <div class="mt-10 sm:mt-12 space-y-4">
+        <div class="mt-8 sm:mt-10 space-y-3">
             <div class="flex items-center justify-between">
-                <h3 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-shapes text-blue-600"></i>
-                    <span>Helm Terkait Lainnya</span>
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider">
+                    Helm Terkait Lainnya
                 </h3>
                 <a href="{{ route('katalog', ['kategori_filter' => $helm->id_kategori]) }}" class="text-xs font-bold text-blue-600 hover:underline">
                     Lihat Semua &rarr;
                 </a>
             </div>
 
-            {{-- 100% Identical Grid with Katalog Filter --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+            {{-- Grid Selaras dengan Katalog --}}
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 md:gap-4">
                 @foreach($related as $rel)
-                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-blue-500 hover:shadow-xl hover:shadow-slate-200/40 transition-all flex flex-col">
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between">
                     {{-- Thumb --}}
                     <div class="aspect-square bg-slate-50 relative overflow-hidden">
                         <a href="{{ route('katalog.detail', $rel->id_helm) }}">
                             <img src="{{ $rel->gambar_url }}" 
                                  alt="{{ $rel->nama_helm }}" 
-                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         </a>
                         
                         {{-- Brand Tag --}}
                         @if($rel->merk)
-                        <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded text-[8px] font-black text-slate-900 shadow-sm uppercase">
+                        <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded text-[8px] font-black text-slate-900 shadow-2xs uppercase">
                             {{ $rel->merk->nama_merk }}
                         </div>
                         @endif
@@ -275,11 +228,11 @@
                         {{-- Stock Status Tag --}}
                         <div class="absolute top-2 right-2">
                             @if($rel->stok > 0)
-                                <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[8px] font-black border border-emerald-200 shadow-2xs">
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[8px] font-black border border-emerald-200">
                                     Stok {{ $rel->stok }}
                                 </span>
                             @else
-                                <span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 text-[8px] font-black border border-rose-200 shadow-2xs">
+                                <span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 text-[8px] font-black border border-rose-200">
                                     Habis
                                 </span>
                             @endif
@@ -287,16 +240,16 @@
                     </div>
 
                     {{-- Body --}}
-                    <div class="p-3 flex flex-col flex-grow justify-between gap-3">
+                    <div class="p-2.5 sm:p-3 flex flex-col flex-grow justify-between gap-2.5">
                         <div>
                             <a href="{{ route('katalog.detail', $rel->id_helm) }}">
-                                <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 h-8 leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+                                <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 h-7 sm:h-8 leading-tight mb-1 group-hover:text-blue-600 transition-colors">
                                     {{ $rel->nama_helm }}
                                 </h4>
                             </a>
-                            <p class="text-[10px] font-black text-blue-600">{{ format_rupiah($rel->harga_jual) }}</p>
+                            <p class="text-[10px] sm:text-xs font-black text-blue-600">{{ format_rupiah($rel->harga_jual) }}</p>
                         </div>
-                        <a href="{{ route('katalog.detail', $rel->id_helm) }}" class="w-full py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-center text-[9px] font-black text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all uppercase tracking-widest">
+                        <a href="{{ route('katalog.detail', $rel->id_helm) }}" class="w-full py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-center text-[9px] font-bold text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all uppercase tracking-wider">
                             Detail
                         </a>
                     </div>
@@ -308,7 +261,7 @@
 
     </div>
 
-    {{-- Slide-Over Chat Internal Toko (Tokopedia / Shopee Live Chat Standard) --}}
+    {{-- Slide-Over Chat Internal Toko --}}
     <div x-show="chatOpen" 
          x-cloak
          class="fixed inset-0 z-50 overflow-hidden" 
@@ -325,7 +278,7 @@
                 <div class="px-4 py-3 bg-white border-b border-slate-200 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="relative">
-                            <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                            <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
                                 <i class="fa-solid fa-helmet-safety"></i>
                             </div>
                             <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white"></span>
@@ -333,11 +286,11 @@
                         <div>
                             <div class="flex items-center gap-1.5">
                                 <p class="text-xs font-bold text-slate-900 leading-tight">Bayeng Putra Helm</p>
-                                <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 text-[9px] font-bold">Gerai Resmi</span>
+                                <span class="px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 text-[9px] font-bold">Official</span>
                             </div>
                             <p class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1 mt-0.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Staf Kasir Online &bull; Gerai RE Martadinata</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <span>Online</span>
                             </p>
                         </div>
                     </div>
@@ -348,32 +301,26 @@
                     </button>
                 </div>
 
-                {{-- Product Context Banner (Shopee / Tokopedia Style) --}}
+                {{-- Product Context Banner --}}
                 <div class="p-3 bg-slate-50 border-b border-slate-200 flex items-center gap-3">
-                    <img src="{{ $helm->gambar_url }}" class="w-12 h-12 object-cover rounded-lg border border-slate-200 shrink-0">
+                    <img src="{{ $helm->gambar_url }}" class="w-11 h-11 object-cover rounded-lg border border-slate-200 shrink-0">
                     <div class="overflow-hidden flex-1">
                         <p class="font-bold text-slate-900 truncate text-xs">{{ $helm->nama_helm }}</p>
                         <p class="text-[11px] font-black text-blue-600 mt-0.5">{{ format_rupiah($helm->harga_jual) }}</p>
                     </div>
                     <button type="button" 
-                            @click="sendMessage('Halo staf toko, saya sedang melihat helm {{ addslashes($helm->nama_helm) }}. Apakah stoknya ready?')"
+                            @click="sendMessage('Halo, apakah stok helm {{ addslashes($helm->nama_helm) }} masih ready?')"
                             class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10px] rounded-lg border border-blue-200 transition-colors shrink-0 cursor-pointer">
-                        Tanyakan Stok
+                        Tanya Stok
                     </button>
                 </div>
 
                 {{-- Messages Stream --}}
                 <div id="chat-scroll-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#f8fafc]">
-                    <div class="text-center my-1">
-                        <span class="px-3 py-1 rounded-full bg-slate-200/70 text-slate-600 text-[10px] font-medium">
-                            Percakapan langsung dengan staf toko
-                        </span>
-                    </div>
-
                     <template x-for="(msg, index) in messages" :key="index">
                         <div class="flex flex-col" :class="msg.sender === 'user' ? 'items-end' : 'items-start'">
-                            <div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs"
-                                 :class="msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-xs' : 'bg-white text-slate-800 border border-slate-200/90 rounded-bl-xs'">
+                            <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed"
+                                 :class="msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-xs' : 'bg-white text-slate-800 border border-slate-200 shadow-2xs rounded-bl-xs'">
                                 <p x-text="msg.text"></p>
                             </div>
                             <span class="text-[9px] text-slate-400 mt-1 px-1" x-text="msg.time"></span>
@@ -381,12 +328,12 @@
                     </template>
                 </div>
 
-                {{-- Quick Suggestions (Pill Chips ala Shopee) --}}
+                {{-- Quick Suggestions --}}
                 <div class="px-3 py-2 bg-white border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
                     <button type="button" 
                             @click="sendMessage('Apakah helm {{ addslashes($helm->nama_helm) }} masih ready di toko?')"
                             class="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-[10px] font-semibold border border-slate-200 shrink-0 transition-colors cursor-pointer">
-                        Ready stok hari ini?
+                        Ready stok?
                     </button>
                     <button type="button" 
                             @click="sendMessage('Bisa coba fitting ukuran helm ini langsung di gerai?')"
@@ -405,10 +352,10 @@
                     <form @submit.prevent="sendMessage()" class="flex items-center gap-2">
                         <input type="text" 
                                x-model="chatInput" 
-                               placeholder="Ketik pesan untuk staf gerai..." 
-                               class="flex-1 px-3.5 py-2.5 bg-slate-100 rounded-xl text-xs text-slate-900 border border-transparent focus:border-blue-600 focus:bg-white outline-none transition-all placeholder:text-slate-400">
+                               placeholder="Ketik pesan..." 
+                               class="flex-1 px-3.5 py-2 bg-slate-100 rounded-xl text-xs text-slate-900 border border-transparent focus:border-blue-600 focus:bg-white outline-none transition-all placeholder:text-slate-400">
                         <button type="submit" 
-                                class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shrink-0 transition-all shadow-sm active:scale-95 cursor-pointer">
+                                class="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shrink-0 transition-all shadow-sm active:scale-95 cursor-pointer">
                             <i class="fa-solid fa-paper-plane text-xs"></i>
                         </button>
                     </form>
