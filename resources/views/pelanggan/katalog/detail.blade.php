@@ -122,10 +122,12 @@
                             <p>{{ $helm->deskripsi ?? 'Helm berkendara standar SNI & DOT dengan bahan shell berkualitas tinggi, busa dalam empuk dapat dilepas dan dicuci, serta sistem penguncian aman.' }}</p>
                         </div>
 
-                        {{-- Informasi Ukuran Kepala (Plain Text) --}}
-                        <div class="pt-1 text-xs text-slate-600 leading-relaxed">
-                            <p class="font-bold text-slate-800 mb-0.5">Ukuran Kepala:</p>
-                            <p class="text-slate-600">M: 57 - 58 cm &bull; L: 59 - 60 cm &bull; XL: 61 - 62 cm</p>
+                        {{-- Informasi Ukuran Kepala --}}
+                        <div class="pt-2 text-xs text-slate-600 leading-relaxed space-y-0.5">
+                            <p class="font-semibold text-slate-800 mb-1">Ukuran kepala:</p>
+                            <p>- M: 57 - 58 cm</p>
+                            <p>- L: 59 - 60 cm</p>
+                            <p>- XL: 61 - 62 cm</p>
                         </div>
 
                     </div>

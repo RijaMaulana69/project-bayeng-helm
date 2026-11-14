@@ -82,19 +82,16 @@
                     <p class="text-lg font-black text-blue-600 leading-tight">
                         {{ format_rupiah($helm->harga_jual) }}
                     </p>
-                    <div class="mt-1 text-xs font-medium">
+                    <div class="mt-1 text-xs text-slate-500">
                         @if($selectedVariantObj)
-                            <span class="text-slate-500">Sisa stok: </span>
-                            <span class="font-bold {{ $selectedVariantObj['stok'] > 3 ? 'text-emerald-600' : 'text-amber-600' }}">
-                                {{ $selectedVariantObj['stok'] }} unit
-                            </span>
+                            <span>Stok: {{ $selectedVariantObj['stok'] }}</span>
                         @else
-                            <span class="text-slate-500">Silakan pilih varian helm</span>
+                            <span>Pilih varian</span>
                         @endif
                     </div>
                     @if($selectedVariantObj)
-                        <p class="text-[11px] text-slate-700 font-semibold truncate mt-0.5">
-                            {{ $selectedVariantObj['warna'] }} &bull; {{ $selectedVariantObj['ukuran'] }}
+                        <p class="text-xs text-slate-700 font-medium truncate mt-0.5">
+                            {{ $selectedVariantObj['warna'] }}, {{ $selectedVariantObj['ukuran'] }}
                         </p>
                     @endif
                 </div>
@@ -109,13 +106,10 @@
             <div class="p-4 overflow-y-auto space-y-5 flex-1">
                 
                 {{-- Variant Chips --}}
-                <div class="space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                            Pilih Varian Warna & Ukuran
-                        </label>
-                        <span class="text-[10px] text-slate-400 font-medium">Wajib pilih 1</span>
-                    </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-800">
+                        Pilih Varian
+                    </label>
                     <div class="flex flex-wrap gap-2">
                         @forelse($availableVariants as $v)
                             @php
@@ -125,29 +119,26 @@
                             <button type="button"
                                     wire:click="selectVarian({{ $v['id_varian'] }})"
                                     @if($isOut) disabled @endif
-                                    class="px-3 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer
+                                    class="px-3 py-2 rounded-xl text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer
                                     {{ $isSelected 
                                         ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30' 
                                         : ($isOut 
                                             ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
                                             : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
-                                <span>{{ $v['warna'] }} &bull; {{ $v['ukuran'] }}</span>
+                                <span>{{ $v['warna'] }} - {{ $v['ukuran'] }}</span>
                                 @if($isOut)
                                     <span class="text-[9px] text-rose-500 font-semibold">(Habis)</span>
                                 @endif
                             </button>
                         @empty
-                            <p class="text-xs text-slate-400">Tidak ada varian fisik tersedia.</p>
+                            <p class="text-xs text-slate-400">Varian belum tersedia.</p>
                         @endforelse
                     </div>
                 </div>
 
                 {{-- Quantity Stepper (- / +) --}}
-                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-bold text-slate-800 uppercase tracking-wider">Jumlah Beli</p>
-                        <p class="text-[10px] text-slate-400">Atur unit helm yang ingin diamankan</p>
-                    </div>
+                <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-800">Jumlah</span>
 
                     <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
                         <button type="button" 
@@ -156,7 +147,7 @@
                                 class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer">
                             <i class="fa-solid fa-minus text-[10px]"></i>
                         </button>
-                        <span class="w-10 text-center text-xs font-black text-slate-900">{{ $qty }}</span>
+                        <span class="w-10 text-center text-xs font-bold text-slate-900">{{ $qty }}</span>
                         <button type="button" 
                                 wire:click="incrementQty" 
                                 {{ !$selectedVarian || $qty >= ($selectedVariantObj['stok'] ?? 0) ? 'disabled' : '' }}
@@ -177,7 +168,7 @@
                         class="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
                         <i class="fa-solid fa-bag-shopping text-sm"></i>
-                        <span>{{ $selectedVarian ? 'Masukkan Keranjang' : 'Pilih Varian Dahulu' }}</span>
+                        <span>Masukkan Keranjang</span>
                     </span>
                     <span wire:loading wire:target="addToCart" class="flex items-center gap-2">
                         <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>
