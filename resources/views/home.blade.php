@@ -66,16 +66,21 @@
         </div>
     </section>
 
-    {{-- Categories: Clean Horizontal Scroll --}}
-    <section class="py-4 px-5">
-        <div class="max-w-6xl mx-auto flex items-center gap-3 overflow-x-auto hide-scrollbar">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex-shrink-0">Koleksi:</span>
-            @foreach($kategoris as $kat)
-                <a href="{{ route('katalog', ['kategori_filter' => $kat->id_kategori]) }}" 
-                   class="flex-shrink-0 px-4 py-2 bg-slate-200/50 hover:bg-blue-600 hover:text-white border border-transparent rounded-lg text-[10px] font-bold text-slate-600 transition-all uppercase tracking-widest shadow-2xs">
-                    {{ $kat->nama_kategori }}
+    {{-- Category Filter Bar (E-commerce Style) --}}
+    <section class="py-6 px-5 bg-white border-b border-slate-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center gap-3 overflow-x-auto hide-scrollbar">
+                <a href="{{ route('katalog') }}" 
+                   class="flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-full text-[11px] font-bold transition-all shadow-sm">
+                    Semua
                 </a>
-            @endforeach
+                @foreach($kategoris as $kat)
+                    <a href="{{ route('katalog', ['kategori_filter' => $kat->id_kategori]) }}" 
+                       class="flex-shrink-0 px-4 py-2 bg-white border border-slate-200 rounded-full text-[11px] font-semibold text-slate-700 hover:border-blue-600 hover:text-blue-600 transition-all">
+                        {{ $kat->nama_kategori }}
+                    </a>
+                @endforeach
+            </div>
         </div>
     </section>
 
