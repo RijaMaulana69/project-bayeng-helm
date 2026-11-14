@@ -191,9 +191,6 @@
                 </div>
             </div>
         </div>
-        <div class="px-8 pt-8 mx-auto mt-16 border-t border-slate-100 max-w-7xl flex justify-between items-center">
-            <p class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">&copy; {{ date('Y') }} Bayeng Putra Helm Store</p>
-        </div>
     </footer>
 
     {{-- Toast --}}
