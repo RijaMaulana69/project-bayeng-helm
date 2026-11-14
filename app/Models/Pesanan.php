@@ -61,6 +61,37 @@ class Pesanan extends Model
         return $this->hasMany(LogStatusPesanan::class, 'id_pesanan', 'id_pesanan')->orderBy('created_at', 'desc');
     }
 
+    public function getStatusLabelAttribute(): string
+    {
+        return match($this->status) {
+            'pending' => 'Menunggu Pembayaran',
+            'unpaid_pickup' => 'Bayar di Toko',
+            'paid' => 'Sudah Dibayar',
+            'processing' => 'Sedang Disiapkan',
+            'ready' => 'Siap Diambil',
+            'completed' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
+            default => ucfirst($this->status),
+        };
+    }
+
+    public function getBuktiBayarUrlAttribute(): ?string
+    {
+        if (! $this->bukti_bayar) {
+            return null;
+        }
+
+        if (file_exists(public_path('uploads/bukti/' . $this->bukti_bayar))) {
+            return asset('uploads/bukti/' . $this->bukti_bayar);
+        }
+
+        if (file_exists(public_path('storage/' . $this->bukti_bayar))) {
+            return asset('storage/' . $this->bukti_bayar);
+        }
+
+        return asset('uploads/bukti/' . $this->bukti_bayar);
+    }
+
     public function getStatusBadgeAttribute(): string
     {
         return match($this->status) {

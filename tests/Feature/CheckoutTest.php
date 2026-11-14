@@ -80,5 +80,14 @@ class CheckoutTest extends TestCase
             'metode_bayar' => 'tunai',
             'status' => 'unpaid_pickup',
         ]);
+
+        $pesanan = \App\Models\Pesanan::where('id_pelanggan', $pelanggan->id_pelanggan)->first();
+        $successResponse = $this->actingAs($pelanggan, 'pelanggan')
+            ->get(route('pelanggan.checkout.sukses', $pesanan->id_pesanan));
+
+        $successResponse->assertStatus(200);
+        $successResponse->assertSee('Pesanan Berhasil Dibuat');
+        $successResponse->assertSee($pesanan->kode_pickup);
+        $successResponse->assertSee('Gerai Bayeng Putra Helm Kuningan');
     }
 }

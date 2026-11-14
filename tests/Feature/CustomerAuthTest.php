@@ -153,7 +153,7 @@ class CustomerAuthTest extends TestCase
 
         Pelanggan::create([
             'nama' => 'Rider Dua',
-            'email' => 'rider_phone_' . rand(100, 999) . '@test.com',
+            'email' => 'rider_phone_' . uniqid() . '@test.com',
             'telepon' => $uniquePhone,
             'password' => 'Secret123',
         ]);

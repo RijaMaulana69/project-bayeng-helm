@@ -37,10 +37,10 @@ class AddToCartButtonTest extends TestCase
 
     public function test_authenticated_customer_can_add_to_cart(): void
     {
-        $pelanggan = Pelanggan::first() ?? Pelanggan::create([
+        $pelanggan = Pelanggan::create([
             'nama' => 'Tester PDP',
-            'email' => 'pdp_test_' . rand(100, 999) . '@test.com',
-            'telepon' => '081299998888',
+            'email' => 'pdp_test_' . uniqid() . '@test.com',
+            'telepon' => '0812' . rand(10000000, 99999999),
             'password' => bcrypt('password'),
         ]);
 

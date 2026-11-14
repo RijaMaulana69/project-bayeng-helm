@@ -135,7 +135,7 @@ class CheckoutController extends Controller
             abort(403, 'Anda tidak memiliki akses ke pesanan ini.');
         }
 
-        $pesanan->load('details');
+        $pesanan->load(['details.helm']);
 
         return view('pelanggan.checkout.sukses', compact('pesanan'));
     }
