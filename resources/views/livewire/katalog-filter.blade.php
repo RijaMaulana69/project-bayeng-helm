@@ -189,15 +189,15 @@
     {{-- Filter Modal / Bottom Sheet (Rentang Harga) --}}
     <div x-show="filterModal" 
          x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
+         class="fixed inset-0 z-[60] overflow-y-auto"
          aria-labelledby="modal-title" role="dialog" aria-modal="true">
         
         {{-- Backdrop --}}
-        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" 
+        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity" 
              @click="filterModal = false"></div>
 
         <div class="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4 text-center">
-            <div class="relative transform overflow-hidden rounded-t-3xl sm:rounded-2xl bg-white text-left shadow-2xl transition-all w-full sm:max-w-md p-6 space-y-5">
+            <div class="relative transform overflow-hidden rounded-t-3xl sm:rounded-2xl bg-white text-left shadow-2xl transition-all w-full sm:max-w-md p-6 pb-24 sm:pb-6 space-y-5">
                 
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2">
