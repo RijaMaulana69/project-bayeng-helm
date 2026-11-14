@@ -9,7 +9,7 @@
     {{-- Google Fonts: Plus Jakarta Sans --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
     {{-- Font Awesome 6 --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -55,18 +55,50 @@
     @livewireStyles
     @stack('styles')
 </head>
-<body class="min-h-screen bg-blue-600 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 text-slate-800 antialiased selection:bg-blue-900 selection:text-white flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+<body class="min-h-full bg-white sm:bg-[#f8f9fa] text-slate-800 antialiased selection:bg-blue-600 selection:text-white flex flex-col justify-between">
 
-    {{-- Subtle Ambient Radial Light in the Blue Background --}}
-    <div class="fixed inset-0 pointer-events-none overflow-hidden">
-        <div class="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-indigo-900/40 rounded-full blur-3xl"></div>
-    </div>
+    {{-- Minimal Top Navigation (Tokopedia Style) --}}
+    <header class="w-full border-b border-slate-100 sm:border-slate-200 bg-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-helmet-safety text-base"></i>
+                </div>
+                <span class="font-extrabold text-base tracking-tight text-slate-900">BAYENG PUTRA HELM</span>
+            </a>
 
-    {{-- Centered Main Content Area --}}
-    <main class="w-full @yield('container-width', 'max-w-md') mx-auto relative z-10 my-auto">
-        @yield('content')
+            <div class="flex items-center gap-4 text-xs">
+                <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Bayeng%20Putra%20Helm,%20saya%20butuh%20bantuan" 
+                   target="_blank" 
+                   class="text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1.5 font-medium">
+                    <i class="fa-regular fa-circle-question text-sm text-slate-400"></i>
+                    <span class="hidden sm:inline">Butuh bantuan?</span>
+                </a>
+                <a href="{{ route('home') }}" class="text-slate-500 hover:text-slate-800 transition-colors font-medium">
+                    <i class="fa-solid fa-arrow-left text-[11px] mr-1"></i> Beranda
+                </a>
+            </div>
+        </div>
+    </header>
+
+    {{-- Main Form Container --}}
+    <main class="flex-grow flex items-center justify-center px-4 py-8 sm:py-12">
+        <div class="w-full @yield('container-width', 'max-w-[430px]') mx-auto">
+            @yield('content')
+        </div>
     </main>
+
+    {{-- Minimal Clean Footer --}}
+    <footer class="w-full border-t border-slate-100 sm:border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>&copy; {{ date('Y') }} Bayeng Putra Helm &bull; Sistem Click & Collect</p>
+            <div class="flex items-center gap-4 text-slate-400 text-[11px]">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-emerald-500"></i> 100% SNI & DOT Original</span>
+                <span>&bull;</span>
+                <span>Jl. RE Martadinata No.49, Kuningan</span>
+            </div>
+        </div>
+    </footer>
 
     {{-- SweetAlert2 Flash Notifications --}}
     @if(session('success'))
