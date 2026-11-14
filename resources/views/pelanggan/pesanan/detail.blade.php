@@ -39,9 +39,6 @@
                     default              => 'bg-slate-50 text-slate-600 border-slate-200',
                 };
             @endphp
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium border {{ $badgeClass }}">
-                {{ $pesanan->status_label }}
-            </span>
         </div>
 
         {{-- Single Flat Unified Container in List Format --}}
@@ -87,10 +84,12 @@
                         @endif
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-slate-900 truncate">{{ $item->nama_helm }}</p>
+                            @if($item->warna || $item->ukuran)
+                                <p class="text-[11px] text-slate-400 mt-0.5">
+                                    {{ $item->warna ?? '' }}{{ $item->warna && $item->ukuran ? ', ' : '' }}{{ $item->ukuran ?? '' }}
+                                </p>
+                            @endif
                             <p class="text-[11px] text-slate-500 mt-0.5">
-                                Varian: {{ $item->warna ?? '-' }}, Size {{ $item->ukuran ?? '-' }}
-                            </p>
-                            <p class="text-[11px] text-slate-500">
                                 {{ $item->qty }} &times; {{ format_rupiah($item->harga) }}
                             </p>
                         </div>
@@ -133,7 +132,7 @@
 
             {{-- 4. Pengambilan di Gerai --}}
             <div class="p-3.5 sm:p-4 space-y-1.5 text-xs">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Pengambilan di Gerai</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Pengambilan di Toko</span>
                 <div class="space-y-1">
                     <p class="text-slate-700">Penerima: <span class="font-medium text-slate-900">{{ $pesanan->penerima }}</span> ({{ $pesanan->telepon ?? '-' }})</p>
                     <p class="text-slate-700">Lokasi: <span class="font-medium text-slate-900">Gerai Bayeng Putra Helm Kuningan</span></p>

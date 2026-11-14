@@ -22,10 +22,6 @@
         {{-- Page Header --}}
         <div class="flex items-center justify-between">
             <h1 class="text-sm sm:text-base font-bold text-slate-900">Pesanan Saya</h1>
-            <a href="{{ route('katalog') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                <span>Belanja Helm</span>
-                <i class="fa-solid fa-chevron-right text-[10px]"></i>
-            </a>
         </div>
 
         {{-- Status Filter Tabs (Scrollable on Mobile) --}}
@@ -103,15 +99,25 @@
                             </div>
 
                             <div class="flex-1 min-w-0">
-                                <h2 class="text-xs sm:text-sm font-medium text-slate-900 truncate">
-                                    {{ $firstItem->nama_helm }}
-                                </h2>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
-                                    Varian: {{ $firstItem->warna ?? '-' }}, Size {{ $firstItem->ukuran ?? '-' }} &bull; {{ $firstItem->qty }} barang
-                                </p>
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <h2 class="text-xs sm:text-sm font-medium text-slate-900 truncate">
+                                            {{ $firstItem->nama_helm }}
+                                        </h2>
+                                        @if($firstItem->warna || $firstItem->ukuran)
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                {{ $firstItem->warna ?? '' }}{{ $firstItem->warna && $firstItem->ukuran ? ', ' : '' }}{{ $firstItem->ukuran ?? '' }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <span class="text-[11px] text-slate-400 block leading-tight">&times;{{ $firstItem->qty }}</span>
+                                        <span class="text-xs font-medium text-slate-700 leading-tight">{{ format_rupiah($firstItem->harga) }}</span>
+                                    </div>
+                                </div>
                                 @if($otherCount > 0)
-                                    <p class="text-[11px] text-slate-400 mt-0.5">
-                                        +{{ $otherCount }} helm lainnya
+                                    <p class="text-[11px] text-slate-400 mt-2 pt-1.5 border-t border-slate-100">
+                                        +{{ $otherCount }} produk lainnya
                                     </p>
                                 @endif
                             </div>

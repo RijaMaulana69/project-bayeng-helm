@@ -24,10 +24,22 @@
     @if($this->carts->count() > 0)
         {{-- Page Header --}}
         <div class="flex items-center justify-between mb-3">
-            <h1 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5">
-                <span>Keranjang</span>
-                <span class="text-xs font-medium text-slate-400">({{ $this->carts->count() }})</span>
-            </h1>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('katalog') }}" 
+                   onclick="if (window.history.length > 1) { event.preventDefault(); window.history.back(); }"
+                   class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors shadow-2xs" 
+                   title="Kembali">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                </a>
+                <h1 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5 leading-tight">
+                    <span>Keranjang</span>
+                    <span class="text-xs font-medium text-slate-400">({{ $this->carts->count() }})</span>
+                </h1>
+            </div>
+            <a href="{{ route('katalog') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                <span>Tambah Helm</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5 items-start">
@@ -91,8 +103,8 @@
                                         {{ $item->helm->nama_helm }}
                                     </a>
                                     @if($item->varian)
-                                        <p class="text-[11px] text-slate-500 mt-0.5">
-                                            Varian: {{ $item->varian->warna }}, Size {{ $item->varian->ukuran }}
+                                        <p class="text-[11px] text-slate-400 mt-0.5">
+                                            {{ $item->varian->warna ?? '' }}{{ ($item->varian->warna && $item->varian->ukuran) ? ', ' : '' }}{{ $item->varian->ukuran ?? '' }}
                                         </p>
                                     @endif
                                 </div>
@@ -222,6 +234,17 @@
         </div>
 
     @else
+        {{-- Empty State Header --}}
+        <div class="flex items-center gap-2 mb-3">
+            <a href="{{ route('katalog') }}" 
+               onclick="if (window.history.length > 1) { event.preventDefault(); window.history.back(); }"
+               class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors shadow-2xs" 
+               title="Kembali">
+                <i class="fa-solid fa-arrow-left text-[11px]"></i>
+            </a>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">Keranjang</h1>
+        </div>
+
         {{-- Empty Cart State (Clean & Quiet) --}}
         <div class="bg-white rounded-xl p-8 sm:p-12 text-center border border-slate-200 shadow-2xs max-w-sm mx-auto my-8 space-y-3">
             <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">

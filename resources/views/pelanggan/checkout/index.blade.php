@@ -90,9 +90,11 @@
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-xs sm:text-sm font-medium text-slate-900 truncate">{{ $item->helm->nama_helm }}</p>
-                                        <p class="text-[11px] text-slate-500 mt-0.5">
-                                            Varian: {{ $item->varian->warna ?? '-' }}, Size {{ $item->varian->ukuran ?? '-' }}
-                                        </p>
+                                        @if($item->varian)
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                {{ $item->varian->warna ?? '' }}{{ ($item->varian->warna && $item->varian->ukuran) ? ', ' : '' }}{{ $item->varian->ukuran ?? '' }}
+                                            </p>
+                                        @endif
                                         <p class="text-xs text-slate-600 mt-0.5">
                                             {{ $item->qty }} &times; {{ format_rupiah($item->helm->harga_jual ?? 0) }}
                                         </p>

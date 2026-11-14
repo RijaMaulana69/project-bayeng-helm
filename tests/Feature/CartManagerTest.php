@@ -13,10 +13,10 @@ class CartManagerTest extends TestCase
 {
     public function test_customer_can_see_cart_items(): void
     {
-        $pelanggan = Pelanggan::first() ?? Pelanggan::create([
-            'nama' => 'Test Cart',
-            'email' => 'cart_test_' . rand(100, 999) . '@test.com',
-            'telepon' => '081299991111',
+        $pelanggan = Pelanggan::create([
+            'nama' => 'Test Cart Customer',
+            'email' => 'cart_test_' . uniqid() . '@test.com',
+            'telepon' => '0812' . rand(10000000, 99999999),
             'password' => bcrypt('password'),
         ]);
 
@@ -70,7 +70,12 @@ class CartManagerTest extends TestCase
 
     public function test_remove_from_cart(): void
     {
-        $pelanggan = Pelanggan::first();
+        $pelanggan = Pelanggan::create([
+            'nama' => 'Remove Tester',
+            'email' => 'remove_' . uniqid() . '@test.com',
+            'telepon' => '0812' . rand(10000000, 99999999),
+            'password' => bcrypt('password'),
+        ]);
         $helm = Helm::with('varians')->whereHas('varians')->first();
         $variant = $helm->varians->first();
 

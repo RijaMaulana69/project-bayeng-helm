@@ -85,9 +85,11 @@
                             @endif
                             <div class="flex-1 min-w-0">
                                 <p class="font-medium text-slate-900 truncate">{{ $detail->nama_helm }}</p>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
-                                    Varian: {{ $detail->warna ?? '-' }}, Size {{ $detail->ukuran ?? '-' }}
-                                </p>
+                                @if($detail->warna || $detail->ukuran)
+                                    <p class="text-[11px] text-slate-400 mt-0.5">
+                                        {{ $detail->warna ?? '' }}{{ ($detail->warna && $detail->ukuran) ? ', ' : '' }}{{ $detail->ukuran ?? '' }}
+                                    </p>
+                                @endif
                                 <p class="text-[11px] text-slate-500">
                                     {{ $detail->qty }} &times; {{ format_rupiah($detail->harga) }}
                                 </p>
