@@ -170,10 +170,10 @@
             <div class="col-span-3 space-y-3">
                 <p class="font-bold text-white text-[11px] uppercase tracking-wider">Layanan Pelanggan</p>
                 <ul class="space-y-2 text-[11px]">
-                    <li><a href="{{ route('katalog') }}" class="hover:text-white transition-colors">Katalog Helm</a></li>
-                    <li><a href="{{ route('pelanggan.pesanan') }}" class="hover:text-white transition-colors">Cek Status E-Tiket</a></li>
+                    <li><a href="{{ route('katalog') }}" class="hover:text-white transition-colors">Katalog</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan') }}" class="hover:text-white transition-colors">Riwayat Pesanan</a></li>
                     <li><a href="#lokasi-gerai" class="hover:text-white transition-colors">Panduan Ambil di Toko</a></li>
-                    <li><a href="{{ route('home') }}#lokasi-gerai" class="hover:text-white transition-colors">Jam Operasional Gerai</a></li>
+                    <li><a href="{{ route('home') }}#lokasi-gerai" class="hover:text-white transition-colors">Jam Operasional Toko</a></li>
                 </ul>
             </div>
 

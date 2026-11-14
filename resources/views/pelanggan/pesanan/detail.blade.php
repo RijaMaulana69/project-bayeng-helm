@@ -39,6 +39,9 @@
                     default              => 'bg-slate-50 text-slate-600 border-slate-200',
                 };
             @endphp
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border {{ $badgeClass }}">
+                {{ $pesanan->status_label }}
+            </span>
         </div>
 
         {{-- Single Flat Unified Container in List Format --}}
@@ -48,7 +51,7 @@
             <div class="p-3.5 sm:p-4 space-y-2 text-xs">
                 <div class="flex items-center justify-between text-slate-500 text-[11px]">
                     <span>No. Pesanan: <span class="font-mono font-medium text-slate-800">{{ $pesanan->no_pesanan }}</span></span>
-                    <span>{{ $pesanan->created_at->format('d M Y, H:i') }}</span>
+                    <span>{{ $pesanan->created_at->format('d M Y, H:i') }} WIB</span>
                 </div>
 
                 @if(in_array($pesanan->status, ['ready', 'unpaid_pickup', 'paid']))
@@ -69,7 +72,56 @@
                 @endif
             </div>
 
-            {{-- 2. Daftar Helm (List Format) --}}
+            {{-- 2. Lacak Pesanan (Gaya E-Commerce Tokopedia) --}}
+            @if(count($pesanan->tracking_timeline) > 0)
+                <div class="p-3.5 sm:p-4 space-y-3.5 text-xs bg-white">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-truck-fast text-blue-600 text-xs"></i>
+                            <span>Lacak Pesanan</span>
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">{{ $pesanan->no_pesanan }}</span>
+                    </div>
+
+                    {{-- Vertical Stepper Timeline ala Tokopedia --}}
+                    <div class="relative pl-6 sm:pl-7 space-y-4 before:absolute before:left-[11px] sm:before:left-[13px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                        @foreach($pesanan->tracking_timeline as $index => $step)
+                            @php
+                                $isLatest = ($index === 0);
+                            @endphp
+                            <div class="relative">
+                                {{-- Node Indicator --}}
+                                @if($isLatest)
+                                    <div class="absolute -left-6 sm:-left-7 top-0.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] ring-4 ring-blue-50 shadow-2xs">
+                                        <i class="fa-solid fa-check text-[9px]"></i>
+                                    </div>
+                                @else
+                                    <div class="absolute -left-6 sm:-left-7 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 text-slate-400 flex items-center justify-center text-[8px]">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                    </div>
+                                @endif
+
+                                {{-- Content --}}
+                                <div class="space-y-0.5">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <h4 class="text-xs font-bold {{ $isLatest ? 'text-blue-600' : 'text-slate-800' }}">
+                                            {{ $step['title'] }}
+                                        </h4>
+                                        <span class="text-[10px] text-slate-400 shrink-0 font-normal">
+                                            {{ $step['time'] }} WIB
+                                        </span>
+                                    </div>
+                                    <p class="text-[11px] {{ $isLatest ? 'text-slate-700 font-medium' : 'text-slate-500' }} leading-relaxed">
+                                        {{ $step['desc'] }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- 3. Daftar Helm (List Format) --}}
             <div class="divide-y divide-slate-100">
                 <div class="px-3.5 sm:px-4 py-2 bg-slate-50/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     Produk Dipesan ({{ $pesanan->details->sum('qty') }})
@@ -175,24 +227,6 @@
                     <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Bukti Transfer</span>
                     <div class="w-32 h-32 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
                         <img src="{{ $pesanan->bukti_bayar_url }}" alt="Bukti Transfer" class="w-full h-full object-cover">
-                    </div>
-                </div>
-            @endif
-
-            {{-- 7. Riwayat Status --}}
-            @if($pesanan->logs && $pesanan->logs->count() > 0)
-                <div class="p-3.5 sm:p-4 space-y-2 text-xs">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Riwayat Status</span>
-                    <div class="space-y-2">
-                        @foreach($pesanan->logs as $log)
-                            <div class="flex items-start gap-2 text-[11px]">
-                                <div class="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0"></div>
-                                <div>
-                                    <span class="text-slate-800 font-medium">{{ $log->catatan }}</span>
-                                    <span class="text-slate-400 ml-1">{{ $log->created_at->format('d M Y, H:i') }}</span>
-                                </div>
-                            </div>
-                        @endforeach
                     </div>
                 </div>
             @endif

@@ -118,7 +118,8 @@ class CartManager extends Component
             unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
             $this->dispatch('cart-updated');
         } else {
-            session()->flash('warning', "Maksimal pembelian varian ini adalah {$maxStock} unit.");
+            $this->dispatch('cart-toast', ['message' => "Stok tersisa {$maxStock} unit", 'type' => 'warning']);
+            session()->flash('warning', "Stok tersisa {$maxStock} unit");
         }
     }
 
@@ -148,7 +149,8 @@ class CartManager extends Component
 
         unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
         $this->dispatch('cart-updated');
-        session()->flash('success', 'Helm dihapus dari keranjang.');
+        $this->dispatch('cart-deleted', ['message' => 'Helm berhasil dihapus']);
+        session()->flash('success', 'Helm berhasil dihapus');
     }
 
     public function removeSelected()
@@ -164,7 +166,8 @@ class CartManager extends Component
         $this->selectedItems = [];
         unset($this->carts, $this->selectedCarts, $this->selectedCount, $this->selectedTotal);
         $this->dispatch('cart-updated');
-        session()->flash('success', 'Helm yang dipilih berhasil dihapus.');
+        $this->dispatch('cart-deleted', ['message' => 'Helm terpilih berhasil dihapus']);
+        session()->flash('success', 'Helm terpilih berhasil dihapus');
     }
 
     public function render()

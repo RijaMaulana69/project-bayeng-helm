@@ -105,4 +105,137 @@ class Pesanan extends Model
             default => '<span class="badge bg-light text-dark">' . ucfirst($this->status) . '</span>',
         };
     }
+
+    public function getTrackingTimelineAttribute(): array
+    {
+        $events = [];
+        $initialLog = $this->logs ? $this->logs->where('status_dari', '-')->first() : null;
+        $createdTime = ($initialLog && $initialLog->created_at) ? $initialLog->created_at : $this->created_at;
+
+        // 1. Initial Milestone: Pesanan Dibuat
+        $createdDesc = match ($this->metode_bayar) {
+            'tunai'    => 'Pesanan berhasil dibuat dengan opsi Bayar di Gerai.',
+            'transfer' => 'Pesanan berhasil dibuat. Menunggu konfirmasi pembayaran transfer.',
+            'qris'     => 'Pesanan berhasil dibuat. Menunggu scan pembayaran QRIS.',
+            default    => 'Pesanan berhasil dibuat oleh pembeli.',
+        };
+
+        $events[] = [
+            'status'     => 'created',
+            'title'      => 'Pesanan Dibuat',
+            'desc'       => $createdDesc,
+            'time'       => $createdTime ? $createdTime->format('d M Y, H:i') : '-',
+            'created_at' => $createdTime,
+        ];
+
+        // 2. Process logs from oldest to newest
+        $logs = $this->logs ? $this->logs->sortBy('created_at') : collect();
+
+        foreach ($logs as $log) {
+            $isCustomNote = $log->catatan 
+                && !str_contains($log->catatan, 'Pesanan baru dibuat')
+                && !str_starts_with($log->catatan, 'Status diubah oleh')
+                && !str_starts_with($log->catatan, 'Barang diserahkan ke pelanggan')
+                && !str_contains($log->catatan, 'Bukti pembayaran diunggah');
+
+            $eventData = match ($log->status_ke) {
+                'unpaid_pickup' => [
+                    'status' => 'unpaid_pickup',
+                    'title'  => 'Menunggu Pengambilan di Gerai',
+                    'desc'   => $isCustomNote ? $log->catatan : "Pesanan siap diambil. Tunjukkan Kode Pickup {$this->kode_pickup} ke kasir saat pengambilan barang.",
+                ],
+                'pending' => [
+                    'status' => 'pending',
+                    'title'  => 'Menunggu Pembayaran',
+                    'desc'   => $isCustomNote ? $log->catatan : 'Selesaikan pembayaran ' . format_rupiah($this->grand_total) . ' dan unggah bukti transfer.',
+                ],
+                'paid' => [
+                    'status' => 'paid',
+                    'title'  => 'Pembayaran Diverifikasi',
+                    'desc'   => $isCustomNote ? $log->catatan : 'Bukti pembayaran telah diterima dan diverifikasi oleh kasir gerai.',
+                ],
+                'processing' => [
+                    'status' => 'processing',
+                    'title'  => 'Pesanan Sedang Disiapkan',
+                    'desc'   => $isCustomNote ? $log->catatan : 'Staf toko sedang menyiapkan dan memeriksa kondisi helm pesanan.',
+                ],
+                'ready' => [
+                    'status' => 'ready',
+                    'title'  => 'Siap Diambil di Gerai',
+                    'desc'   => $isCustomNote ? $log->catatan : "Helm sudah siap di Gerai Bayeng Putra Helm Kuningan. Tunjukkan Kode Pickup {$this->kode_pickup} ke kasir.",
+                ],
+                'completed' => [
+                    'status' => 'completed',
+                    'title'  => 'Pesanan Selesai',
+                    'desc'   => $isCustomNote ? $log->catatan : 'Helm telah berhasil diambil di gerai. Terima kasih telah berbelanja!',
+                ],
+                'cancelled' => [
+                    'status' => 'cancelled',
+                    'title'  => 'Pesanan Dibatalkan',
+                    'desc'   => $isCustomNote ? $log->catatan : 'Pesanan telah dibatalkan.',
+                ],
+                default => null,
+            };
+
+            if ($eventData) {
+                // If it's a pending status right at checkout creation, enrich the created event instead of duplicating
+                if ($eventData['status'] === 'pending' && $log->status_dari === '-') {
+                    $events[0]['desc'] = 'Pesanan dibuat. Menunggu penyelesaian pembayaran sebesar ' . format_rupiah($this->grand_total);
+                    continue;
+                }
+
+                $eventData['time'] = $log->created_at ? $log->created_at->format('d M Y, H:i') : '-';
+                $eventData['created_at'] = $log->created_at;
+                $events[] = $eventData;
+            }
+        }
+
+        // 3. Fallback: if current status is not represented yet (e.g. status was updated directly)
+        $hasCurrentStatus = collect($events)->contains('status', $this->status);
+        if (! $hasCurrentStatus) {
+            $fallback = match ($this->status) {
+                'unpaid_pickup' => [
+                    'status' => 'unpaid_pickup',
+                    'title'  => 'Menunggu Pengambilan di Gerai',
+                    'desc'   => "Pesanan siap diambil. Tunjukkan Kode Pickup {$this->kode_pickup} ke kasir saat pengambilan barang.",
+                ],
+                'ready' => [
+                    'status' => 'ready',
+                    'title'  => 'Siap Diambil di Gerai',
+                    'desc'   => "Helm sudah siap di Gerai Bayeng Putra Helm. Tunjukkan Kode Pickup {$this->kode_pickup} ke kasir.",
+                ],
+                'processing' => [
+                    'status' => 'processing',
+                    'title'  => 'Pesanan Sedang Disiapkan',
+                    'desc'   => 'Staf toko sedang menyiapkan helm pesanan.',
+                ],
+                'paid' => [
+                    'status' => 'paid',
+                    'title'  => 'Pembayaran Diverifikasi',
+                    'desc'   => 'Pembayaran telah diverifikasi oleh kasir gerai.',
+                ],
+                'completed' => [
+                    'status' => 'completed',
+                    'title'  => 'Pesanan Selesai',
+                    'desc'   => 'Helm telah berhasil diambil di gerai.',
+                ],
+                'cancelled' => [
+                    'status' => 'cancelled',
+                    'title'  => 'Pesanan Dibatalkan',
+                    'desc'   => 'Pesanan telah dibatalkan.',
+                ],
+                default => null,
+            };
+
+            if ($fallback) {
+                $fallbackTime = $this->updated_at ?: $this->created_at;
+                $fallback['time'] = $fallbackTime ? $fallbackTime->format('d M Y, H:i') : '-';
+                $fallback['created_at'] = $fallbackTime;
+                $events[] = $fallback;
+            }
+        }
+
+        // Return newest at the top (Tokopedia timeline style: index 0 = latest milestone)
+        return array_reverse($events);
+    }
 }

@@ -108,6 +108,9 @@ class CustomerOrderTest extends TestCase
             ->get(route('pelanggan.pesanan.detail', $pesanan->id_pesanan));
 
         $response->assertStatus(200);
+        $response->assertSee('Lacak Pesanan');
+        $response->assertSee('Menunggu Pengambilan di Gerai');
+        $response->assertSee('Pesanan Dibuat');
         $response->assertSee($pesanan->no_pesanan);
         $response->assertSee($pesanan->kode_pickup);
         $response->assertSee($helm->nama_helm);

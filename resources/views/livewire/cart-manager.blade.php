@@ -1,25 +1,133 @@
-<div>
-    {{-- Toast Notification --}}
-    @if(session()->has('success'))
-        <div class="mb-3 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between shadow-2xs animate-fade-in">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
-                <span>{{ session('success') }}</span>
+<div x-data="{
+    confirmModalOpen: false,
+    confirmTitle: '',
+    confirmMessage: '',
+    deleteMode: '',
+    targetCartId: null,
+
+    toastOpen: {{ session()->has('success') || session()->has('warning') || session()->has('error') ? 'true' : 'false' }},
+    toastMessage: '{{ addslashes(session('success') ?? session('warning') ?? session('error') ?? '') }}',
+    toastType: '{{ session()->has('error') ? 'error' : (session()->has('warning') ? 'warning' : 'success') }}',
+    toastTimeout: null,
+
+    showToast(msg, type = 'success') {
+        this.toastMessage = msg;
+        this.toastType = type;
+        this.toastOpen = true;
+        clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 2200);
+    },
+
+    askDeleteSingle(id, name) {
+        this.targetCartId = id;
+        this.deleteMode = 'single';
+        this.confirmTitle = 'Hapus dari Keranjang?';
+        this.confirmMessage = 'Helm ' + name + ' akan dihapus dari keranjang belanja.';
+        this.confirmModalOpen = true;
+    },
+
+    askDeleteSelected(count) {
+        this.deleteMode = 'selected';
+        this.confirmTitle = 'Hapus ' + count + ' Helm?';
+        this.confirmMessage = count + ' helm yang dipilih akan dihapus dari keranjang belanja.';
+        this.confirmModalOpen = true;
+    },
+
+    confirmDelete() {
+        if (this.deleteMode === 'single' && this.targetCartId) {
+            $wire.removeFromCart(this.targetCartId);
+        } else if (this.deleteMode === 'selected') {
+            $wire.removeSelected();
+        }
+        this.confirmModalOpen = false;
+    },
+
+    init() {
+        if (this.toastOpen) {
+            this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 2200);
+        }
+    }
+}"
+@cart-deleted.window="showToast($event.detail?.message || 'Helm berhasil dihapus', 'success')"
+@cart-toast.window="showToast($event.detail?.message || '', $event.detail?.type || 'success')">
+
+    {{-- Floating Pill Toast (Minimalis & Elegan) --}}
+    <div x-show="toastOpen"
+         x-transition:enter="transition ease-out duration-250 transform"
+         x-transition:enter-start="opacity-0 -translate-y-2 scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+         x-transition:leave="transition ease-in duration-200 transform"
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 -translate-y-2 scale-95"
+         x-cloak
+         class="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div class="px-4 py-2 rounded-full bg-slate-900/90 text-white shadow-lg backdrop-blur-sm flex items-center gap-2 border border-slate-700/50">
+            <template x-if="toastType === 'success'">
+                <i class="fa-solid fa-check text-emerald-400 text-xs shrink-0"></i>
+            </template>
+            <template x-if="toastType === 'warning'">
+                <i class="fa-solid fa-circle-exclamation text-amber-400 text-xs shrink-0"></i>
+            </template>
+            <template x-if="toastType === 'error'">
+                <i class="fa-solid fa-circle-xmark text-rose-400 text-xs shrink-0"></i>
+            </template>
+            <span class="text-xs font-medium whitespace-nowrap" x-text="toastMessage"></span>
+        </div>
+    </div>
+
+    {{-- Custom Confirmation Modal (Modern E-Commerce Sheet) --}}
+    <div x-show="confirmModalOpen" 
+         x-cloak
+         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        
+        {{-- Backdrop --}}
+        <div x-show="confirmModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="confirmModalOpen = false"
+             class="fixed inset-0 bg-slate-900/40 backdrop-blur-2xs"></div>
+
+        {{-- Dialog Body --}}
+        <div x-show="confirmModalOpen"
+             x-transition:enter="transition ease-out duration-250 transform"
+             x-transition:enter-start="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+             x-transition:enter-end="translate-y-0 sm:scale-100 sm:opacity-100"
+             x-transition:leave="transition ease-in duration-150 transform"
+             x-transition:leave-start="translate-y-0 sm:scale-100 sm:opacity-100"
+             x-transition:leave-end="translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+             class="relative w-full sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-slate-100 z-10 text-center sm:text-left">
+            
+            {{-- Mobile Drag Handle --}}
+            <div class="sm:hidden w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+
+            <div class="sm:flex sm:items-start sm:gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 mx-auto sm:mx-0 shrink-0">
+                    <i class="fa-regular fa-trash-can text-sm"></i>
+                </div>
+                <div class="mt-3 sm:mt-0 flex-1">
+                    <h3 class="text-sm font-bold text-slate-900" x-text="confirmTitle"></h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed" x-text="confirmMessage"></p>
+                </div>
+            </div>
+
+            <div class="mt-5 flex items-center gap-2.5 justify-end">
+                <button type="button" 
+                        @click="confirmModalOpen = false"
+                        class="flex-1 sm:flex-none px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer">
+                    Batal
+                </button>
+                <button type="button" 
+                        @click="confirmDelete()"
+                        class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm shadow-rose-600/20 active:scale-95 transition-all cursor-pointer">
+                    Hapus
+                </button>
             </div>
         </div>
-    @endif
-    @if(session()->has('warning'))
-        <div class="mb-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-center gap-2 shadow-2xs animate-fade-in">
-            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm"></i>
-            <span>{{ session('warning') }}</span>
-        </div>
-    @endif
-    @if(session()->has('error'))
-        <div class="mb-3 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2 shadow-2xs animate-fade-in">
-            <i class="fa-solid fa-circle-xmark text-rose-600 text-sm"></i>
-            <span>{{ session('error') }}</span>
-        </div>
-    @endif
+    </div>
 
     @if($this->carts->count() > 0)
         {{-- Page Header --}}
@@ -62,8 +170,7 @@
 
                         @if(count($selectedItems) > 0)
                             <button type="button" 
-                                    wire:click="removeSelected" 
-                                    wire:confirm="Hapus {{ count($selectedItems) }} helm yang dipilih?"
+                                    @click="askDeleteSelected({{ count($selectedItems) }})"
                                     class="text-slate-500 hover:text-rose-600 font-medium transition-colors cursor-pointer">
                                 Hapus
                             </button>
@@ -125,8 +232,7 @@
                                     {{-- Trash & Stepper --}}
                                     <div class="flex items-center gap-2">
                                         <button type="button" 
-                                                wire:click="removeFromCart({{ $item->id_cart }})" 
-                                                wire:confirm="Hapus {{ $item->helm->nama_helm }} dari keranjang?"
+                                                @click="askDeleteSingle({{ $item->id_cart }}, '{{ addslashes($item->helm->nama_helm) }}')"
                                                 class="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer" 
                                                 title="Hapus">
                                             <i class="fa-regular fa-trash-can text-xs"></i>
