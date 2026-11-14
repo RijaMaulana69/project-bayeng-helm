@@ -123,6 +123,7 @@
     </main>
 
     {{-- Mobile Nav (App Style) --}}
+    @unless(request()->routeIs('katalog.detail'))
     <nav class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around h-16 px-2 bg-white border-t border-slate-100 md:hidden shadow-lg">
         <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 transition-colors {{ request()->routeIs('home') ? 'text-blue-600' : 'text-slate-400' }}">
             <i class="fa-solid fa-house-chimney text-lg"></i>
@@ -141,6 +142,7 @@
             <span class="text-[9px] font-bold uppercase tracking-widest">{{ auth('pelanggan')->check() ? 'Profil' : 'Masuk' }}</span>
         </a>
     </nav>
+    @endunless
 
     {{-- Footer (E-commerce Style ala Tokopedia/Shopee/Blibli) --}}
     <footer class="hidden md:block bg-slate-900 text-slate-400 pt-12 pb-8 mt-16 border-t border-slate-800">

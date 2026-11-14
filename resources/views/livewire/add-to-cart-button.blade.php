@@ -1,140 +1,225 @@
-<div>
+<div x-data="{ variantSheetOpen: false }"
+     @open-variant-sheet.window="variantSheetOpen = true"
+     @cart-added-success.window="variantSheetOpen = false">
+    
     {{-- Toast Notification Feedback --}}
     @if(session()->has('cart-success'))
-        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in">
-            <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
-            <span>{{ session('cart-success') }}</span>
+        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between gap-2 mb-4 animate-fade-in shadow-2xs">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                <span>{{ session('cart-success') }}</span>
+            </div>
+            <a href="{{ route('pelanggan.cart') }}" class="text-[11px] text-blue-600 hover:underline font-bold shrink-0">
+                Lihat Keranjang &rarr;
+            </a>
         </div>
     @endif
     @if(session()->has('cart-error'))
-        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in">
+        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in shadow-2xs">
             <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm"></i>
             <span>{{ session('cart-error') }}</span>
         </div>
     @endif
 
-    {{-- Variant Selector: Pill Chips E-Commerce --}}
-    <div class="space-y-3">
-        <div class="flex items-center justify-between">
-            <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
-                Pilih Varian <span class="text-rose-500">*</span>
-            </label>
-            @if($selectedVarian)
-                @php
-                    $selectedObj = collect($availableVariants)->firstWhere('id_varian', $selectedVarian);
-                @endphp
-                @if($selectedObj)
-                    <span class="text-[11px] font-semibold text-slate-500">
-                        Sisa stok: <strong class="{{ $selectedObj['stok'] > 3 ? 'text-emerald-600' : 'text-amber-600' }}">{{ $selectedObj['stok'] }}</strong>
-                    </span>
+    {{-- Variant Teaser Strip (Shopee / Blibli Style) --}}
+    <button type="button" 
+            @click="variantSheetOpen = true"
+            class="w-full py-3 px-3.5 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl flex items-center justify-between text-left transition-colors cursor-pointer group">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Pilihan Variasi:</span>
+            <div class="truncate text-xs font-bold {{ $selectedVarian ? 'text-blue-600' : 'text-slate-800' }}">
+                @if($selectedVariantObj)
+                    <span>{{ $selectedVariantObj['warna'] }} &bull; {{ $selectedVariantObj['ukuran'] }}</span>
+                    <span class="text-[11px] text-slate-400 font-normal ml-1">({{ $selectedVariantObj['stok'] }} unit)</span>
+                @else
+                    <span class="text-slate-600 font-semibold">Pilih Warna & Ukuran ({{ count($availableVariants) }} varian)</span>
                 @endif
-            @endif
+            </div>
         </div>
-
-        <div class="flex flex-wrap gap-2">
-            @forelse($availableVariants as $varian)
-                @php
-                    $isSelected = ($selectedVarian == $varian['id_varian']);
-                    $isOutOfStock = ($varian['stok'] <= 0);
-                @endphp
-                <button type="button"
-                        wire:click="selectVarian({{ $varian['id_varian'] }})"
-                        @if($isOutOfStock) disabled @endif
-                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2 
-                        {{ $isSelected 
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30 ring-2 ring-blue-600/20' 
-                            : ($isOutOfStock 
-                                ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
-                                : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
-                    <span class="w-2 h-2 rounded-full {{ $isSelected ? 'bg-white' : ($isOutOfStock ? 'bg-slate-300' : 'bg-blue-600') }}"></span>
-                    <span>{{ $varian['warna'] }} &bull; {{ $varian['ukuran'] }}</span>
-                    @if($isOutOfStock)
-                        <span class="text-[10px] text-rose-500 font-semibold">(Habis)</span>
-                    @endif
-                </button>
-            @empty
-                <p class="text-xs text-slate-400">Tidak ada varian fisik tersedia.</p>
-            @endforelse
+        <div class="flex items-center gap-1.5 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0">
+            <span class="text-[11px] font-semibold">{{ $selectedVarian ? 'Ubah' : 'Pilih' }}</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </div>
-    </div>
+    </button>
 
-    {{-- Quantity & Action Buttons (Desktop Panel) --}}
-    <div class="mt-6 pt-5 border-t border-slate-100 hidden sm:flex items-center gap-3">
-        
-        {{-- Quantity Counter --}}
-        <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
-            <button type="button" 
-                    wire:click="decrementQty" 
-                    {{ $qty <= 1 ? 'disabled' : '' }}
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i class="fa-solid fa-minus text-[10px]"></i>
-            </button>
-            <span class="w-10 text-center text-xs font-black text-slate-900">{{ $qty }}</span>
-            <button type="button" 
-                    wire:click="incrementQty" 
-                    {{ !$selectedVarian || $qty >= (collect($availableVariants)->firstWhere('id_varian', $selectedVarian)['stok'] ?? 0) ? 'disabled' : '' }}
-                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i class="fa-solid fa-plus text-[10px]"></i>
-            </button>
-        </div>
-
-        {{-- Add to Cart Button --}}
-        <button type="button"
-                wire:click="addToCart"
-                wire:loading.attr="disabled"
-                {{ !$selectedVarian ? 'disabled' : '' }}
-                class="flex-1 h-11 inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all">
-            <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
-                <i class="fa-solid fa-bag-shopping text-sm"></i>
-                <span>+ Keranjang</span>
-            </span>
-            <span wire:loading wire:target="addToCart" class="flex items-center gap-2">
-                <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>
-                <span>Menambahkan...</span>
-            </span>
-        </button>
-
-        {{-- Chat Admin Desktop Button --}}
+    {{-- Desktop Action Buttons Panel (Hidden on Mobile) --}}
+    <div class="mt-5 hidden sm:flex items-center gap-3">
+        {{-- Chat Button Desktop --}}
         <button type="button"
                 @click="$dispatch('open-store-chat')"
-                title="Chat Staf Toko"
+                title="Tanya Staf Toko via Chat"
                 class="h-11 px-4 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer">
-            <i class="fa-solid fa-headset text-blue-600 text-base"></i>
-            <span>Chat</span>
+            <i class="fa-regular fa-comment-dots text-blue-600 text-base"></i>
+            <span>Chat Staf</span>
+        </button>
+
+        {{-- Primary Add To Cart Button Desktop --}}
+        <button type="button"
+                @click="variantSheetOpen = true"
+                class="flex-1 h-11 inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 active:scale-98 transition-all cursor-pointer">
+            <i class="fa-solid fa-bag-shopping text-sm"></i>
+            <span>+ Masukkan Keranjang</span>
         </button>
     </div>
 
-    {{-- Sticky Mobile Action Bottom Bar (Tokopedia Style) --}}
-    <div class="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-lg flex items-center gap-3">
-        
-        {{-- Chat Button Mobile --}}
+    {{-- Mobile Sticky Action Bottom Bar (Shopee / Blibli Style, at bottom-0) --}}
+    <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-3 py-2 flex items-center gap-2.5 shadow-lg">
+        {{-- Chat Staf Mobile --}}
         <button type="button"
                 @click="$dispatch('open-store-chat')"
-                title="Chat Toko"
-                class="w-10 h-10 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-blue-600 bg-white shadow-2xs active:scale-95 shrink-0 cursor-pointer">
-            <i class="fa-solid fa-headset text-base"></i>
+                class="w-12 h-10 flex flex-col items-center justify-center text-slate-600 hover:text-blue-600 active:scale-95 transition-transform cursor-pointer shrink-0">
+            <i class="fa-regular fa-comment-dots text-base leading-none"></i>
+            <span class="text-[9px] font-bold mt-0.5 leading-none">Chat</span>
         </button>
 
-        {{-- Price preview --}}
-        <div class="flex-1 overflow-hidden">
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Harga Gerai</p>
-            <p class="text-sm font-black text-blue-600 truncate mt-0.5">{{ format_rupiah($helm->harga_jual) }}</p>
-        </div>
+        <div class="h-6 w-[1px] bg-slate-200 shrink-0"></div>
 
-        {{-- Mobile Add to Cart --}}
+        {{-- Cart Shortcut Mobile --}}
+        <a href="{{ route('pelanggan.cart') }}" 
+           class="w-12 h-10 flex flex-col items-center justify-center text-slate-600 hover:text-blue-600 active:scale-95 transition-transform relative shrink-0">
+            <div class="relative leading-none">
+                <i class="fa-solid fa-cart-shopping text-base leading-none"></i>
+                @livewire('cart-counter')
+            </div>
+            <span class="text-[9px] font-bold mt-0.5 leading-none">Keranjang</span>
+        </a>
+
+        {{-- CTA Button Mobile --}}
         <button type="button"
-                wire:click="addToCart"
-                wire:loading.attr="disabled"
-                {{ !$selectedVarian ? 'disabled' : '' }}
-                class="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold flex items-center gap-2 disabled:bg-slate-200 disabled:text-slate-400 shadow-md shadow-blue-600/20 active:scale-95 transition-all shrink-0">
-            <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-1.5">
-                <i class="fa-solid fa-bag-shopping text-xs"></i>
-                <span>{{ $selectedVarian ? '+ Keranjang' : 'Pilih Varian' }}</span>
-            </span>
-            <span wire:loading wire:target="addToCart">
-                <i class="fa-solid fa-circle-notch fa-spin"></i>
-            </span>
+                @click="variantSheetOpen = true"
+                class="flex-1 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer">
+            <i class="fa-solid fa-bag-shopping text-xs"></i>
+            <span>+ Keranjang</span>
         </button>
+    </div>
+
+    {{-- Variant Selection Bottom Sheet & Quantity Modal (Shopee/Blibli Style) --}}
+    <div x-show="variantSheetOpen" 
+         x-cloak
+         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+         role="dialog" aria-modal="true">
+        
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-2xs transition-opacity"
+             @click="variantSheetOpen = false"></div>
+
+        {{-- Panel Container --}}
+        <div class="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl z-10 shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-slide-up sm:animate-scale-in">
+            
+            {{-- Sheet Header: Product Thumbnail & Price Preview --}}
+            <div class="p-4 border-b border-slate-100 flex items-start gap-3 bg-white relative">
+                <div class="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+                    <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 overflow-hidden pr-6">
+                    <p class="text-lg font-black text-blue-600 leading-tight">
+                        {{ format_rupiah($helm->harga_jual) }}
+                    </p>
+                    <div class="mt-1 text-xs font-medium">
+                        @if($selectedVariantObj)
+                            <span class="text-slate-500">Sisa stok: </span>
+                            <span class="font-bold {{ $selectedVariantObj['stok'] > 3 ? 'text-emerald-600' : 'text-amber-600' }}">
+                                {{ $selectedVariantObj['stok'] }} unit
+                            </span>
+                        @else
+                            <span class="text-slate-500">Silakan pilih varian helm</span>
+                        @endif
+                    </div>
+                    @if($selectedVariantObj)
+                        <p class="text-[11px] text-slate-700 font-semibold truncate mt-0.5">
+                            {{ $selectedVariantObj['warna'] }} &bull; {{ $selectedVariantObj['ukuran'] }}
+                        </p>
+                    @endif
+                </div>
+                <button type="button" 
+                        @click="variantSheetOpen = false" 
+                        class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            {{-- Sheet Body (Scrollable) --}}
+            <div class="p-4 overflow-y-auto space-y-5 flex-1">
+                
+                {{-- Variant Chips --}}
+                <div class="space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                            Pilih Varian Warna & Ukuran
+                        </label>
+                        <span class="text-[10px] text-slate-400 font-medium">Wajib pilih 1</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        @forelse($availableVariants as $v)
+                            @php
+                                $isSelected = ($selectedVarian == $v['id_varian']);
+                                $isOut = ($v['stok'] <= 0);
+                            @endphp
+                            <button type="button"
+                                    wire:click="selectVarian({{ $v['id_varian'] }})"
+                                    @if($isOut) disabled @endif
+                                    class="px-3 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer
+                                    {{ $isSelected 
+                                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30' 
+                                        : ($isOut 
+                                            ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
+                                            : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
+                                <span>{{ $v['warna'] }} &bull; {{ $v['ukuran'] }}</span>
+                                @if($isOut)
+                                    <span class="text-[9px] text-rose-500 font-semibold">(Habis)</span>
+                                @endif
+                            </button>
+                        @empty
+                            <p class="text-xs text-slate-400">Tidak ada varian fisik tersedia.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- Quantity Stepper (- / +) --}}
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-800 uppercase tracking-wider">Jumlah Beli</p>
+                        <p class="text-[10px] text-slate-400">Atur unit helm yang ingin diamankan</p>
+                    </div>
+
+                    <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
+                        <button type="button" 
+                                wire:click="decrementQty" 
+                                {{ $qty <= 1 ? 'disabled' : '' }}
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer">
+                            <i class="fa-solid fa-minus text-[10px]"></i>
+                        </button>
+                        <span class="w-10 text-center text-xs font-black text-slate-900">{{ $qty }}</span>
+                        <button type="button" 
+                                wire:click="incrementQty" 
+                                {{ !$selectedVarian || $qty >= ($selectedVariantObj['stok'] ?? 0) ? 'disabled' : '' }}
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer">
+                            <i class="fa-solid fa-plus text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Sheet Footer: Confirmation Button --}}
+            <div class="p-4 bg-slate-50 border-t border-slate-200">
+                <button type="button"
+                        wire:click="addToCart"
+                        wire:loading.attr="disabled"
+                        {{ !$selectedVarian ? 'disabled' : '' }}
+                        class="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping text-sm"></i>
+                        <span>{{ $selectedVarian ? '+ Masukkan ke Keranjang' : 'Pilih Varian Dahulu' }}</span>
+                    </span>
+                    <span wire:loading wire:target="addToCart" class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>
+                        <span>Memproses...</span>
+                    </span>
+                </button>
+            </div>
+
+        </div>
     </div>
 
 </div>

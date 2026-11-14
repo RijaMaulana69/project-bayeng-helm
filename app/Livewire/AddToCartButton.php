@@ -94,12 +94,23 @@ class AddToCartButton extends Component
         }
 
         $this->dispatch('cart-updated');
+        $this->dispatch('cart-added-success');
 
         session()->flash('cart-success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 
+    public function getSelectedVariantProperty()
+    {
+        if (! $this->selectedVarian) {
+            return null;
+        }
+        return collect($this->availableVariants)->firstWhere('id_varian', $this->selectedVarian);
+    }
+
     public function render()
     {
-        return view('livewire.add-to-cart-button');
+        return view('livewire.add-to-cart-button', [
+            'selectedVariantObj' => $this->selectedVariant,
+        ]);
     }
 }

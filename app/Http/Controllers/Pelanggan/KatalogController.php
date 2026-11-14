@@ -23,7 +23,7 @@ class KatalogController extends Controller
         $related = Helm::where('id_kategori', $helm->id_kategori)
             ->where('id_helm', '!=', $helm->id_helm)
             ->where('stok', '>', 0)
-            ->take(4)
+            ->take(6)
             ->get();
 
         return view('pelanggan.katalog.detail', compact('helm', 'related'));
