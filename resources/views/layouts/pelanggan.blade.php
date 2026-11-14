@@ -143,30 +143,86 @@
         </a>
     </nav>
 
-    {{-- Footer (Ultra-Minimalist 1 Baris - Uniqlo/Apple Style) --}}
-    <footer class="hidden md:block bg-white border-t border-slate-100 py-6 mt-16">
-        <div class="max-w-6xl mx-auto px-5 flex items-center justify-between">
-            {{-- Brand Left --}}
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center text-[10px]">
-                    <i class="fa-solid fa-helmet-safety"></i>
+    {{-- Footer (E-commerce Style ala Tokopedia/Shopee/Blibli) --}}
+    <footer class="hidden md:block bg-slate-900 text-slate-400 pt-12 pb-8 mt-16 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-5 grid grid-cols-12 gap-8 pb-10 border-b border-slate-800 text-xs">
+            
+            {{-- Col 1: Store Branding & Address --}}
+            <div class="col-span-4 space-y-3">
+                <div class="flex items-center gap-2 text-white">
+                    <div class="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-helmet-safety"></i>
+                    </div>
+                    <span class="font-black text-sm tracking-tight">BAYENG PUTRA HELM</span>
                 </div>
-                <span class="text-xs font-black tracking-tight text-slate-800">BAYENG PUTRA</span>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                    Toko helm resmi terlengkap di Kuningan. Sistem BOPIS (Buy Online, Pick-up in Store) — amankan stok dari rumah, fitting ukuran langsung di gerai kami.
+                </p>
+                <div class="pt-1 flex items-center gap-2 text-slate-300 text-[11px]">
+                    <i class="fa-solid fa-location-dot text-blue-500"></i>
+                    <span>Jl. RE Martadinata No.49, Kuningan, Jawa Barat</span>
+                </div>
             </div>
 
-            {{-- Nav Links Center --}}
-            <nav class="flex items-center gap-6 text-[11px] font-medium text-slate-500">
-                <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Beranda</a>
-                <a href="{{ route('katalog') }}" class="hover:text-blue-600 transition-colors">Katalog</a>
-                <a href="{{ route('pelanggan.pesanan') }}" class="hover:text-blue-600 transition-colors">Cek Tiket</a>
-                <a href="#lokasi-gerai" class="hover:text-blue-600 transition-colors">Lokasi Gerai</a>
-                <a href="{{ route('admin.login') }}" class="hover:text-slate-700 transition-colors text-slate-300">Staff</a>
-            </nav>
+            {{-- Col 2: Belanja & Layanan --}}
+            <div class="col-span-3 space-y-3">
+                <p class="font-bold text-white text-[11px] uppercase tracking-wider">Layanan Pelanggan</p>
+                <ul class="space-y-2 text-[11px]">
+                    <li><a href="{{ route('katalog') }}" class="hover:text-white transition-colors">Katalog Helm</a></li>
+                    <li><a href="{{ route('pelanggan.pesanan') }}" class="hover:text-white transition-colors">Cek Status E-Tiket</a></li>
+                    <li><a href="#lokasi-gerai" class="hover:text-white transition-colors">Panduan Ambil di Toko</a></li>
+                    <li><a href="https://wa.me/6281234567890" target="_blank" class="hover:text-white transition-colors">Bantuan Kasir via WA</a></li>
+                </ul>
+            </div>
 
-            {{-- Action Right --}}
-            <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+            {{-- Col 3: Keamanan & Jaminan --}}
+            <div class="col-span-2 space-y-3">
+                <p class="font-bold text-white text-[11px] uppercase tracking-wider">Jaminan Toko</p>
+                <ul class="space-y-2 text-[11px]">
+                    <li class="flex items-center gap-1.5 text-slate-300">
+                        <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
+                        <span>100% SNI & DOT</span>
+                    </li>
+                    <li class="flex items-center gap-1.5 text-slate-300">
+                        <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
+                        <span>Garansi Fitting Pas</span>
+                    </li>
+                    <li class="flex items-center gap-1.5 text-slate-300">
+                        <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
+                        <span>Stok Fisik Nyata</span>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Col 4: Metode Bayar & Kontak Kasir --}}
+            <div class="col-span-3 space-y-3">
+                <p class="font-bold text-white text-[11px] uppercase tracking-wider">Pembayaran di Gerai</p>
+                <p class="text-[10px] text-slate-400">Terima pembayaran tunai atau non-tunai saat penyerahan helm:</p>
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                    <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold border border-slate-700">QRIS</span>
+                    <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold border border-slate-700">BCA</span>
+                    <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold border border-slate-700">Mandiri</span>
+                    <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-[10px] font-bold border border-slate-700">Tunai</span>
+                </div>
+                <div class="pt-2">
+                    <a href="{{ route('admin.login') }}" class="text-[10px] text-slate-600 hover:text-slate-400 transition-colors inline-flex items-center gap-1">
+                        <i class="fa-solid fa-lock text-[8px]"></i>
+                        <span>Portal Staf Kasir</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Bottom Bar: Jam Operasional & Layanan --}}
+        <div class="max-w-6xl mx-auto px-5 pt-6 flex items-center justify-between text-[11px] text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                <span>Gerai Buka: <strong>08:00 - 21:00 WIB</strong> (Setiap Hari)</span>
+            </div>
+            <a href="https://wa.me/6281234567890" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition-colors font-semibold flex items-center gap-1.5">
                 <i class="fa-brands fa-whatsapp text-sm"></i>
-                <span>Hubungi Toko</span>
+                <span>Customer Care: +62 812 3456 7890</span>
             </a>
         </div>
     </footer>
