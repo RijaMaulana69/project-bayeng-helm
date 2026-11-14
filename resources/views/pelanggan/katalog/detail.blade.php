@@ -110,12 +110,11 @@
                     <div class="border-t border-slate-100 pt-4 space-y-3.5">
                         
                         {{-- Header --}}
-                        <div class="flex items-center justify-between">
+                        <div>
                             <h2 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-circle-info text-blue-600 text-xs"></i>
                                 <span>Deskripsi Produk</span>
                             </h2>
-                            <span class="text-[10px] text-slate-400 font-medium">SNI & DOT</span>
                         </div>
 
                         {{-- Text Description --}}
@@ -123,23 +122,10 @@
                             <p>{{ $helm->deskripsi ?? 'Helm berkendara standar SNI & DOT dengan bahan shell berkualitas tinggi, busa dalam empuk dapat dilepas dan dicuci, serta sistem penguncian aman.' }}</p>
                         </div>
 
-                        {{-- Informasi Ukuran Terintegrasi --}}
-                        <div class="pt-2 space-y-2">
-                            <p class="text-xs font-bold text-slate-800">Panduan Ukuran (Lingkar Kepala):</p>
-                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                                    <p class="font-bold text-slate-900">Ukuran M</p>
-                                    <p class="text-[11px] font-bold text-blue-600 mt-0.5">57 - 58 cm</p>
-                                </div>
-                                <div class="p-2 rounded-lg bg-blue-50 border border-blue-200">
-                                    <p class="font-bold text-blue-900">Ukuran L</p>
-                                    <p class="text-[11px] font-bold text-blue-600 mt-0.5">59 - 60 cm</p>
-                                </div>
-                                <div class="p-2 rounded-lg bg-slate-50 border border-slate-200">
-                                    <p class="font-bold text-slate-900">Ukuran XL</p>
-                                    <p class="text-[11px] font-bold text-blue-600 mt-0.5">61 - 62 cm</p>
-                                </div>
-                            </div>
+                        {{-- Informasi Ukuran Kepala (Plain Text) --}}
+                        <div class="pt-1 text-xs text-slate-600 leading-relaxed">
+                            <p class="font-bold text-slate-800 mb-0.5">Ukuran Kepala:</p>
+                            <p class="text-slate-600">M: 57 - 58 cm &bull; L: 59 - 60 cm &bull; XL: 61 - 62 cm</p>
                         </div>
 
                     </div>
@@ -163,49 +149,54 @@
                 </a>
             </div>
 
-            {{-- Grid Compact Selaras dengan Katalog --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
+            {{-- Grid Selaras dengan Katalog --}}
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
                 @foreach($related as $rel)
-                <a href="{{ route('katalog.detail', $rel->id_helm) }}" 
-                   class="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-blue-500 hover:shadow-xl hover:shadow-slate-200/40 transition-all flex flex-col">
                     {{-- Thumb --}}
                     <div class="aspect-square bg-slate-50 relative overflow-hidden">
-                        <img src="{{ $rel->gambar_url }}" 
-                             alt="{{ $rel->nama_helm }}" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <a href="{{ route('katalog.detail', $rel->id_helm) }}">
+                            <img src="{{ $rel->gambar_url }}" 
+                                 alt="{{ $rel->nama_helm }}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </a>
                         
                         {{-- Brand Tag --}}
                         @if($rel->merk)
-                        <div class="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded text-[8px] font-black text-slate-900 shadow-2xs uppercase">
+                        <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-white/90 backdrop-blur-sm rounded text-[8px] font-black text-slate-900 shadow-sm uppercase">
                             {{ $rel->merk->nama_merk }}
                         </div>
                         @endif
 
                         {{-- Stock Status Tag --}}
-                        <div class="absolute top-1.5 right-1.5">
+                        <div class="absolute top-2 right-2">
                             @if($rel->stok > 0)
-                                <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[8px] font-black border border-emerald-200">
+                                <span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[8px] font-black border border-emerald-200 shadow-2xs">
                                     Stok {{ $rel->stok }}
                                 </span>
                             @else
-                                <span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 text-[8px] font-black border border-rose-200">
+                                <span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 text-[8px] font-black border border-rose-200 shadow-2xs">
                                     Habis
                                 </span>
                             @endif
                         </div>
                     </div>
 
-                    {{-- Body (Compact Shopee Style) --}}
-                    <div class="p-2 sm:p-2.5 flex flex-col flex-grow justify-between gap-1 sm:gap-1.5">
-                        <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
-                            {{ $rel->nama_helm }}
-                        </h4>
-                        <div class="flex items-center justify-between pt-0.5">
-                            <span class="text-xs sm:text-sm font-black text-blue-600">{{ format_rupiah($rel->harga_jual) }}</span>
-                            <span class="text-[9px] font-semibold text-slate-400 group-hover:text-blue-600 transition-colors">Lihat &rarr;</span>
+                    {{-- Body --}}
+                    <div class="p-3 flex flex-col flex-grow justify-between gap-3">
+                        <div>
+                            <a href="{{ route('katalog.detail', $rel->id_helm) }}">
+                                <h3 class="text-[11px] font-bold text-slate-800 line-clamp-2 h-8 leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+                                    {{ $rel->nama_helm }}
+                                </h3>
+                            </a>
+                            <p class="text-[10px] font-black text-blue-600">{{ format_rupiah($rel->harga_jual) }}</p>
                         </div>
+                        <a href="{{ route('katalog.detail', $rel->id_helm) }}" class="w-full py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-center text-[9px] font-black text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all uppercase tracking-widest">
+                            Detail
+                        </a>
                     </div>
-                </a>
+                </div>
                 @endforeach
             </div>
         </div>
