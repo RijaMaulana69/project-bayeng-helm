@@ -38,7 +38,7 @@
 
             {{-- Form Fields --}}
             <form method="POST" action="{{ route('pelanggan.profil.update') }}" 
-                  x-data="{ changePass: {{ $errors->has('password') ? 'true' : 'false' }}, showPass: false }" 
+                  x-data="{ changePass: {{ $errors->has('password') ? 'true' : 'false' }}, showPass: false, showConfirm: false }" 
                   class="p-4 sm:p-5 space-y-4">
                 @csrf
                 @method('PUT')
@@ -62,7 +62,7 @@
                 {{-- Field: No. WhatsApp / HP --}}
                 <div class="space-y-1">
                     <label for="telepon" class="block text-xs font-medium text-slate-700">
-                        Nomor WhatsApp / HP
+                        Nomor WhatsApp
                     </label>
                     <input type="text"
                            id="telepon"
@@ -107,7 +107,7 @@
                                 <input :type="showPass ? 'text' : 'password'"
                                        id="password"
                                        name="password"
-                                       placeholder="Minimal 8 karakter (huruf besar, kecil, angka)"
+                                       placeholder="Masukkan Kata Sandi"
                                        class="w-full px-3 pr-9 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
                                 <button type="button" 
                                         @click="showPass = !showPass" 
@@ -122,13 +122,21 @@
 
                         <div class="space-y-1">
                             <label for="password_confirmation" class="block text-xs font-medium text-slate-700">
-                                Ulangi Kata Sandi Baru
+                                Ulangi Kata Sandi
                             </label>
-                            <input :type="showPass ? 'text' : 'password'"
-                                   id="password_confirmation"
-                                   name="password_confirmation"
-                                   placeholder="Ulangi kata sandi baru"
-                                   class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                            <div class="relative">
+                                <input :type="showConfirm ? 'text' : 'password'"
+                                       id="password_confirmation"
+                                       name="password_confirmation"
+                                       placeholder="Ulangi kata sandi baru"
+                                       class="w-full px-3 pr-9 py-2 rounded-lg border border-slate-200 bg-white text-xs text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                                <button type="button" 
+                                        @click="showConfirm = !showConfirm" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                                        title="Tampilkan / Sembunyikan Kata Sandi">
+                                    <i class="fa-solid text-[11px]" :class="showConfirm ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
