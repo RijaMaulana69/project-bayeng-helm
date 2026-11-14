@@ -82,11 +82,16 @@
             </nav>
 
             {{-- Actions --}}
-            <div class="flex items-center gap-3 md:gap-6">
+            <div class="flex items-center gap-1.5 sm:gap-2 md:gap-4">
                 @auth('pelanggan')
-                    <a href="{{ route('pelanggan.cart') }}" class="relative p-2 text-slate-500 hover:text-blue-600 transition-colors">
+                    {{-- Notifikasi Dropdown (Di Kiri Keranjang) --}}
+                    @livewire('notification-dropdown')
+
+                    {{-- Keranjang Belanja --}}
+                    <a href="{{ route('pelanggan.cart') }}" class="relative text-slate-500 hover:text-blue-600 transition-colors" title="Keranjang Belanja">
                         @livewire('cart-counter')
                     </a>
+
                     <div class="hidden md:block relative" x-data="{ open: false }" @click.outside="open = false">
                         <button @click="open = !open" class="flex items-center gap-2 p-1 rounded-full hover:bg-slate-50 transition-colors border border-slate-200">
                             <div class="flex items-center justify-center w-6 h-6 text-[10px] font-bold text-white bg-slate-800 rounded-full md:w-7 md:h-7 uppercase">

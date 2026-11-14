@@ -143,14 +143,14 @@ class AddToCartButton extends Component
 
         if (! $this->selectedVarian) {
             if (! $this->selectedWarna && count($this->availableColors) > 0) {
-                $this->dispatch('cart-error', ['message' => 'Pilih varian warna dulu']);
+                $this->dispatch('cart-error', ['message' => 'Pilih warna helm terlebih dahulu']);
                 return;
             }
             if (! $this->selectedUkuran && count($this->availableSizes) > 0) {
-                $this->dispatch('cart-error', ['message' => 'Pilih size helm dulu']);
+                $this->dispatch('cart-error', ['message' => 'Pilih ukuran helm terlebih dahulu']);
                 return;
             }
-            $this->dispatch('cart-error', ['message' => 'Pilih varian dan size helm dulu']);
+            $this->dispatch('cart-error', ['message' => 'Pilih warna dan ukuran terlebih dahulu']);
             return;
         }
 
@@ -171,7 +171,7 @@ class AddToCartButton extends Component
         if ($cart) {
             $newQty = $cart->qty + $this->qty;
             if ($newQty > $varian->stok) {
-                $this->dispatch('cart-error', ['message' => "Stok tersisa {$varian->stok} unit (sudah ada {$cart->qty} di keranjang kamu)"]);
+                $this->dispatch('cart-error', ['message' => "Stok tersisa {$varian->stok} unit (sudah ada {$cart->qty} di keranjang)"]);
                 return;
             }
             $cart->update(['qty' => $newQty]);
@@ -185,7 +185,7 @@ class AddToCartButton extends Component
         }
 
         $this->dispatch('cart-updated');
-        $this->dispatch('cart-added-success', ['message' => 'Helm berhasil masuk ke keranjang']);
+        $this->dispatch('cart-added-success', ['message' => 'Berhasil ditambahkan ke keranjang']);
     }
 
     public function getSelectedVariantProperty()

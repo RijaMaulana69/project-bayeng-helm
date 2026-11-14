@@ -9,46 +9,36 @@
              this.toastType = type;
              this.toastOpen = true;
              clearTimeout(this.toastTimeout);
-             this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 3500);
+             this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 2200);
          },
          init() {
              if (this.toastOpen) {
-                 this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 3500);
+                 this.toastTimeout = setTimeout(() => { this.toastOpen = false; }, 2200);
              }
          }
      }"
      @open-variant-sheet.window="variantSheetOpen = true"
-     @cart-added-success.window="variantSheetOpen = false; showToast($event.detail?.message || 'Helm berhasil masuk ke keranjang', 'success')"
+     @cart-added-success.window="variantSheetOpen = false; showToast($event.detail?.message || 'Berhasil ditambahkan ke keranjang', 'success')"
      @cart-error.window="showToast($event.detail?.message || 'Terjadi kesalahan', 'error')">
     
-    {{-- Floating Notification at Top of Screen (Clean & Non-Intrusive) --}}
+    {{-- Floating Toast Notification (Halus & Minimalis ala E-Commerce Modern) --}}
     <div x-show="toastOpen"
-         x-transition:enter="transition ease-out duration-300 transform"
-         x-transition:enter-start="-translate-y-full opacity-0"
-         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:enter="transition ease-out duration-250 transform"
+         x-transition:enter-start="opacity-0 -translate-y-2 scale-95"
+         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
          x-transition:leave="transition ease-in duration-200 transform"
-         x-transition:leave-start="translate-y-0 opacity-100"
-         x-transition:leave-end="-translate-y-full opacity-0"
+         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 -translate-y-2 scale-95"
          x-cloak
-         class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] sm:w-auto sm:min-w-[340px] max-w-md pointer-events-auto">
-        <div class="px-4 py-3 rounded-2xl bg-slate-900/95 text-white shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 border border-slate-700/60">
-            <div class="flex items-center gap-2.5 overflow-hidden">
-                <template x-if="toastType === 'success'">
-                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm shrink-0"></i>
-                </template>
-                <template x-if="toastType === 'error'">
-                    <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm shrink-0"></i>
-                </template>
-                <span class="text-xs font-semibold truncate" x-text="toastMessage"></span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <a href="{{ route('pelanggan.cart') }}" class="text-xs font-bold text-blue-400 hover:text-blue-300 hover:underline">
-                    Lihat Keranjang
-                </a>
-                <button type="button" @click="toastOpen = false" class="text-slate-400 hover:text-white p-1 cursor-pointer">
-                    <i class="fa-solid fa-xmark text-xs"></i>
-                </button>
-            </div>
+         class="fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div class="px-4 py-2 rounded-full bg-slate-900/90 text-white shadow-lg backdrop-blur-sm flex items-center gap-2 border border-slate-700/50">
+            <template x-if="toastType === 'success'">
+                <i class="fa-solid fa-check text-emerald-400 text-xs shrink-0"></i>
+            </template>
+            <template x-if="toastType === 'error'">
+                <i class="fa-solid fa-circle-exclamation text-rose-400 text-xs shrink-0"></i>
+            </template>
+            <span class="text-xs font-medium whitespace-nowrap" x-text="toastMessage"></span>
         </div>
     </div>
 
@@ -67,8 +57,8 @@
         <button type="button"
                 @click="variantSheetOpen = true"
                 class="flex-1 h-11 inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 active:scale-98 transition-all cursor-pointer">
-            <i class="fa-solid fa-bag-shopping text-sm"></i>
-            <span>Masukkan Keranjang</span>
+            <i class="fa-solid fa-cart-shopping text-sm"></i>
+            <span>Tambah ke Keranjang</span>
         </button>
     </div>
 
@@ -86,8 +76,8 @@
         <button type="button"
                 @click="variantSheetOpen = true"
                 class="flex-1 h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-98 transition-all cursor-pointer">
-            <i class="fa-solid fa-bag-shopping text-xs"></i>
-            <span>Masukkan Keranjang</span>
+            <i class="fa-solid fa-cart-shopping text-xs"></i>
+            <span>Tambah ke Keranjang</span>
         </button>
     </div>
 
@@ -150,7 +140,7 @@
                 @if(count($availableColors) > 0)
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-800">
-                        Pilih Varian
+                        Warna
                     </label>
                     <div class="flex flex-wrap gap-2">
                         @foreach($availableColors as $color)
@@ -181,7 +171,7 @@
                 @if(count($availableSizes) > 0)
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-800">
-                        Pilih Size
+                        Ukuran
                     </label>
                     <div class="flex flex-wrap gap-2">
                         @foreach($availableSizes as $size)
@@ -239,12 +229,12 @@
                         {{ !$selectedVarian || ($selectedVariantObj['stok'] ?? 0) <= 0 ? 'disabled' : '' }}
                         class="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
                     <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
-                        <i class="fa-solid fa-bag-shopping text-sm"></i>
+                        <i class="fa-solid fa-cart-shopping text-sm"></i>
                         <span>
                             @if($selectedVariantObj && $selectedVariantObj['stok'] <= 0)
                                 Stok Habis
                             @else
-                                Masukkan Keranjang
+                                Tambah ke Keranjang
                             @endif
                         </span>
                     </span>

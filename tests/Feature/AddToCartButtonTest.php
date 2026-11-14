@@ -16,9 +16,9 @@ class AddToCartButtonTest extends TestCase
         $this->assertNotNull($helm);
 
         Livewire::test(AddToCartButton::class, ['helm' => $helm])
-            ->assertSee('Pilih Varian')
-            ->assertSee('Pilih Size')
-            ->assertSee('Masukkan Keranjang')
+            ->assertSee('Warna')
+            ->assertSee('Ukuran')
+            ->assertSee('Tambah ke Keranjang')
             ->assertDontSee('Wajib pilih 1');
     }
 
