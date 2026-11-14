@@ -5,17 +5,17 @@
 @section('content')
 <div class="bg-white sm:rounded-2xl sm:border sm:border-slate-200/90 sm:shadow-sm p-5 sm:p-8 space-y-6">
     
-    {{-- Header (Tokopedia Style) --}}
+    {{-- Header --}}
     <div>
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 group mb-3">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-helmet-safety text-sm"></i>
+            </div>
+            <span class="font-extrabold text-sm tracking-tight text-slate-900">BAYENG PUTRA HELM</span>
+        </a>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
             Daftar Akun Baru
         </h1>
-        <p class="text-xs text-slate-500 mt-1">
-            Sudah punya akun? 
-            <a href="{{ route('pelanggan.login') }}" class="font-bold text-blue-600 hover:text-blue-700 hover:underline">
-                Masuk
-            </a>
-        </p>
     </div>
 
     {{-- Main Register Form --}}
@@ -75,9 +75,6 @@
             @error('telepon')
                 <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
             @enderror
-            <p class="text-[11px] text-slate-400 mt-1">
-                Nomor aktif untuk pengiriman e-Tiket & serah terima barang di toko.
-            </p>
         </div>
 
         {{-- Alamat Email --}}
@@ -125,7 +122,7 @@
                 <p class="text-rose-500 text-xs mt-1 font-medium">{{ $message }}</p>
             @enderror
 
-            {{-- Dynamic Password Strength Meter --}}
+            {{-- Dynamic Password Strength Meter (Clean Bars) --}}
             <div class="mt-2" x-show="password.length > 0">
                 <div class="grid grid-cols-4 gap-1.5">
                     <div class="h-1 rounded-full transition-colors duration-200" :class="score >= 1 ? (score <= 2 ? 'bg-amber-400' : 'bg-emerald-500') : 'bg-slate-200'"></div>
@@ -133,16 +130,7 @@
                     <div class="h-1 rounded-full transition-colors duration-200" :class="score >= 3 ? 'bg-emerald-500' : 'bg-slate-200'"></div>
                     <div class="h-1 rounded-full transition-colors duration-200" :class="score >= 4 ? 'bg-emerald-500' : 'bg-slate-200'"></div>
                 </div>
-                <p class="text-[11px] text-slate-400 mt-1" x-show="score < 4">
-                    Minimal 8 karakter, wajib huruf besar, huruf kecil, dan angka.
-                </p>
-                <p class="text-[11px] text-emerald-600 font-semibold mt-1" x-show="score >= 4">
-                    <i class="fa-solid fa-check text-[10px]"></i> Kombinasi kata sandi kuat & aman
-                </p>
             </div>
-            <p class="text-[11px] text-slate-400 mt-1" x-show="password.length === 0">
-                Minimal 8 karakter dengan kombinasi huruf besar, kecil & angka.
-            </p>
         </div>
 
         {{-- Konfirmasi Password --}}
@@ -185,6 +173,22 @@
             </button>
         </div>
     </form>
+
+    {{-- Switch Link to Login (Placed below Daftar) --}}
+    <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
+        Sudah punya akun? 
+        <a href="{{ route('pelanggan.login') }}" class="font-bold text-blue-600 hover:text-blue-700 hover:underline ml-1">
+            Masuk
+        </a>
+    </div>
+
+    {{-- Back to Home Link --}}
+    <div class="text-center">
+        <a href="{{ route('home') }}" class="text-xs text-slate-400 hover:text-slate-600 inline-flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+            <span>Kembali ke Beranda</span>
+        </a>
+    </div>
 
 </div>
 @endsection

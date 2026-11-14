@@ -5,17 +5,17 @@
 @section('content')
 <div class="bg-white sm:rounded-2xl sm:border sm:border-slate-200/90 sm:shadow-sm p-5 sm:p-8 space-y-6">
     
-    {{-- Header (Tokopedia Style) --}}
+    {{-- Header --}}
     <div>
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 group mb-3">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-helmet-safety text-sm"></i>
+            </div>
+            <span class="font-extrabold text-sm tracking-tight text-slate-900">BAYENG PUTRA HELM</span>
+        </a>
         <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
             Masuk ke Akun
         </h1>
-        <p class="text-xs text-slate-500 mt-1">
-            Belum punya akun? 
-            <a href="{{ route('pelanggan.register') }}" class="font-bold text-blue-600 hover:text-blue-700 hover:underline">
-                Daftar
-            </a>
-        </p>
     </div>
 
     {{-- Main Login Form --}}
@@ -84,6 +84,22 @@
             </button>
         </div>
     </form>
+
+    {{-- Switch Link to Register (Placed below Masuk) --}}
+    <div class="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
+        Belum punya akun? 
+        <a href="{{ route('pelanggan.register') }}" class="font-bold text-blue-600 hover:text-blue-700 hover:underline ml-1">
+            Daftar
+        </a>
+    </div>
+
+    {{-- Back to Home Link --}}
+    <div class="text-center">
+        <a href="{{ route('home') }}" class="text-xs text-slate-400 hover:text-slate-600 inline-flex items-center gap-1.5 transition-colors">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+            <span>Kembali ke Beranda</span>
+        </a>
+    </div>
 
 </div>
 @endsection
