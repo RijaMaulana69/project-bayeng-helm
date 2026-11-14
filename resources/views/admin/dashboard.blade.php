@@ -93,6 +93,11 @@
                         <span class="text-2xl font-bold text-slate-900">{{ $pesanan_perlu_disiapkan }}</span>
                         <span class="text-xs text-slate-500 font-normal">paket</span>
                     </div>
+                    <div class="mt-2 flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/80">
+                            Gudang &rarr; Etalase Kasir
+                        </span>
+                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sky-600">
                     <span>Siapkan Barang</span>
@@ -116,9 +121,11 @@
                         </span>
                         <span class="text-xs text-slate-500 font-normal">menunggu cek</span>
                     </div>
-                    <p class="mt-2 text-[11px] text-slate-500">
-                        {{ $pesanan_pending_count > 0 ? 'Ada bukti bayar bank yang perlu dicek.' : 'Semua transfer sudah diverifikasi.' }}
-                    </p>
+                    <div class="mt-2 flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $pesanan_pending_count > 0 ? 'bg-amber-50 text-amber-700 border border-amber-200/80' : 'bg-slate-50 text-slate-600 border border-slate-200' }}">
+                            {{ $pesanan_pending_count > 0 ? 'Perlu Dicek' : 'Semua Terverifikasi' }}
+                        </span>
+                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
                     <span>Cek Pembayaran</span>
@@ -142,9 +149,14 @@
                         </span>
                         <span class="text-xs text-slate-500 font-normal">varian kosong (0)</span>
                     </div>
-                    <p class="mt-2 text-[11px] text-slate-500">
-                        {{ $varian_menipis_count }} varian helm sisa 1-3 unit.
-                    </p>
+                    <div class="mt-2 flex items-center gap-1.5 flex-wrap">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
+                            {{ $varian_habis_count }} Habis
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+                            {{ $varian_menipis_count }} Menipis
+                        </span>
+                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">
                     <span>Input Stok Masuk</span>
