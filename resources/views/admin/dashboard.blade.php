@@ -64,14 +64,6 @@
                         <span class="text-2xl font-bold text-slate-900">{{ $pesanan_siap_ambil }}</span>
                         <span class="text-xs text-slate-500 font-normal">pelanggan</span>
                     </div>
-                    <div class="mt-2 flex items-center gap-1.5 flex-wrap">
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                            {{ $pickup_ready_count }} Lunas
-                        </span>
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
-                            {{ $pickup_unpaid_count }} Bayar Kasir
-                        </span>
-                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
                     <span>Layani Pelanggan</span>
@@ -92,11 +84,6 @@
                     <div class="mt-2.5 flex items-baseline gap-2">
                         <span class="text-2xl font-bold text-slate-900">{{ $pesanan_perlu_disiapkan }}</span>
                         <span class="text-xs text-slate-500 font-normal">paket</span>
-                    </div>
-                    <div class="mt-2 flex items-center gap-1.5">
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/80">
-                            Gudang &rarr; Etalase Kasir
-                        </span>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sky-600">
@@ -121,11 +108,6 @@
                         </span>
                         <span class="text-xs text-slate-500 font-normal">menunggu cek</span>
                     </div>
-                    <div class="mt-2 flex items-center gap-1.5">
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $pesanan_pending_count > 0 ? 'bg-amber-50 text-amber-700 border border-amber-200/80' : 'bg-slate-50 text-slate-600 border border-slate-200' }}">
-                            {{ $pesanan_pending_count > 0 ? 'Perlu Dicek' : 'Semua Terverifikasi' }}
-                        </span>
-                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
                     <span>Cek Pembayaran</span>
@@ -149,14 +131,6 @@
                         </span>
                         <span class="text-xs text-slate-500 font-normal">varian kosong (0)</span>
                     </div>
-                    <div class="mt-2 flex items-center gap-1.5 flex-wrap">
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
-                            {{ $varian_habis_count }} Habis
-                        </span>
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-                            {{ $varian_menipis_count }} Menipis
-                        </span>
-                    </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">
                     <span>Input Stok Masuk</span>
@@ -173,7 +147,6 @@
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Pesanan Siap Ambil</h3>
-                    <p class="text-[11px] text-slate-400">Menunggu pelanggan datang ke gerai toko</p>
                 </div>
                 <a href="{{ route('admin.pickup.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Lihat Semua</span>
@@ -237,7 +210,6 @@
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok</h3>
-                    <p class="text-[11px] text-slate-400">Varian habis atau menipis di toko fisik</p>
                 </div>
                 <a href="{{ route('admin.stok.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Kelola Stok</span>
@@ -287,13 +259,6 @@
                         Seluruh stok varian di rak aman.
                     </div>
                 @endforelse
-            </div>
-
-            <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>{{ $varian_habis_count }} varian habis &bull; {{ $varian_menipis_count }} menipis</span>
-                <a href="{{ route('admin.stok.index') }}" class="font-semibold text-blue-600 hover:underline">
-                    Kelola Stok &rarr;
-                </a>
             </div>
         </div>
 
