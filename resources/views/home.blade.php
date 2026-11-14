@@ -90,7 +90,7 @@
             <div class="flex items-end justify-between mb-8">
                 <div>
                     <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tighter">KOLEKSI PILIHAN</h2>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Stok Real-Time di Toko</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">Stok Tersedia</p>
                 </div>
                 <a href="{{ route('katalog') }}" class="text-[10px] font-black text-blue-600 hover:underline tracking-widest uppercase">Lihat Katalog</a>
             </div>
@@ -134,7 +134,7 @@
                     <div class="flex-1 space-y-4 text-center md:text-left">
                         <h2 class="text-2xl md:text-4xl font-black tracking-tighter leading-none">KUNJUNGI GERAI KAMI</h2>
                         <p class="text-xs md:text-sm text-slate-400 font-medium leading-relaxed max-w-md">
-                            Temukan lokasi resmi kami di Kuningan untuk pengalaman berbelanja yang lebih personal dan aman.
+                            Pusat helm resmi berstandar SNI & DOT di Kuningan. Tersedia berbagai merk ternama dan varian ukuran lengkap.
                         </p>
                         <div class="pt-4 flex flex-col sm:flex-row gap-3">
                             <div class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">

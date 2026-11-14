@@ -79,7 +79,6 @@
             <nav class="hidden md:flex items-center gap-8">
                 <a href="{{ route('home') }}" class="nav-link text-xs font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('home') ? 'active text-blue-600' : 'text-slate-500 hover:text-slate-900' }}">Beranda</a>
                 <a href="{{ route('katalog') }}" class="nav-link text-xs font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('katalog*') ? 'active text-blue-600' : 'text-slate-500 hover:text-slate-900' }}">Katalog</a>
-                <a href="{{ route('pelanggan.pesanan') }}" class="nav-link text-xs font-bold uppercase tracking-widest transition-colors {{ request()->routeIs('pelanggan.pesanan*') ? 'active text-blue-600' : 'text-slate-500 hover:text-slate-900' }}">Cek Tiket</a>
             </nav>
 
             {{-- Actions --}}
@@ -135,7 +134,7 @@
         </a>
         <a href="{{ route('pelanggan.pesanan') }}" class="flex flex-col items-center gap-1 transition-colors {{ request()->routeIs('pelanggan.pesanan*') ? 'text-blue-600' : 'text-slate-400' }}">
             <i class="fa-solid fa-receipt text-lg"></i>
-            <span class="text-[9px] font-bold uppercase tracking-widest">Tiket</span>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Pesanan Saya</span>
         </a>
         <a href="{{ auth('pelanggan')->check() ? route('pelanggan.profil') : route('pelanggan.login') }}" class="flex flex-col items-center gap-1 transition-colors {{ request()->routeIs('pelanggan.profil*') || request()->routeIs('pelanggan.login') ? 'text-blue-600' : 'text-slate-400' }}">
             <i class="fa-solid fa-user text-lg"></i>
@@ -158,10 +157,6 @@
                 <p class="text-[11px] text-slate-400 leading-relaxed">
                     Toko helm resmi terlengkap di Kuningan. Sistem BOPIS (Buy Online, Pick-up in Store) — amankan stok dari rumah, fitting ukuran langsung di gerai kami.
                 </p>
-                <div class="pt-1 flex items-center gap-2 text-slate-300 text-[11px]">
-                    <i class="fa-solid fa-location-dot text-blue-500"></i>
-                    <span>Jl. RE Martadinata No.49, Kuningan, Jawa Barat</span>
-                </div>
             </div>
 
             {{-- Col 2: Belanja & Layanan --}}
@@ -181,15 +176,15 @@
                 <ul class="space-y-2 text-[11px]">
                     <li class="flex items-center gap-1.5 text-slate-300">
                         <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
-                        <span>100% SNI & DOT</span>
+                        <span>100% SNI</span>
                     </li>
                     <li class="flex items-center gap-1.5 text-slate-300">
                         <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
-                        <span>Garansi Fitting Pas</span>
+                        <span>Garansi</span>
                     </li>
                     <li class="flex items-center gap-1.5 text-slate-300">
                         <i class="fa-solid fa-check text-blue-500 text-[10px]"></i>
-                        <span>Stok Fisik Nyata</span>
+                        <span>Banyak Pilihan</span>
                     </li>
                 </ul>
             </div>
@@ -212,18 +207,6 @@
                 </div>
             </div>
 
-        </div>
-
-        {{-- Bottom Bar: Jam Operasional & Layanan --}}
-        <div class="max-w-6xl mx-auto px-5 pt-6 flex items-center justify-between text-[11px] text-slate-500">
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-                <span>Gerai Buka: <strong>08:00 - 21:00 WIB</strong> (Setiap Hari)</span>
-            </div>
-            <a href="https://wa.me/6281234567890" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition-colors font-semibold flex items-center gap-1.5">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
-                <span>Customer Care: +62 812 3456 7890</span>
-            </a>
         </div>
     </footer>
 
