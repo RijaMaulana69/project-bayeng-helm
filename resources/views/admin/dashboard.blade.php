@@ -144,7 +144,7 @@
         
         {{-- Antrean Siap Ambil (7 Cols) --}}
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ pickupFilter: 'all' }">
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="p-3.5 sm:p-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Ambil Pesanan</h3>
                 </div>
@@ -154,26 +154,28 @@
                 </a>
             </div>
 
-            {{-- Tab Filter: Rekomendasi C (Bayar di Toko vs Sudah Lunas) --}}
-            <div class="px-4 py-2 bg-slate-50/70 border-b border-slate-100 flex items-center gap-1.5 overflow-x-auto">
-                <button type="button" 
-                        @click="pickupFilter = 'all'"
-                        :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
-                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
-                    Semua ({{ $pesanan_siap_ambil }})
-                </button>
-                <button type="button" 
-                        @click="pickupFilter = 'unpaid'"
-                        :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
-                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
-                    Bayar di Toko ({{ $pickup_unpaid_count }})
-                </button>
-                <button type="button" 
-                        @click="pickupFilter = 'ready'"
-                        :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-bold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
-                        class="px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer whitespace-nowrap">
-                    Sudah Lunas ({{ $pickup_ready_count }})
-                </button>
+            {{-- Segmented Control Tabs (Clean on Mobile) --}}
+            <div class="px-3 sm:px-4 py-2 bg-slate-50/60 border-b border-slate-100">
+                <div class="flex p-0.5 bg-slate-200/60 rounded-xl text-xs">
+                    <button type="button" 
+                            @click="pickupFilter = 'all'"
+                            :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
+                        Semua ({{ $pesanan_siap_ambil }})
+                    </button>
+                    <button type="button" 
+                            @click="pickupFilter = 'unpaid'"
+                            :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-amber-700 font-medium'"
+                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
+                        <span class="sm:hidden">Bayar</span><span class="hidden sm:inline">Bayar di Toko</span> ({{ $pickup_unpaid_count }})
+                    </button>
+                    <button type="button" 
+                            @click="pickupFilter = 'ready'"
+                            :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-emerald-700 font-medium'"
+                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
+                        <span class="sm:hidden">Lunas</span><span class="hidden sm:inline">Sudah Lunas</span> ({{ $pickup_ready_count }})
+                    </button>
+                </div>
             </div>
 
             <div class="divide-y divide-slate-100">
@@ -184,31 +186,26 @@
                         $extraCount = $pesanan->details->count() - 1;
                         $isPaid = $pesanan->status === 'ready';
                     @endphp
-                    <div class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors"
+                    <div class="p-3 sm:p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors"
                          x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
-                        <div class="min-w-0 space-y-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="font-mono font-bold text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200/80">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-bold text-xs sm:text-sm text-slate-900 tracking-wide">
                                     {{ $pesanan->kode_pickup }}
                                 </span>
                                 @if($isPaid)
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
                                         Lunas
                                     </span>
                                 @else
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
-                                        Tagihan: {{ format_rupiah($pesanan->grand_total) }}
+                                    <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/70">
+                                        {{ format_rupiah($pesanan->grand_total) }}
                                     </span>
                                 @endif
                             </div>
 
-                            <p class="text-xs text-slate-800 font-medium truncate">
-                                {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }}
-                                <span class="text-slate-400 font-normal">&bull; {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}</span>
-                            </p>
-
-                            <p class="text-[11px] font-mono text-slate-400">
-                                #{{ $pesanan->no_pesanan }}
+                            <p class="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5">
+                                {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }} &bull; {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}
                             </p>
                         </div>
 
@@ -216,9 +213,9 @@
                             <form action="{{ route('admin.pickup.validasi') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
-                                <button type="submit" class="h-8 px-3 rounded-xl bg-slate-900 hover:bg-blue-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                                <button type="submit" class="h-8 px-3 rounded-lg bg-slate-900 hover:bg-blue-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
                                     <span>Proses</span>
-                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    <i class="fa-solid fa-chevron-right text-[9px]"></i>
                                 </button>
                             </form>
                         </div>
