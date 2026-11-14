@@ -102,7 +102,7 @@
                        name="password" 
                        autocomplete="new-password"
                        required
-                       placeholder="Min. 8 karakter (huruf besar, kecil, angka)"
+                       placeholder="Masukkan password"
                        class="w-full h-11 sm:h-12 pl-3.5 pr-11 rounded-xl border border-slate-300 bg-white text-base sm:text-sm font-normal text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all shadow-sm">
                 <button type="button" 
                         @click="showPass = !showPass" 
