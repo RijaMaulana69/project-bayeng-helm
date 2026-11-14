@@ -241,75 +241,51 @@
         <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
             
             {{-- Topbar Header --}}
-            <header class="z-20 h-[60px] bg-white border-b border-slate-200/90 px-4 lg:px-8 flex items-center justify-between shrink-0">
+            <header class="z-20 h-14 bg-white border-b border-slate-200/80 px-4 lg:px-8 flex items-center justify-between shrink-0">
                 
-                {{-- Left: Mobile Brand & Page Title --}}
+                {{-- Left: Mobile Drawer Trigger + Page Title --}}
                 <div class="flex items-center gap-3">
-                    {{-- Mobile Drawer Trigger --}}
                     <button type="button" 
                             @click="mobileDrawer = true" 
-                            class="lg:hidden w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
+                            class="lg:hidden w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors"
+                            aria-label="Buka Menu">
                         <i class="fa-solid fa-bars text-sm"></i>
                     </button>
 
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h1 class="text-sm font-bold text-slate-900">@yield('page-title', 'Dashboard')</h1>
-                            <span class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span>Toko Aktif</span>
-                            </span>
-                        </div>
-                        <p class="hidden md:block text-[11px] text-slate-400">Bayeng Putra Helm &bull; {{ now()->translatedFormat('d F Y') }}</p>
+                    <div class="flex items-center gap-2.5">
+                        <h1 class="text-sm font-semibold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Toko Aktif</span>
+                        </span>
                     </div>
                 </div>
 
-                {{-- Right: Quick Pickup Search + Actions --}}
-                <div class="flex items-center gap-2.5">
-                    {{-- Inline Quick Pickup Input (Desktop & Tablet) --}}
-                    <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="hidden md:flex items-center gap-1.5">
-                        @csrf
-                        <div class="relative">
-                            <i class="fa-solid fa-qrcode absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" 
-                                   name="kode_pickup" 
-                                   placeholder="Scan / Kode PKP-..." 
-                                   required 
-                                   autocomplete="off"
-                                   class="w-44 lg:w-48 h-8 pl-7 pr-2.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
-                        </div>
-                        <button type="submit" 
-                                class="h-8 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer">
-                            <span>Validasi</span>
-                        </button>
-                    </form>
-
-                    {{-- Quick Kasir Pickup Button --}}
-                    <a href="{{ route('admin.pickup.index') }}" 
-                       class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors relative"
-                       title="Buka Kasir Pickup">
-                        <i class="fa-solid fa-qrcode text-xs text-blue-600"></i>
-                        <span class="hidden sm:inline">Kasir Pickup</span>
-                        @if(($nav_pickup_count ?? 0) > 0)
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
-                        @endif
-                    </a>
-
-                    {{-- Link to Store Frontend --}}
+                {{-- Right: Actions & User Info --}}
+                <div class="flex items-center gap-3">
+                    {{-- Link to Customer Web Store --}}
                     <a href="{{ route('home') }}" target="_blank" 
-                       class="h-8 px-2.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
-                       title="Buka Toko Online">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
-                        <span class="hidden sm:inline">Toko</span>
+                       class="text-xs text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                        <span class="hidden sm:inline">Lihat Toko</span>
                     </a>
 
-                    {{-- Profile Menu (Desktop) --}}
+                    {{-- User Profile Pill --}}
                     @if($authUser)
-                    <div class="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
-                        <a href="{{ route('admin.profil') }}" class="text-right">
+                    <div class="flex items-center gap-2 pl-3 border-l border-slate-200/80">
+                        <div class="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                            {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
+                        </div>
+                        <div class="hidden sm:block text-left">
                             <span class="text-xs font-semibold text-slate-800 block leading-tight">{{ $authUser->nama_lengkap }}</span>
                             <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
-                        </a>
+                        </div>
+                        <form action="{{ route('admin.logout') }}" method="POST" class="ml-1">
+                            @csrf
+                            <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Logout">
+                                <i class="fa-solid fa-power-off text-xs"></i>
+                            </button>
+                        </form>
                     </div>
                     @endif
                 </div>
