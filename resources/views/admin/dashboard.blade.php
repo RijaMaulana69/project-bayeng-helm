@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', $isOwner ? 'Dashboard Bisnis' : 'Meja Kasir')
+@section('page-title', $isOwner ? 'Ringkasan Toko' : 'Meja Kasir Operasional')
 
 @section('content')
 
@@ -18,20 +19,11 @@
                     <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                         Halo, {{ $user->nama_lengkap }}
                     </h1>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                        Kasir Gerai
-                    </span>
                 </div>
                 <p class="text-xs text-slate-500 mt-0.5">
                     {{ now()->translatedFormat('l, d F Y') }}
                 </p>
             </div>
-
-            <a href="{{ route('admin.pickup.index') }}" 
-               class="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors self-start sm:self-auto">
-                <i class="fa-solid fa-qrcode text-xs text-slate-500"></i>
-                <span>Layar Kasir Pickup</span>
-            </a>
         </div>
 
         {{-- Clean Voucher Pickup Input Bar --}}
@@ -43,7 +35,7 @@
                     <input type="text" 
                            id="pickup_input_karyawan"
                            name="kode_pickup" 
-                           placeholder="Cek Voucher Pickup Pelanggan (ketik kode PKP-...)" 
+                           placeholder="Cek Voucher Pickup Pelanggan (PKP-...)" 
                            required 
                            autocomplete="off"
                            class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
@@ -51,15 +43,13 @@
                 <button type="submit" 
                         class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0">
                     <span>Validasi</span>
-                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </button>
             </form>
         </div>
     </div>
 
-    
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+    {{-- 2. Antrean Tindakan Kasir --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {{-- 1. Siap Diambil di Gerai --}}
             <a href="{{ route('admin.pickup.index') }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
@@ -103,9 +93,6 @@
                         <span class="text-2xl font-bold text-slate-900">{{ $pesanan_perlu_disiapkan }}</span>
                         <span class="text-xs text-slate-500 font-normal">paket</span>
                     </div>
-                    <p class="mt-2 text-[11px] text-slate-500">
-                        Ambil helm dari kardus gudang ke etalase kasir.
-                    </p>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sky-600">
                     <span>Siapkan Barang</span>
@@ -165,7 +152,6 @@
                 </div>
             </a>
         </div>
-    </div>
 
     {{-- 3. Meja Kasir: Antrean Pelanggan & Cek Fisik Helm --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
