@@ -1,24 +1,37 @@
-<div class="space-y-5">
+<div>
     {{-- Toast Notification Feedback --}}
     @if(session()->has('cart-success'))
-        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2.5">
+        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in">
             <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
             <span>{{ session('cart-success') }}</span>
         </div>
     @endif
     @if(session()->has('cart-error'))
-        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2.5">
+        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2 mb-4 animate-fade-in">
             <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm"></i>
             <span>{{ session('cart-error') }}</span>
         </div>
     @endif
 
-    {{-- Variant Selector --}}
-    <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-            Pilih Varian (Warna & Ukuran) <span class="text-rose-500">*</span>
-        </label>
-        <div class="flex flex-wrap gap-2.5">
+    {{-- Variant Selector: Pill Chips E-Commerce --}}
+    <div class="space-y-3">
+        <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Pilih Varian <span class="text-rose-500">*</span>
+            </label>
+            @if($selectedVarian)
+                @php
+                    $selectedObj = collect($availableVariants)->firstWhere('id_varian', $selectedVarian);
+                @endphp
+                @if($selectedObj)
+                    <span class="text-[11px] font-semibold text-slate-500">
+                        Sisa stok: <strong class="{{ $selectedObj['stok'] > 3 ? 'text-emerald-600' : 'text-amber-600' }}">{{ $selectedObj['stok'] }}</strong>
+                    </span>
+                @endif
+            @endif
+        </div>
+
+        <div class="flex flex-wrap gap-2">
             @forelse($availableVariants as $varian)
                 @php
                     $isSelected = ($selectedVarian == $varian['id_varian']);
@@ -27,14 +40,14 @@
                 <button type="button"
                         wire:click="selectVarian({{ $varian['id_varian'] }})"
                         @if($isOutOfStock) disabled @endif
-                        class="px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all border text-left flex items-center gap-2 
+                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2 
                         {{ $isSelected 
-                            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20' 
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30 ring-2 ring-blue-600/20' 
                             : ($isOutOfStock 
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60' 
-                                : 'bg-white text-slate-800 border-slate-200 hover:border-blue-400 hover:bg-blue-50/50') }}">
-                    <span class="w-2 h-2 rounded-full {{ $isSelected ? 'bg-white' : ($isOutOfStock ? 'bg-slate-300' : 'bg-blue-500') }}"></span>
-                    <span>{{ $varian['warna'] }} &bull; Ukuran {{ $varian['ukuran'] }}</span>
+                                : 'bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600') }}">
+                    <span class="w-2 h-2 rounded-full {{ $isSelected ? 'bg-white' : ($isOutOfStock ? 'bg-slate-300' : 'bg-blue-600') }}"></span>
+                    <span>{{ $varian['warna'] }} &bull; {{ $varian['ukuran'] }}</span>
                     @if($isOutOfStock)
                         <span class="text-[10px] text-rose-500 font-semibold">(Habis)</span>
                     @endif
@@ -45,42 +58,23 @@
         </div>
     </div>
 
-    {{-- Stock Status for Selected Variant --}}
-    @if($selectedVarian)
-        @php
-            $selectedStock = collect($availableVariants)->firstWhere('id_varian', $selectedVarian);
-        @endphp
-        @if($selectedStock)
-            <div class="flex items-center gap-2 text-xs font-medium">
-                <span class="w-2 h-2 rounded-full {{ $selectedStock['stok'] > 3 ? 'bg-emerald-500' : 'bg-amber-500' }} animate-pulse"></span>
-                <span class="text-slate-600">Sisa stok fisik di toko:</span>
-                <span class="font-bold {{ $selectedStock['stok'] > 3 ? 'text-emerald-700' : 'text-amber-700' }}">
-                    {{ $selectedStock['stok'] }} unit
-                </span>
-            </div>
-        @endif
-    @endif
-
-    {{-- Quantity & Add to Cart Action --}}
-    <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+    {{-- Quantity & Action Buttons (Desktop Panel) --}}
+    <div class="mt-6 pt-5 border-t border-slate-100 hidden sm:flex items-center gap-3">
         
         {{-- Quantity Counter --}}
-        <div class="flex items-center border border-slate-200 rounded-2xl bg-white p-1 self-start sm:self-auto shadow-sm">
+        <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
             <button type="button" 
                     wire:click="decrementQty" 
                     {{ $qty <= 1 ? 'disabled' : '' }}
-                    class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i class="fa-solid fa-minus text-xs"></i>
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <i class="fa-solid fa-minus text-[10px]"></i>
             </button>
-            <input type="number" 
-                   wire:model="qty" 
-                   readonly 
-                   class="w-12 text-center text-sm font-extrabold text-slate-900 border-0 focus:ring-0 bg-transparent">
+            <span class="w-10 text-center text-xs font-black text-slate-900">{{ $qty }}</span>
             <button type="button" 
                     wire:click="incrementQty" 
                     {{ !$selectedVarian || $qty >= (collect($availableVariants)->firstWhere('id_varian', $selectedVarian)['stok'] ?? 0) ? 'disabled' : '' }}
-                    class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                <i class="fa-solid fa-plus text-xs"></i>
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <i class="fa-solid fa-plus text-[10px]"></i>
             </button>
         </div>
 
@@ -89,27 +83,63 @@
                 wire:click="addToCart"
                 wire:loading.attr="disabled"
                 {{ !$selectedVarian ? 'disabled' : '' }}
-                class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-600/25 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all">
+                class="flex-1 h-11 inline-flex items-center justify-center gap-2 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed active:scale-98 transition-all">
             <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-2">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span>Masukkan ke Keranjang</span>
+                <i class="fa-solid fa-bag-shopping text-sm"></i>
+                <span>+ Keranjang</span>
             </span>
             <span wire:loading wire:target="addToCart" class="flex items-center gap-2">
-                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <i class="fa-solid fa-circle-notch fa-spin text-sm"></i>
                 <span>Menambahkan...</span>
+            </span>
+        </button>
+
+        {{-- Chat Admin Desktop Button --}}
+        @php
+            $waText = urlencode("Halo Admin Bayeng Putra Helm, saya mau tanya ketersediaan helm *{$helm->nama_helm}* (ID: {$helm->id_helm}). Apakah stoknya ready di toko Kuningan?");
+        @endphp
+        <a href="https://wa.me/6281234567890?text={{ $waText }}" 
+           target="_blank" 
+           title="Chat Admin Toko"
+           class="h-11 px-4 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs">
+            <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
+            <span>Chat</span>
+        </a>
+    </div>
+
+    {{-- Sticky Mobile Action Bottom Bar (Tokopedia Style) --}}
+    <div class="sm:hidden fixed bottom-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-2.5 shadow-lg flex items-center gap-3">
+        
+        {{-- Chat Button Mobile --}}
+        @php
+            $waTextMob = urlencode("Halo Admin Bayeng Putra Helm, saya tertarik helm *{$helm->nama_helm}*. Apakah ready di toko?");
+        @endphp
+        <a href="https://wa.me/6281234567890?text={{ $waTextMob }}" 
+           target="_blank" 
+           class="w-10 h-10 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-600 bg-white shadow-2xs active:scale-95 shrink-0">
+            <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i>
+        </a>
+
+        {{-- Price preview --}}
+        <div class="flex-1 overflow-hidden">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Harga Gerai</p>
+            <p class="text-sm font-black text-blue-600 truncate mt-0.5">{{ format_rupiah($helm->harga_jual) }}</p>
+        </div>
+
+        {{-- Mobile Add to Cart --}}
+        <button type="button"
+                wire:click="addToCart"
+                wire:loading.attr="disabled"
+                {{ !$selectedVarian ? 'disabled' : '' }}
+                class="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold flex items-center gap-2 disabled:bg-slate-200 disabled:text-slate-400 shadow-md shadow-blue-600/20 active:scale-95 transition-all shrink-0">
+            <span wire:loading.remove wire:target="addToCart" class="flex items-center gap-1.5">
+                <i class="fa-solid fa-bag-shopping text-xs"></i>
+                <span>{{ $selectedVarian ? '+ Keranjang' : 'Pilih Varian' }}</span>
+            </span>
+            <span wire:loading wire:target="addToCart">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
             </span>
         </button>
     </div>
 
-    {{-- Value Props / Guarantee --}}
-    <div class="pt-4 border-t border-slate-200/80 grid grid-cols-2 gap-3 text-[11px] text-slate-500">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-circle-check text-blue-600"></i>
-            <span>Bisa Dicoba (Fitting) di Toko</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved text-emerald-600"></i>
-            <span>Garansi 100% Original & SNI</span>
-        </div>
-    </div>
 </div>

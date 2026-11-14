@@ -1,95 +1,121 @@
 @extends('layouts.pelanggan')
-@section('title', $helm->nama_helm . ' - Detail & Spesifikasi')
+@section('title', $helm->nama_helm . ' - Detail & Ketersediaan Gerai')
 
 @section('content')
-<div class="bg-slate-50 min-h-screen py-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-slate-50 min-h-screen py-6 pb-32 md:pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-5">
         
-        {{-- Breadcrumbs --}}
-        <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 font-medium">
-            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Beranda</a>
-            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-            <a href="{{ route('katalog') }}" class="hover:text-blue-600 transition-colors">Katalog Helm</a>
-            <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-            <span class="text-slate-800 font-semibold truncate max-w-xs">{{ $helm->nama_helm }}</span>
+        {{-- Breadcrumb Nav --}}
+        <nav class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-4 overflow-hidden">
+            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors shrink-0">Beranda</a>
+            <span class="text-slate-300">/</span>
+            <a href="{{ route('katalog') }}" class="hover:text-blue-600 transition-colors shrink-0">Katalog</a>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-900 font-bold truncate">{{ $helm->nama_helm }}</span>
         </nav>
 
-        {{-- Main Product Card --}}
-        <div class="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200/80 shadow-sm mb-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        {{-- Main PDP Card (Marketplace Pro Layout) --}}
+        <div class="bg-white rounded-2xl p-4 sm:p-6 md:p-8 border border-slate-200 shadow-sm mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start">
                 
-                {{-- Product Image Gallery (Left Column) --}}
-                <div class="lg:col-span-6 space-y-4">
-                    <div class="relative aspect-square rounded-3xl overflow-hidden bg-slate-100/70 border border-slate-200/60 shadow-inner group">
+                {{-- Left: Product Image Gallery --}}
+                <div class="md:col-span-5 space-y-3">
+                    <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-50 border border-slate-200 group">
                         <img src="{{ $helm->gambar_url }}" 
                              alt="{{ $helm->nama_helm }}" 
-                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         
                         @if($helm->merk)
-                            <div class="absolute top-4 left-4 px-3 py-1 rounded-xl bg-white/95 backdrop-blur-md text-xs font-black text-slate-800 shadow-sm border border-slate-200/60">
+                            <div class="absolute top-3 left-3 px-2 py-0.5 rounded-md bg-slate-900/80 text-white text-[9px] font-bold uppercase tracking-wider">
                                 {{ $helm->merk->nama_merk }}
                             </div>
                         @endif
 
-                        <div class="absolute bottom-4 right-4 bg-slate-900/90 text-white text-[11px] font-semibold px-3 py-1.5 rounded-xl backdrop-blur-md shadow-md flex items-center gap-1.5">
-                            <i class="fa-solid fa-store text-blue-400"></i>
-                            <span>Tersedia untuk Ambil di Toko</span>
+                        <div class="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-xs text-slate-800 text-[10px] font-bold px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 text-blue-600">
+                                <i class="fa-solid fa-store"></i>
+                                <span>Gerai Kuningan</span>
+                            </span>
+                            <span class="text-emerald-600 font-black">Bisa Fitting di Toko</span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Product Info & Variant Selection (Right Column) --}}
-                <div class="lg:col-span-6 space-y-6">
+                {{-- Right: Product Details & Buying Actions --}}
+                <div class="md:col-span-7 space-y-5">
                     
-                    {{-- Category & Title --}}
+                    {{-- Title & Meta --}}
                     <div>
                         <div class="flex items-center gap-2 mb-2">
-                            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider">
+                            <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
                                 {{ $helm->kategori->nama_kategori ?? 'Helm Motor' }}
                             </span>
-                            @php $totalStok = $helm->varians->sum('stok'); @endphp
-                            @if($totalStok > 0)
-                                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span>Stok Fisik Tersedia ({{ $totalStok }})</span>
-                                </span>
-                            @else
-                                <span class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold">
-                                    Stok Habis
-                                </span>
-                            @endif
+                            <span class="text-[11px] text-slate-400">&bull;</span>
+                            <span class="text-[11px] font-semibold text-slate-600">SNI & DOT Certified</span>
                         </div>
-
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
                             {{ $helm->nama_helm }}
                         </h1>
                     </div>
 
-                    {{-- Price Display --}}
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
+                    {{-- Price Strip --}}
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-center justify-between">
                         <div>
-                            <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Harga Penjualan</p>
-                            <p class="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block leading-none mb-1">Harga Toko</span>
+                            <span class="text-2xl font-black text-blue-600 tracking-tight">
                                 {{ format_rupiah($helm->harga_jual) }}
-                            </p>
+                            </span>
                         </div>
-                        <div class="text-right text-xs text-slate-500">
-                            <p class="font-bold text-slate-700">Bebas Ongkir</p>
-                            <p class="text-[11px]">Ambil Langsung di Toko</p>
+                        <div class="text-right">
+                            <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200">
+                                <i class="fa-solid fa-handshake"></i>
+                                <span>Bayar Pas Ambil</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Livewire Add To Cart & Variant Selection --}}
+                    <livewire:add-to-cart-button :helm="$helm" />
+
+                    {{-- Store Consultation Strip (Tokopedia Style Chat Info) --}}
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 leading-none">Konsultasi Ukuran & Fitting</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">Ragu dengan ukuran lingkar kepala? Chat staf toko.</p>
+                                </div>
+                            </div>
+                            @php
+                                $waTextCons = urlencode("Halo Staf Toko Bayeng Helm, saya mau konsultasi ukuran untuk helm *{$helm->nama_helm}*. Lingkar kepala saya sekitar ... cm.");
+                            @endphp
+                            <a href="https://wa.me/6281234567890?text={{ $waTextCons }}" target="_blank" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg transition-colors shrink-0">
+                                Tanya Staf
+                            </a>
                         </div>
                     </div>
 
                     {{-- Description --}}
-                    <div class="space-y-2">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Deskripsi & Spesifikasi</h3>
-                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                            {{ $helm->deskripsi ?? 'Helm original berkualitas tinggi dengan sertifikasi standar keamanan resmi. Nyaman digunakan untuk harian maupun touring jarak jauh.' }}
-                        </p>
+                    <div class="space-y-2 pt-2 border-t border-slate-100">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Deskripsi Produk</h3>
+                        <div class="text-xs text-slate-600 leading-relaxed space-y-2">
+                            <p>{{ $helm->deskripsi ?? 'Helm berkendara standar SNI & DOT dengan bahan shell berkualitas tinggi, busa dalam empuk dapat dilepas dan dicuci, serta tali pengunci yang aman.' }}</p>
+                        </div>
                     </div>
 
-                    {{-- Add to Cart Livewire Component --}}
-                    <div class="pt-2">
-                        <livewire:add-to-cart-button :helm="$helm" />
+                    {{-- Store Trust Badges --}}
+                    <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 text-[11px] text-slate-600 font-medium">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-blue-600"></i>
+                            <span>100% Produk Original</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-rotate text-blue-600"></i>
+                            <span>Bisa Tukar Ukuran di Toko</span>
+                        </div>
                     </div>
 
                 </div>
@@ -97,48 +123,40 @@
             </div>
         </div>
 
-        {{-- Varian Matrix Card --}}
+        {{-- Ketersediaan Stok Fisik Gerai (Table Clean) --}}
         @if($helm->varians->count())
-        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm mb-12">
-            <div class="flex items-center justify-between mb-6">
+        <div class="bg-white rounded-2xl p-5 md:p-6 border border-slate-200 shadow-sm mb-8">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Ketersediaan Stok Fisik Gerai</h3>
-                    <p class="text-xs text-slate-500">Kombinasi warna dan ukuran helm yang siap diambil langsung di toko hari ini.</p>
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-tight">Ketersediaan Stok Fisik Gerai</h3>
+                    <p class="text-[11px] text-slate-500">Data ketersediaan langsung di gerai kami hari ini.</p>
                 </div>
-                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl">
-                    Live Stock Sync
+                <span class="text-[10px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                    Gerai Kuningan
                 </span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
                     <thead>
-                        <tr class="border-b border-slate-200 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
-                            <th class="py-3 px-4">Warna Helm</th>
-                            <th class="py-3 px-4">Ukuran</th>
-                            <th class="py-3 px-4 text-center">Status Stok</th>
+                        <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                            <th class="py-2.5 px-3 rounded-l-lg">Varian Warna</th>
+                            <th class="py-2.5 px-3">Ukuran</th>
+                            <th class="py-2.5 px-3 text-right rounded-r-lg">Status Ketersediaan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($helm->varians as $v)
-                        <tr class="hover:bg-slate-50/60 transition-colors">
-                            <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
-                                <span class="w-3 h-3 rounded-full border border-slate-300 bg-slate-400"></span>
-                                <span>{{ $v->warna }}</span>
-                            </td>
-                            <td class="py-3 px-4 font-bold text-slate-700">
-                                <span class="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-800">
-                                    {{ $v->ukuran }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 text-center">
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="py-2.5 px-3 font-semibold text-slate-800">{{ $v->warna }}</td>
+                            <td class="py-2.5 px-3 font-bold text-slate-600">{{ $v->ukuran }}</td>
+                            <td class="py-2.5 px-3 text-right">
                                 @if($v->stok > 0)
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[11px]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        Tersedia ({{ $v->stok }} unit)
+                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                        Tersedia ({{ $v->stok }})
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 font-bold text-[11px]">
+                                    <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
                                         Habis
                                     </span>
                                 @endif
@@ -151,40 +169,33 @@
         </div>
         @endif
 
-        {{-- Related Helmets --}}
-        @if(isset($related) && $related->count())
-        <div>
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-lg font-bold text-slate-900">Helm Serupa Lainnya</h3>
-                    <p class="text-xs text-slate-500">Pilihan alternatif merk atau kategori yang sama</p>
-                </div>
-                <a href="{{ route('katalog') }}" class="text-xs font-bold text-blue-600 hover:text-blue-700">
-                    Lihat Katalog Lengkap &rarr;
-                </a>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                @foreach($related->take(4) as $item)
-                <div class="group bg-white rounded-3xl overflow-hidden border border-slate-200/80 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-                    <div class="relative aspect-square bg-slate-100/70 overflow-hidden">
-                        <a href="{{ route('katalog.detail', $item->id_helm) }}">
-                            <img src="{{ $item->gambar_url }}" 
-                                 alt="{{ $item->nama_helm }}" 
-                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
+        {{-- Produk Terkait (Grid Serasi) --}}
+        @if(isset($related) && $related->count() > 0)
+        <div class="space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-tight">Produk Terkait</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                @foreach($related as $rel)
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-blue-500 hover:shadow-md transition-all flex flex-col justify-between">
+                    <div class="aspect-square bg-slate-50 relative overflow-hidden">
+                        <a href="{{ route('katalog.detail', $rel->id_helm) }}">
+                            <img src="{{ $rel->gambar_url }}" alt="{{ $rel->nama_helm }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         </a>
+                        @if($rel->merk)
+                            <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-slate-900/80 text-white text-[8px] font-bold uppercase rounded">
+                                {{ $rel->merk->nama_merk }}
+                            </div>
+                        @endif
                     </div>
-                    <div class="p-4 flex flex-col justify-between flex-grow space-y-2">
-                        <div>
-                            <p class="text-[10px] font-bold text-blue-600 uppercase">{{ $item->merk->nama_merk ?? 'Helm' }}</p>
-                            <h4 class="font-bold text-xs text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                                {{ $item->nama_helm }}
+                    <div class="p-3 flex flex-col flex-grow justify-between gap-2">
+                        <a href="{{ route('katalog.detail', $rel->id_helm) }}">
+                            <h4 class="text-[11px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors">
+                                {{ $rel->nama_helm }}
                             </h4>
-                        </div>
-                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-xs font-extrabold text-slate-900">{{ format_rupiah($item->harga_jual) }}</span>
-                            <a href="{{ route('katalog.detail', $item->id_helm) }}" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-600 text-slate-700 hover:text-white flex items-center justify-center text-[10px] transition-colors">
-                                <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                            <span class="text-xs font-black text-blue-600">{{ format_rupiah($rel->harga_jual) }}</span>
+                            <a href="{{ route('katalog.detail', $rel->id_helm) }}" class="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-[9px] font-bold text-slate-700 hover:bg-blue-600 hover:text-white transition-colors">
+                                Detail
                             </a>
                         </div>
                     </div>
