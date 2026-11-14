@@ -123,7 +123,7 @@
     </main>
 
     {{-- Mobile Nav (App Style) --}}
-    @unless(request()->routeIs('katalog.detail') || request()->routeIs('pelanggan.cart') || request()->routeIs('cart'))
+    @unless(request()->routeIs('katalog.detail') || request()->routeIs('pelanggan.cart') || request()->routeIs('cart') || request()->routeIs('pelanggan.checkout*'))
     <nav class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around h-16 px-2 bg-white border-t border-slate-100 md:hidden shadow-lg">
         <a href="{{ route('home') }}" class="flex flex-col items-center gap-1 transition-colors {{ request()->routeIs('home') ? 'text-blue-600' : 'text-slate-400' }}">
             <i class="fa-solid fa-house-chimney text-lg"></i>
