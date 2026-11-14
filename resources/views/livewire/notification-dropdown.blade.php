@@ -13,27 +13,43 @@
         @endif
     </button>
 
-    {{-- Dropdown Panel (Opsi 1: Clean Tokopedia Style) --}}
     @if($isOpen)
-        <div class="absolute right-0 sm:-right-8 mt-2 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden divide-y divide-slate-100 animate-scale-in">
+        {{-- Mobile Backdrop Overlay --}}
+        <div class="fixed inset-0 bg-slate-900/30 backdrop-blur-2xs z-40 sm:hidden" 
+             wire:click="closeDropdown"></div>
+
+        {{-- Dropdown Panel (Mobile-First Sheet & Desktop Floating Dropdown) --}}
+        <div class="fixed inset-x-3 top-16 mt-1.5 sm:mt-2 sm:absolute sm:inset-auto sm:top-full sm:right-0 w-auto sm:w-96 max-w-lg sm:max-w-none bg-white rounded-2xl border border-slate-200 shadow-2xl sm:shadow-xl z-50 overflow-hidden divide-y divide-slate-100 animate-scale-in">
             
             {{-- Header --}}
             <div class="px-4 py-3 bg-white flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-900">Notifikasi</span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-900">Notifikasi</span>
                     @if($activeCount > 0)
                         <span class="px-1.5 py-0.2 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100">
                             {{ $activeCount }}
                         </span>
                     @endif
                 </div>
-                <a href="{{ route('pelanggan.pesanan') }}" class="text-[11px] font-medium text-blue-600 hover:text-blue-700">
-                    Lihat Semua
-                </a>
+
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('pelanggan.pesanan') }}" 
+                       @click="$wire.closeDropdown()"
+                       class="text-xs font-semibold text-blue-600 hover:text-blue-700">
+                        Lihat Semua
+                    </a>
+                    {{-- Mobile Dismiss Button --}}
+                    <button type="button" 
+                            wire:click="closeDropdown" 
+                            class="sm:hidden w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                            title="Tutup">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                </div>
             </div>
 
             {{-- Content List --}}
-            <div class="max-h-80 overflow-y-auto divide-y divide-slate-100">
+            <div class="max-h-[62vh] sm:max-h-80 overflow-y-auto divide-y divide-slate-100 overscroll-contain">
                 @forelse($recentOrders as $order)
                     @php
                         $firstItem = $order->details->first();
@@ -71,10 +87,10 @@
                     @endphp
 
                     <a href="{{ route('pelanggan.pesanan.detail', $order->id_pesanan) }}" 
-                       class="p-3.5 flex items-start gap-3 hover:bg-slate-50/80 transition-colors block">
+                       class="p-3 sm:p-3.5 flex items-start gap-3 hover:bg-slate-50/80 active:bg-slate-100 transition-colors block">
                         
                         {{-- Thumbnail Foto Helm --}}
-                        <div class="w-11 h-11 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                        <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
                             @if($firstItem && $firstItem->helm && $firstItem->helm->gambar_url)
                                 <img src="{{ $firstItem->helm->gambar_url }}" alt="{{ $firstItem->nama_helm }}" class="w-full h-full object-cover">
                             @else
@@ -86,7 +102,7 @@
                         <div class="flex-1 min-w-0">
                             {{-- Baris 1: Status & Waktu --}}
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-xs font-semibold {{ $statusTitleColor }} truncate">
+                                <span class="text-xs font-bold {{ $statusTitleColor }} truncate">
                                     {{ $statusTitle }}
                                 </span>
                                 <span class="text-[10px] text-slate-400 shrink-0 font-normal">
@@ -110,7 +126,7 @@
                             {{-- Baris 3: Info Kunci (Kode Pickup / Nominal) --}}
                             <div class="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
                                 @if(in_array($order->status, ['ready', 'unpaid_pickup']))
-                                    <span>Kode Pickup: <span class="font-mono font-bold text-blue-600 tracking-wide">{{ $order->kode_pickup }}</span></span>
+                                    <span>Kode Pickup: <span class="font-mono font-bold text-blue-600 tracking-wide text-xs">{{ $order->kode_pickup }}</span></span>
                                 @elseif($order->status === 'pending')
                                     <span>Total: <span class="font-semibold text-slate-900">{{ format_rupiah($order->grand_total) }}</span></span>
                                 @elseif(in_array($order->status, ['paid', 'processing']))
@@ -121,7 +137,7 @@
                                     <span class="font-mono text-slate-400">{{ $order->no_pesanan }}</span>
                                 @endif
 
-                                <span class="text-[10px] text-blue-600 font-medium flex items-center gap-0.5">
+                                <span class="text-[10px] text-blue-600 font-semibold flex items-center gap-0.5">
                                     <span>Detail</span>
                                     <i class="fa-solid fa-chevron-right text-[8px]"></i>
                                 </span>
@@ -133,7 +149,7 @@
                         <div class="w-11 h-11 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-base">
                             <i class="fa-regular fa-bell"></i>
                         </div>
-                        <p class="text-xs font-medium text-slate-900">Belum ada notifikasi</p>
+                        <p class="text-xs font-semibold text-slate-900">Belum ada notifikasi</p>
                         <p class="text-[11px] text-slate-400 leading-relaxed">Update status pesanan helm kamu akan muncul di sini.</p>
                     </div>
                 @endforelse
