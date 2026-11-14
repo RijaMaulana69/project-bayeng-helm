@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="120" height="40">
+  <rect width="120" height="40" rx="8" fill="#003d7c"/>
+  <path d="M15 12 h25 v4 h-25 z M15 20 h25 v4 h-25 z" fill="#fbbf24"/>
+  <text x="68%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="900" font-size="14" fill="#ffffff">mandiri</text>
+</svg>
