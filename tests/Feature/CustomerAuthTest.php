@@ -67,6 +67,20 @@ class CustomerAuthTest extends TestCase
         $response->assertSessionHasErrors(['password']);
     }
 
+    public function test_customer_registration_fails_if_password_exceeds_12_characters(): void
+    {
+        $response = $this->from('/pelanggan/register')->post('/pelanggan/register', [
+            'nama' => 'Budi Santoso',
+            'email' => 'longpass@test.com',
+            'telepon' => '081234567892',
+            'password' => 'Password12345', // 13 chars (> 12)
+            'password_confirmation' => 'Password12345',
+        ]);
+
+        $response->assertRedirect('/pelanggan/register');
+        $response->assertSessionHasErrors(['password']);
+    }
+
     public function test_customer_registration_fails_if_password_lacks_uppercase_or_number(): void
     {
         $response = $this->from('/pelanggan/register')->post('/pelanggan/register', [
@@ -126,7 +140,7 @@ class CustomerAuthTest extends TestCase
     {
         $response = $this->from('/pelanggan/login')->post('/pelanggan/login', [
             'email' => 'budi@gmail.com',
-            'password' => 'SalahSandi123',
+            'password' => 'Salah123',
         ]);
 
         $response->assertRedirect('/pelanggan/login');

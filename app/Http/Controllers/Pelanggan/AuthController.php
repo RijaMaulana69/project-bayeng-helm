@@ -22,11 +22,11 @@ class AuthController extends Controller
         // 1. Validasi input dasar
         $request->validate([
             'email' => 'required|string',
-            'password' => 'required|string|max:64',
+            'password' => 'required|string|max:12',
         ], [
             'email.required' => 'Alamat email atau No. WhatsApp wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
-            'password.max' => 'Kata sandi melebihi batas maksimal 64 karakter.',
+            'password.max' => 'Kata sandi melebihi batas maksimal 12 karakter.',
         ]);
 
         $loginInput = trim($request->input('email'));
@@ -118,7 +118,7 @@ class AuthController extends Controller
 
         $request->merge($input);
 
-        // 2. Validasi ketat (nama maksimal 30 karakter, password minimal 8 & maksimal 64 karakter)
+        // 2. Validasi ketat (nama maksimal 30 karakter, password 8 - 12 karakter)
         $request->validate([
             'nama' => 'required|string|min:3|max:30',
             'email' => 'required|email|max:100|unique:pelanggan,email',
@@ -127,7 +127,7 @@ class AuthController extends Controller
                 'required',
                 'confirmed',
                 'min:8',
-                'max:64',
+                'max:12',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
             ],
         ], [
@@ -144,7 +144,7 @@ class AuthController extends Controller
             'telepon.regex' => 'Nomor WhatsApp hanya boleh berisi angka.',
             'password.required' => 'Kata sandi wajib diisi.',
             'password.min' => 'Kata sandi minimal 8 karakter.',
-            'password.max' => 'Kata sandi maksimal 64 karakter.',
+            'password.max' => 'Kata sandi maksimal 12 karakter.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
             'password.regex' => 'Kata sandi harus mengandung huruf besar, huruf kecil, dan angka.',
         ]);
