@@ -243,7 +243,7 @@
             {{-- Topbar Header --}}
             <header class="z-20 h-14 bg-white border-b border-slate-200/80 px-4 lg:px-8 flex items-center justify-between shrink-0">
                 
-                {{-- Left: Mobile Drawer Trigger + Page Title --}}
+                {{-- Left: Mobile Drawer Trigger + Page Title + Real-time Clock --}}
                 <div class="flex items-center gap-3">
                     <button type="button" 
                             @click="mobileDrawer = true" 
@@ -252,17 +252,125 @@
                         <i class="fa-solid fa-bars text-sm"></i>
                     </button>
 
-                    <div class="flex items-center gap-2.5">
-                        <h1 class="text-sm font-semibold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
-                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>Toko Aktif</span>
-                        </span>
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-sm font-bold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
+                        
+                        {{-- Real-time Digital Clock --}}
+                        <div x-data="{ time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }" 
+                             x-init="setInterval(() => { time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }, 1000)"
+                             class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100/90 text-[11px] font-mono font-medium text-slate-600 border border-slate-200/60">
+                            <i class="fa-regular fa-clock text-[10px] text-slate-400"></i>
+                            <span x-text="time + ' WIB'"></span>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Right: Actions & User Info --}}
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    {{-- Operational Notification Bell Dropdown --}}
+                    @php
+                        $notifPickup = $nav_pickup_count ?? 0;
+                        $notifPending = $nav_pending_count ?? 0;
+                        $notifStock = $nav_critical_stock_count ?? 0;
+                        $notifTotal = $notifPickup + $notifPending + ($notifStock > 0 ? 1 : 0);
+                    @endphp
+                    <div class="relative" x-data="{ notifOpen: false }" @click.outside="notifOpen = false">
+                        <button type="button" 
+                                @click="notifOpen = !notifOpen" 
+                                class="relative w-8 h-8 rounded-lg border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                                title="Notifikasi Toko">
+                            <i class="fa-regular fa-bell text-sm"></i>
+                            @if($notifTotal > 0)
+                                <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center font-mono animate-pulse">
+                                    {{ $notifTotal > 9 ? '9+' : $notifTotal }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Dropdown Panel --}}
+                        <div x-show="notifOpen" 
+                             x-cloak 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden z-50">
+                            <div class="p-3.5 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-slate-900">Notifikasi Toko</span>
+                                    @if($notifTotal > 0)
+                                        <span class="px-1.5 py-0.2 rounded-md bg-rose-50 text-rose-700 text-[10px] font-bold border border-rose-200/80 font-mono">
+                                            {{ $notifTotal }} tugas
+                                        </span>
+                                    @endif
+                                </div>
+                                <button type="button" @click="notifOpen = false" class="text-slate-400 hover:text-slate-600 text-xs cursor-pointer">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto">
+                                @if($notifPickup > 0)
+                                    <a href="{{ route('admin.pickup.index') }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                        <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                            <i class="fa-solid fa-box-open"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                                                {{ $notifPickup }} Pesanan Siap Ambil
+                                            </p>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                Pelanggan siap mengambil paket di gerai
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endif
+
+                                @if($notifPending > 0)
+                                    <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                        <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                            <i class="fa-solid fa-file-invoice"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                                                {{ $notifPending }} Pembayaran Menunggu
+                                            </p>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                Bukti transfer perlu diverifikasi
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endif
+
+                                @if($notifStock > 0)
+                                    <a href="{{ route('admin.stok.index') }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                        <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                                                {{ $notifStock }} Varian Stok Kritis
+                                            </p>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                Stok varian habis atau &le; 3 unit
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endif
+
+                                @if($notifTotal === 0)
+                                    <div class="p-6 text-center">
+                                        <i class="fa-regular fa-circle-check text-2xl text-emerald-500 mb-1"></i>
+                                        <p class="text-xs font-semibold text-slate-700">Operasional Aman</p>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">Semua antrean gerai terkendali.</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Link to Customer Web Store --}}
                     <a href="{{ route('home') }}" target="_blank" 
                        class="text-xs text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
@@ -272,7 +380,7 @@
 
                     {{-- User Profile Pill --}}
                     @if($authUser)
-                    <div class="flex items-center gap-2 pl-3 border-l border-slate-200/80">
+                    <div class="flex items-center gap-2 pl-2 sm:pl-3 border-l border-slate-200/80">
                         <div class="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
                             {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
                         </div>
@@ -282,7 +390,7 @@
                         </div>
                         <form action="{{ route('admin.logout') }}" method="POST" class="ml-1">
                             @csrf
-                            <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Logout">
+                            <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Logout">
                                 <i class="fa-solid fa-power-off text-xs"></i>
                             </button>
                         </form>

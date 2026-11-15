@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', $isOwner ? 'Dashboard Bisnis' : 'Meja Kasir')
-@section('page-title', $isOwner ? 'Ringkasan Toko' : 'Meja Kasir Operasional')
+@section('title', $isOwner ? 'Dashboard Bisnis' : 'Dashboard Kasir')
+@section('page-title', $isOwner ? 'Ringkasan Toko' : 'Dashboard Kasir')
 
 @section('content')
 
@@ -12,17 +12,19 @@
 <div class="space-y-6">
 
     {{-- 1. Header Kasir & Validasi Cepat --}}
-    <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                        Halo, {{ $user->nama_lengkap }}
-                    </h1>
-                </div>
-                <p class="text-xs text-slate-500 mt-0.5">
-                    {{ now()->translatedFormat('l, d F Y') }}
+                <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                    Halo, {{ $user->nama_lengkap }}
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
                 </p>
+            </div>
+            <div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-[11px] font-mono font-medium text-slate-600">
+                <i class="fa-solid fa-store text-slate-400 text-[10px]"></i>
+                <span>Gerai Pusat</span>
             </div>
         </div>
 

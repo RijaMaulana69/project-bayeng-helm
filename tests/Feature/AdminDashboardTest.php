@@ -87,7 +87,7 @@ class AdminDashboardTest extends TestCase
         $response = $this->actingAs($karyawan, 'web')->get(route('admin.dashboard'));
 
         $response->assertStatus(200);
-        $response->assertSee('Meja Kasir Operasional');
+        $response->assertSee('Dashboard Kasir');
         $response->assertSee('Halo, Kasir Operasional Testing');
         $response->assertSee('Kasir Gerai');
         $response->assertSee('Masukkan kode pickup');
