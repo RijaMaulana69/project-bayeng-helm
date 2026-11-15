@@ -90,21 +90,17 @@
         <a href="{{ route('admin.owner.transaksi-karyawan.index', array_merge(request()->except(['karyawan', 'page']), ['karyawan' => 'all'])) }}"
            wire:navigate
            class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 {{ $selectedKaryawan === 'all' || empty($selectedKaryawan) ? 'bg-slate-900 text-white font-semibold shadow-2xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
-            Semua ({{ $kpi['total_transaksi'] }})
+            Semua Kasir
         </a>
 
         @foreach ($cashierStats as $stat)
             @php
                 $isFiltered = ($selectedKaryawan === $stat['user']->username);
-                $omzetNum = $stat['total_omzet'] > 0 ? number_format($stat['total_omzet'], 0, ',', '.') : null;
             @endphp
             <a href="{{ route('admin.owner.transaksi-karyawan.index', array_merge(request()->except(['karyawan', 'page']), ['karyawan' => $stat['user']->username])) }}"
                wire:navigate
                class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 {{ $isFiltered ? 'bg-slate-900 text-white font-semibold shadow-2xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
-                <span>{{ $stat['user']->nama_lengkap }}</span>
-                @if($omzetNum)
-                    <span class="font-mono text-[11px] opacity-80 ml-1">· {{ $omzetNum }}</span>
-                @endif
+                {{ $stat['user']->nama_lengkap }}
             </a>
         @endforeach
     </div>
