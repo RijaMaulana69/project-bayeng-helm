@@ -93,12 +93,13 @@
             {{-- Tombol Serahkan --}}
             <div class="pt-1">
                 <form method="POST" 
+                      id="form-serahkan"
                       action="{{ route('admin.pickup.serahkan', $pesanan->id_pesanan) }}"
-                      x-data="{ submitting: false }"
-                      @submit="if(confirm('Serahkan pesanan ini ke pelanggan?')) { submitting = true; } else { $event.preventDefault(); }">
+                      x-data="{ submitting: false }">
                     @csrf
-                    <button type="submit" 
+                    <button type="button" 
                             :disabled="submitting"
+                            @click="konfirmasiSerahkan()"
                             class="w-full h-11 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-2xs">
                         <template x-if="!submitting">
                             <span class="inline-flex items-center gap-2">
@@ -120,4 +121,40 @@
     </div>
 
 </div>
+
+<script>
+function konfirmasiSerahkan() {
+    const form = document.getElementById('form-serahkan');
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Serahkan Pesanan?',
+            html: '<p class="text-xs text-slate-500">Pastikan barang pesanan <b>{{ $pesanan->no_pesanan }}</b> sudah diserahkan ke pelanggan.</p>',
+            icon: 'question',
+            iconColor: '#059669',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Serahkan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#059669',
+            cancelButtonColor: '#94a3b8',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-2xl shadow-2xl p-5 border border-slate-100 max-w-sm',
+                title: 'text-sm sm:text-base font-bold text-slate-900',
+                confirmButton: 'rounded-xl text-xs sm:text-sm font-semibold px-4 py-2.5 shadow-2xs',
+                cancelButton: 'rounded-xl text-xs sm:text-sm font-semibold px-4 py-2.5'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const alpineData = Alpine.$data(form);
+                if (alpineData) alpineData.submitting = true;
+                form.submit();
+            }
+        });
+    } else {
+        if (confirm('Serahkan pesanan ini ke pelanggan?')) {
+            form.submit();
+        }
+    }
+}
+</script>
 @endsection

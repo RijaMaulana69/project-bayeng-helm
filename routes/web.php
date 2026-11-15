@@ -89,7 +89,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Validasi Pickup (kasir scan/input kode)
         Route::get('pickup', [\App\Http\Controllers\Admin\PickupController::class, 'index'])->name('pickup.index');
-        Route::post('pickup/validasi', [\App\Http\Controllers\Admin\PickupController::class, 'validasi'])->name('pickup.validasi');
+        Route::match(['get', 'post'], 'pickup/validasi', [\App\Http\Controllers\Admin\PickupController::class, 'validasi'])->name('pickup.validasi');
         Route::post('pickup/{pesanan}/serahkan', [\App\Http\Controllers\Admin\PickupController::class, 'serahkan'])->name('pickup.serahkan');
 
         // ============================================================

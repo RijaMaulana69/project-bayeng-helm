@@ -664,41 +664,46 @@
     </div>
 
     {{-- Flash Notifications via SweetAlert2 --}}
-    @if(session('success'))
+    @if(session('success') || session('error'))
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({ 
-                    toast: true, 
-                    position: window.innerWidth < 640 ? 'top' : 'top-end', 
-                    icon: 'success', 
-                    title: '{{ session('success') }}', 
-                    showConfirmButton: false, 
-                    timer: 3500, 
-                    timerProgressBar: true,
-                    customClass: {
-                        popup: 'rounded-2xl shadow-xl border border-slate-100 text-xs sm:text-sm'
-                    }
-                });
-            });
-        </script>
-    @endif
-
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({ 
-                    toast: true, 
-                    position: window.innerWidth < 640 ? 'top' : 'top-end', 
-                    icon: 'error', 
-                    title: '{{ session('error') }}', 
-                    showConfirmButton: false, 
-                    timer: 4000, 
-                    timerProgressBar: true,
-                    customClass: {
-                        popup: 'rounded-2xl shadow-xl border border-slate-100 text-xs sm:text-sm'
-                    }
-                });
-            });
+            (function() {
+                function triggerFlashAlert() {
+                    if (typeof Swal === 'undefined') return;
+                    @if(session('success'))
+                        Swal.fire({ 
+                            toast: true, 
+                            position: 'top', 
+                            icon: 'success', 
+                            title: '{{ addslashes(session('success')) }}', 
+                            showConfirmButton: false, 
+                            timer: 3500, 
+                            timerProgressBar: true,
+                            customClass: {
+                                popup: 'rounded-2xl shadow-2xl border border-slate-100 text-xs sm:text-sm mt-3'
+                            }
+                        });
+                    @endif
+                    @if(session('error'))
+                        Swal.fire({ 
+                            toast: true, 
+                            position: 'top', 
+                            icon: 'error', 
+                            title: '{{ addslashes(session('error')) }}', 
+                            showConfirmButton: false, 
+                            timer: 4000, 
+                            timerProgressBar: true,
+                            customClass: {
+                                popup: 'rounded-2xl shadow-2xl border border-slate-100 text-xs sm:text-sm mt-3'
+                            }
+                        });
+                    @endif
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', triggerFlashAlert);
+                } else {
+                    triggerFlashAlert();
+                }
+            })();
         </script>
     @endif
 

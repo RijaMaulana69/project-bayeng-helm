@@ -22,17 +22,19 @@ class PickupController extends Controller
 
     public function validasi(Request $request)
     {
-        $request->validate([
-            'kode_pickup' => 'required|string|max:20',
-        ]);
+        $kodePickup = $request->input('kode_pickup') ?? $request->query('kode');
+
+        if (!$kodePickup) {
+            return redirect()->route('admin.pickup.index');
+        }
 
         $pesanan = Pesanan::with(['pelanggan', 'details.helm'])
-            ->where('kode_pickup', strtoupper($request->kode_pickup))
+            ->where('kode_pickup', strtoupper(trim($kodePickup)))
             ->whereIn('status', ['ready', 'unpaid_pickup', 'paid', 'processing'])
             ->first();
 
         if (!$pesanan) {
-            return back()->with('error', 'Kode pickup tidak ditemukan atau pesanan tidak dalam status siap ambil.');
+            return redirect()->route('admin.pickup.index')->with('error', 'Kode pickup tidak ditemukan atau pesanan tidak dalam status siap ambil.');
         }
 
         return view('admin.pickup.validasi', compact('pesanan'));

@@ -5,27 +5,28 @@
 @section('content')
 <div class="space-y-4 max-w-5xl mx-auto" x-data="{ pickupFilter: 'all' }">
 
-    {{-- Notifikasi Sukses / Error (Responsif Mobile & Desktop) --}}
+    {{-- Notifikasi Mengambang di Atas (Floating Top Toast) --}}
     @if(session('success'))
         <div x-data="{ show: true }" 
              x-show="show" 
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-2"
-             class="p-3.5 sm:p-4 bg-emerald-50 border border-emerald-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+             x-init="setTimeout(() => show = false, 4500)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
+             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[360px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                     <i class="fa-solid fa-check text-xs"></i>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs sm:text-sm font-bold text-emerald-950 truncate">Penyerahan Berhasil</p>
-                    <p class="text-[11px] sm:text-xs text-emerald-700 mt-0.5 truncate">{{ session('success') }}</p>
+                    <p class="text-xs font-bold text-white truncate">Penyerahan Berhasil</p>
+                    <p class="text-[11px] text-slate-300 truncate mt-0.5">{{ session('success') }}</p>
                 </div>
             </div>
-            <button type="button" @click="show = false" class="text-emerald-500 hover:text-emerald-800 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
@@ -34,20 +35,24 @@
     @if(session('error'))
         <div x-data="{ show: true }" 
              x-show="show" 
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             class="p-3.5 sm:p-4 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+             x-init="setTimeout(() => show = false, 5000)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
+             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[360px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs sm:text-sm font-bold text-rose-950 truncate">Gagal</p>
-                    <p class="text-[11px] sm:text-xs text-rose-700 mt-0.5 truncate">{{ session('error') }}</p>
+                    <p class="text-xs font-bold text-white truncate">Gagal</p>
+                    <p class="text-[11px] text-slate-300 truncate mt-0.5">{{ session('error') }}</p>
                 </div>
             </div>
-            <button type="button" @click="show = false" class="text-rose-500 hover:text-rose-800 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
