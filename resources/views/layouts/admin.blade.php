@@ -58,7 +58,7 @@
         $roleBadgeBg = $isOwner ? 'bg-indigo-50 text-indigo-700 border-indigo-200/80' : 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
     @endphp
 
-    <div class="flex h-screen overflow-hidden bg-[#f8fafc]">
+    <div class="flex h-[100dvh] overflow-hidden bg-[#f8fafc]">
         
         {{-- ======================================================== --}}
         {{-- 1. DESKTOP SIDEBAR (Visible on lg: >= 1024px)             --}}
@@ -243,33 +243,24 @@
             {{-- Topbar Header --}}
             <header class="z-20 h-14 bg-white border-b border-slate-200/80 px-4 lg:px-8 flex items-center justify-between shrink-0">
                 
-                {{-- Left: Mobile Drawer Trigger + Page Title + Real-time Clock --}}
+                {{-- Left: Page Title + Real-time Clock --}}
                 <div class="flex items-center gap-3">
-                    <button type="button" 
-                            @click="mobileDrawer = true" 
-                            class="lg:hidden w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors"
-                            aria-label="Buka Menu">
-                        <i class="fa-solid fa-bars text-sm"></i>
-                    </button>
-
-                    <div class="flex items-center gap-3">
-                        <h1 class="text-sm font-bold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
-                        
-                        {{-- Real-time Digital Clock --}}
-                        <div x-data="{ 
-                                time: '',
-                                updateClock() {
-                                    const now = new Date();
-                                    const h = String(now.getHours()).padStart(2, '0');
-                                    const m = String(now.getMinutes()).padStart(2, '0');
-                                    this.time = `${h}:${m} WIB`;
-                                }
-                             }" 
-                             x-init="updateClock(); setInterval(() => updateClock(), 1000)"
-                             class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                            <i class="fa-regular fa-clock text-[11px]"></i>
-                            <span x-text="time"></span>
-                        </div>
+                    <h1 class="text-sm font-bold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
+                    
+                    {{-- Real-time Digital Clock --}}
+                    <div x-data="{ 
+                            time: '',
+                            updateClock() {
+                                const now = new Date();
+                                const h = String(now.getHours()).padStart(2, '0');
+                                const m = String(now.getMinutes()).padStart(2, '0');
+                                this.time = `${h}:${m} WIB`;
+                            }
+                         }" 
+                         x-init="updateClock(); setInterval(() => updateClock(), 1000)"
+                         class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                        <i class="fa-regular fa-clock text-[11px]"></i>
+                        <span x-text="time"></span>
                     </div>
                 </div>
 
@@ -464,7 +455,7 @@
     {{-- ======================================================== --}}
     {{-- 3. MOBILE BOTTOM NAVIGATION BAR (Fixed on lg:hidden)      --}}
     {{-- ======================================================== --}}
-    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg px-2 py-1 flex items-center justify-around">
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg px-2 py-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] flex items-center justify-around">
         
         {{-- 1. Kasir Pickup (Action-focused) --}}
         <a href="{{ route('admin.pickup.index') }}" 
@@ -674,7 +665,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
-             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+             class="fixed top-16 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
             <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
                     <i class="fa-solid fa-check text-xs"></i>
@@ -699,7 +690,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
-             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+             class="fixed top-16 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
             <div class="flex items-center gap-2.5 min-w-0">
                 <div class="w-7 h-7 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
                     <i class="fa-solid fa-triangle-exclamation text-xs"></i>

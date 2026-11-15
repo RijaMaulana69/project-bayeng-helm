@@ -106,6 +106,7 @@
     {{-- Mobile-Friendly Action Sheet / Dialog Konfirmasi --}}
     <div x-show="showConfirm" 
          x-cloak
+         @keydown.escape.window="if(!submitting) showConfirm = false"
          class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
          role="dialog"
          aria-modal="true">
@@ -129,7 +130,7 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
              x-transition:leave-end="opacity-0 translate-y-full sm:translate-y-0 sm:scale-95"
-             class="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4">
+             class="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-5 pb-8 sm:p-6 pb-[max(2rem,env(safe-area-inset-bottom))] shadow-2xl space-y-4">
             
             {{-- Handle Bar untuk Layar Mobile --}}
             <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto sm:hidden -mt-1 mb-2"></div>
