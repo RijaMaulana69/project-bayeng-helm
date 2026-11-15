@@ -39,7 +39,7 @@
                     {{ $pesanan->status_label }}
                 </span>
             </div>
-            <p class="text-xs text-slate-400 font-mono mt-0.5">
+            <p class="text-xs text-slate-400 mt-0.5">
                 Kode Pickup: <span class="font-bold text-slate-700">{{ $pesanan->kode_pickup }}</span> · Dibuat {{ $pesanan->created_at->translatedFormat('l, d F Y, H:i') }} WIB
             </p>
         </div>
@@ -64,7 +64,7 @@
                 <p class="text-sm font-bold text-slate-900">
                     {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Langsung') }}
                 </p>
-                <p class="text-slate-500 font-mono">
+                <p class="text-slate-500">
                     <i class="fa-solid fa-phone text-[10px] text-slate-400 mr-1"></i>
                     {{ $pesanan->telepon ?? ($pesanan->pelanggan->telepon ?? '-') }}
                 </p>
@@ -87,7 +87,7 @@
                 <div class="flex items-center justify-between">
                     <span class="text-slate-500">Metode Bayar:</span>
                     <span class="font-bold text-slate-900">
-                        {{ $pesanan->metode_bayar === 'tunai' ? 'Tunai di Gerai (Laci Kasir)' : ucfirst($pesanan->metode_bayar) }}
+                        {{ $pesanan->metode_bayar === 'tunai' ? 'Tunai di Gerai (Laci Kasir)' : $pesanan->metode_bayar_label }}
                     </span>
                 </div>
                 <div class="flex items-center justify-between">
@@ -98,7 +98,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-slate-500">Batas Pengambilan:</span>
-                    <span class="font-mono text-slate-700">
+                    <span class="text-slate-700">
                         {{ $pesanan->batas_ambil ? $pesanan->batas_ambil->translatedFormat('d M Y') : 'Hari H Transaksi' }}
                     </span>
                 </div>
@@ -149,20 +149,20 @@
                                     {{ $item->warna }} / {{ $item->ukuran }}
                                 </span>
                             </td>
-                            <td class="py-3 px-4 text-center font-bold font-mono">
+                            <td class="py-3 px-4 text-center font-bold">
                                 {{ $item->qty }}
                             </td>
-                            <td class="py-3 px-4 text-right font-mono text-slate-500">
-                                {{ format_rupiah($hargaAwal) }}
+                            <td class="py-3 px-4 text-right tabular-nums text-slate-500">
+                                {{ number_format($hargaAwal, 0, ',', '.') }}
                             </td>
-                            <td class="py-3 px-4 text-right font-mono text-slate-800">
-                                {{ format_rupiah($hargaJual) }}
+                            <td class="py-3 px-4 text-right tabular-nums text-slate-800">
+                                {{ number_format($hargaJual, 0, ',', '.') }}
                             </td>
-                            <td class="py-3 px-4 text-right font-mono text-emerald-600 font-semibold">
-                                +{{ format_rupiah($margin) }}
+                            <td class="py-3 px-4 text-right tabular-nums text-emerald-600 font-semibold">
+                                +{{ number_format($margin, 0, ',', '.') }}
                             </td>
-                            <td class="py-3 px-4 text-right font-mono font-bold text-slate-900">
-                                {{ format_rupiah($item->subtotal) }}
+                            <td class="py-3 px-4 text-right tabular-nums font-bold text-slate-900">
+                                {{ number_format($item->subtotal, 0, ',', '.') }}
                             </td>
                         </tr>
                     @endforeach
@@ -172,11 +172,11 @@
                         <td colspan="5" class="py-3 px-4 text-right text-slate-600">
                             Total Estimasi Margin Transaksi:
                         </td>
-                        <td class="py-3 px-4 text-right font-mono text-emerald-700 font-bold">
-                            +{{ format_rupiah($pesanan->grand_total - $totalModalOrder) }}
+                        <td class="py-3 px-4 text-right tabular-nums text-emerald-700 font-bold">
+                            +{{ number_format($pesanan->grand_total - $totalModalOrder, 0, ',', '.') }}
                         </td>
-                        <td class="py-3 px-4 text-right font-mono text-slate-900 font-bold">
-                            {{ format_rupiah($pesanan->grand_total) }}
+                        <td class="py-3 px-4 text-right tabular-nums text-slate-900 font-bold">
+                            {{ number_format($pesanan->grand_total, 0, ',', '.') }}
                         </td>
                     </tr>
                 </tfoot>
@@ -211,8 +211,8 @@
                             <span class="font-bold text-xs text-slate-900">
                                 {{ ucfirst($log->status_ke) }}
                             </span>
-                            <span class="text-[11px] text-slate-400 font-mono">
-                                {{ $log->created_at->translatedFormat('d M Y, H:i:s') }} WIB
+                            <span class="text-[11px] text-slate-400">
+                                {{ $log->created_at->translatedFormat('d M Y, H:i') }} WIB
                             </span>
                         </div>
                         <p class="text-xs text-slate-600">

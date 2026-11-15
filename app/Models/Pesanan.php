@@ -75,6 +75,17 @@ class Pesanan extends Model
         };
     }
 
+    public function getMetodeBayarLabelAttribute(): string
+    {
+        return match(strtolower($this->metode_bayar ?? '')) {
+            'tunai' => 'Tunai',
+            'qris' => 'QRIS',
+            'transfer' => 'Transfer',
+            'ewallet' => 'E-Wallet',
+            default => ucfirst($this->metode_bayar ?? '-'),
+        };
+    }
+
     public function getBuktiBayarUrlAttribute(): ?string
     {
         if (! $this->bukti_bayar) {
