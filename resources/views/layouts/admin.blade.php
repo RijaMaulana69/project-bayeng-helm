@@ -256,11 +256,19 @@
                         <h1 class="text-sm font-bold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
                         
                         {{-- Real-time Digital Clock --}}
-                        <div x-data="{ time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }" 
-                             x-init="setInterval(() => { time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }, 1000)"
-                             class="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100/90 text-[11px] font-mono font-medium text-slate-600 border border-slate-200/60">
-                            <i class="fa-regular fa-clock text-[10px] text-slate-400"></i>
-                            <span x-text="time + ' WIB'"></span>
+                        <div x-data="{ 
+                                time: '',
+                                updateClock() {
+                                    const now = new Date();
+                                    const h = String(now.getHours()).padStart(2, '0');
+                                    const m = String(now.getMinutes()).padStart(2, '0');
+                                    this.time = `${h}:${m} WIB`;
+                                }
+                             }" 
+                             x-init="updateClock(); setInterval(() => updateClock(), 1000)"
+                             class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                            <i class="fa-regular fa-clock text-[11px]"></i>
+                            <span x-text="time"></span>
                         </div>
                     </div>
                 </div>
@@ -372,29 +380,70 @@
                     {{-- Subtle Vertical Divider --}}
                     <div class="h-5 w-px bg-slate-200 mx-1"></div>
 
-                    {{-- User Profile Pill & Clean Logout Button --}}
+                    {{-- User Profile Dropdown Menu --}}
                     @if($authUser)
-                    <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200/90 text-slate-700 font-semibold text-xs flex items-center justify-center shrink-0">
+                    <div class="relative" x-data="{ userMenu: false }" @click.outside="userMenu = false">
+                        <button type="button" 
+                                @click="userMenu = !userMenu"
+                                class="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
+                                aria-label="Menu Pengguna">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200/90 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:border-slate-300 transition-colors">
                                 {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
                             </div>
                             <div class="hidden sm:block text-left">
-                                <span class="text-xs font-semibold text-slate-800 block leading-tight">{{ $authUser->nama_lengkap }}</span>
-                                <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
+                                <span class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors block leading-tight">
+                                    {{ $authUser->nama_lengkap }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-medium">
+                                    {{ $roleLabel }}
+                                </span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-hover:text-slate-600 transition-colors hidden sm:block"></i>
+                        </button>
+
+                        {{-- Dropdown Panel --}}
+                        <div x-show="userMenu" 
+                             x-cloak 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden z-50 divide-y divide-slate-100">
+                            
+                            {{-- User Summary --}}
+                            <div class="p-3.5 bg-slate-50/50">
+                                <p class="text-xs font-bold text-slate-900 truncate">{{ $authUser->nama_lengkap }}</p>
+                                <div class="flex items-center gap-1.5 mt-1">
+                                    <span class="inline-block text-[10px] font-semibold px-1.5 py-0.2 rounded border {{ $roleBadgeBg }}">
+                                        {{ $roleLabel }}
+                                    </span>
+                                    <span class="text-[11px] text-slate-400 font-mono truncate">{{ '@' . $authUser->username }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="p-1.5 space-y-0.5">
+                                <a href="{{ route('admin.profil') }}" 
+                                   class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-xl transition-colors">
+                                    <i class="fa-regular fa-user text-slate-400 text-xs w-4 text-center"></i>
+                                    <span>Ubah Profil</span>
+                                </a>
+                            </div>
+
+                            {{-- Logout inside dropdown --}}
+                            <div class="p-1.5">
+                                <form action="{{ route('admin.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left cursor-pointer">
+                                        <i class="fa-solid fa-arrow-right-from-bracket text-xs w-4 text-center"></i>
+                                        <span>Keluar</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
-
-                        {{-- Clean Logout Action --}}
-                        <form action="{{ route('admin.logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" 
-                                    class="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors inline-flex items-center gap-1.5 cursor-pointer ml-1"
-                                    title="Keluar dari sistem">
-                                <i class="fa-solid fa-arrow-right-from-bracket text-[11px]"></i>
-                                <span class="hidden sm:inline">Keluar</span>
-                            </button>
-                        </form>
                     </div>
                     @endif
                 </div>

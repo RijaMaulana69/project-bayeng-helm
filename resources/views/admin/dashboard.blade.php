@@ -13,19 +13,13 @@
 
     {{-- 1. Header Kasir & Validasi Cepat --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-                <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                    Halo, {{ $user->nama_lengkap }}
-                </h1>
-                <p class="text-xs text-slate-400 mt-0.5">
-                    Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
-                </p>
-            </div>
-            <div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-[11px] font-mono font-medium text-slate-600">
-                <i class="fa-solid fa-store text-slate-400 text-[10px]"></i>
-                <span>Gerai Pusat</span>
-            </div>
+        <div>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                Halo, {{ $user->nama_lengkap }}
+            </h1>
+            <p class="text-xs text-slate-400 mt-0.5">
+                Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
+            </p>
         </div>
 
         {{-- Clean Voucher Pickup Input Bar --}}
@@ -214,8 +208,8 @@
                                         Lunas
                                     </span>
                                 @else
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80 font-mono">
-                                        {{ format_rupiah($pesanan->grand_total) }}
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                        Bayar di Toko
                                     </span>
                                 @endif
                                 <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-blue-600 transition-colors"></i>
