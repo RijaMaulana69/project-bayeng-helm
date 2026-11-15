@@ -207,7 +207,7 @@
             </span>
         </div>
 
-        {{-- Feed List (Sleek Tappable Items) --}}
+        {{-- Feed List (Minimalist Text Ledger ala Apple Wallet / Revolut) --}}
         <div class="divide-y divide-slate-100">
             @forelse ($pesanans as $pesanan)
                 @php
@@ -219,83 +219,65 @@
                     $firstDetail = $pesanan->details->first();
                     $otherCount = $pesanan->details->count() - 1;
 
-                    $badge = match($pesanan->status) {
-                        'completed' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-                        'ready' => 'bg-blue-50 text-blue-700 border-blue-200/80',
-                        'processing' => 'bg-amber-50 text-amber-700 border-amber-200/80',
-                        'paid' => 'bg-sky-50 text-sky-700 border-sky-200/80',
-                        'unpaid_pickup' => 'bg-amber-50 text-amber-700 border-amber-200/80',
-                        'pending' => 'bg-slate-100 text-slate-700 border-slate-200/80',
-                        'cancelled' => 'bg-rose-50 text-rose-700 border-rose-200/80',
-                        default => 'bg-slate-100 text-slate-700 border-slate-200/80',
-                    };
-
-                    $metodeBadge = match($pesanan->metode_bayar) {
-                        'qris' => 'bg-sky-50 text-sky-700 border-sky-200/80',
-                        'ewallet' => 'bg-purple-50 text-purple-700 border-purple-200/80',
-                        'tunai' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-                        'transfer' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
-                        default => 'bg-slate-100 text-slate-700 border-slate-200/80',
+                    $statusColor = match($pesanan->status) {
+                        'completed' => 'text-emerald-600',
+                        'ready' => 'text-blue-600',
+                        'processing' => 'text-amber-600',
+                        'paid' => 'text-sky-600',
+                        'unpaid_pickup' => 'text-amber-600',
+                        'pending' => 'text-slate-500',
+                        'cancelled' => 'text-rose-600',
+                        default => 'text-slate-500',
                     };
                 @endphp
                 <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" 
                    wire:navigate
-                   class="group block px-4 py-3 hover:bg-slate-50/70 transition-colors">
-                    <div class="flex items-center justify-between gap-3">
-                        {{-- Left Info: Order, Pelanggan, Produk, Kasir & Metode --}}
-                        <div class="min-w-0 flex-1 space-y-1">
-                            {{-- Row A: Order ID, Waktu & Badge Status --}}
-                            <div class="flex items-center gap-2">
-                                <span class="font-semibold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition-colors">
-                                    {{ $pesanan->no_pesanan }}
-                                </span>
-                                <span class="text-slate-300 text-xs">·</span>
-                                <span class="text-[11px] text-slate-400">
-                                    {{ $pesanan->created_at->translatedFormat('d M, H:i') }}
-                                </span>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $badge }}">
-                                    {{ $pesanan->status_label }}
-                                </span>
+                   class="group block px-3.5 sm:px-4 py-3 sm:py-3.5 hover:bg-slate-50/70 transition-colors">
+                    <div class="flex items-start justify-between gap-3">
+                        {{-- Kolom Kiri: Pelanggan, Produk, No. Order & Kasir (Anti-Patah dengan Truncate) --}}
+                        <div class="min-w-0 flex-1 space-y-0.5">
+                            {{-- Baris 1: Nama Pelanggan --}}
+                            <div class="text-xs sm:text-sm font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
+                                {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Langsung') }}
                             </div>
 
-                            {{-- Row B: Pelanggan & Rincian Helm --}}
-                            <div class="flex items-center gap-1.5 text-xs text-slate-700 truncate">
-                                <span class="font-medium text-slate-900 truncate">
-                                    {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Langsung') }}
-                                </span>
-                                <span class="text-slate-300">·</span>
-                                <span class="text-slate-600 truncate">
-                                    {{ $firstDetail ? $firstDetail->qty . 'x ' . ($firstDetail->helm->nama_helm ?? 'Helm') : 'Tanpa item' }}
-                                    @if($firstDetail)
-                                        <span class="text-slate-400">({{ $firstDetail->warna }}, {{ $firstDetail->ukuran }})</span>
-                                    @endif
-                                </span>
+                            {{-- Baris 2: Rincian Produk Helm --}}
+                            <div class="text-[11px] sm:text-xs text-slate-600 truncate">
+                                {{ $firstDetail ? $firstDetail->qty . 'x ' . ($firstDetail->helm->nama_helm ?? 'Helm') : 'Tanpa item' }}
+                                @if($firstDetail)
+                                    <span class="text-slate-400 font-normal">({{ $firstDetail->warna }}, {{ $firstDetail->ukuran }})</span>
+                                @endif
                                 @if($otherCount > 0)
-                                    <span class="text-[10px] font-medium text-blue-600 shrink-0">+{{ $otherCount }} lainnya</span>
+                                    <span class="text-[10px] font-medium text-blue-600 ml-0.5">+{{ $otherCount }} item</span>
                                 @endif
                             </div>
 
-                            {{-- Row C: Kasir & Metode Bayar --}}
-                            <div class="flex items-center gap-2 text-[11px] text-slate-500">
-                                <span>Kasir: <strong class="text-slate-700 font-medium">{{ $kasirNama }}</strong></span>
-                                <span class="text-slate-300">·</span>
-                                <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border {{ $metodeBadge }}">
-                                    {{ $pesanan->metode_bayar_label }}
-                                </span>
+                            {{-- Baris 3: No. Order, Waktu, dan Nama Kasir --}}
+                            <div class="text-[10px] sm:text-[11px] text-slate-400 truncate pt-0.5">
+                                <span>{{ $pesanan->no_pesanan }}</span>
+                                <span class="mx-1 text-slate-300">·</span>
+                                <span>{{ $pesanan->created_at->translatedFormat('d M, H:i') }}</span>
+                                <span class="mx-1 text-slate-300">·</span>
+                                <span>Kasir: {{ $kasirNama }}</span>
                             </div>
                         </div>
 
-                        {{-- Right Info: Total Nominal & Chevron --}}
-                        <div class="text-right shrink-0 flex items-center gap-2.5">
-                            <div>
-                                <div class="font-bold text-sm sm:text-base text-slate-900 tabular-nums">
-                                    {{ number_format($pesanan->grand_total, 0, ',', '.') }}
-                                </div>
-                                <span class="text-[10px] text-slate-400">
-                                    {{ $pesanan->details->count() }} item
-                                </span>
+                        {{-- Kolom Kanan: Nominal Bersih, Status Teks Murni & Metode Bayar (Shrink-0) --}}
+                        <div class="text-right shrink-0 space-y-0.5 pl-2">
+                            {{-- Baris 1: Nominal Transaksi (Tabular Nums, Tebal, Bersih) --}}
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 tabular-nums">
+                                {{ number_format($pesanan->grand_total, 0, ',', '.') }}
                             </div>
-                            <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all"></i>
+
+                            {{-- Baris 2: Status Teks Murni (Tanpa Background Badge yang Mengganggu) --}}
+                            <div class="text-[10px] sm:text-[11px] font-semibold {{ $statusColor }}">
+                                {{ $pesanan->status_label }}
+                            </div>
+
+                            {{-- Baris 3: Metode Bayar Teks Netral (QRIS, Tunai, Transfer, E-Wallet) --}}
+                            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium">
+                                {{ $pesanan->metode_bayar_label }}
+                            </div>
                         </div>
                     </div>
                 </a>
