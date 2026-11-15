@@ -124,16 +124,51 @@ class LaporanController extends Controller
         $toko = Toko::first();
         $periode = $jenisLaporan === 'bulanan' ? "Tahun {$tahun}" : "Rekap Tahunan";
 
+        // Ringkasan metrik eksekutif
+        $totalPesanan = (int) array_sum(array_column($reportData, 'total_pesanan'));
+        $totalOmzet = (float) array_sum(array_column($reportData, 'total_omzet'));
+        $avgOmzet = $totalPesanan > 0 ? (float) ($totalOmzet / $totalPesanan) : 0;
+
+        // Kontribusi persentase per baris
+        foreach ($reportData as &$row) {
+            $row['persentase'] = $totalOmzet > 0 ? round(($row['total_omzet'] / $totalOmzet) * 100, 1) : 0;
+        }
+        unset($row);
+
+        // Periode terbaik (omzet tertinggi)
+        $bestPeriod = collect($reportData)->sortByDesc('total_omzet')->first();
+
+        // Encode logo dalam base64 untuk keandalan rendering Dompdf
+        $logoBase64 = null;
+        $logoPath = public_path('assets/logo.png');
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        $user = Auth::guard('web')->user();
+        $nomorDokumen = 'BPH-LPJ/' . $tahun . '/' . str_pad(now()->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($user->id_user ?? 1, 3, '0', STR_PAD_LEFT);
+
         $pdf = Pdf::loadView('admin.laporan.pdf', [
             'jenis_laporan' => $jenisLaporan,
             'tahun' => $tahun,
             'report_data' => $reportData,
             'pengaturan' => $toko,
             'periode' => $periode,
+            'total_pesanan' => $totalPesanan,
+            'total_omzet' => $totalOmzet,
+            'avg_omzet' => $avgOmzet,
+            'best_period' => $bestPeriod,
+            'logo_base64' => $logoBase64,
+            'user' => $user,
+            'nomor_dokumen' => $nomorDokumen,
+            'tanggal_cetak' => now()->translatedFormat('d F Y, H:i') . ' WIB',
         ]);
 
-        $user = Auth::guard('web')->user();
-        ActivityLog::log('export_pdf', "Export PDF laporan penjualan {$jenisLaporan} tahun {$tahun}", 'user', $user->id_user, $user->username);
+        $pdf->setPaper('a4', 'portrait');
+
+        if ($user) {
+            ActivityLog::log('export_pdf', "Export PDF laporan penjualan {$jenisLaporan} tahun {$tahun}", 'user', $user->id_user, $user->username);
+        }
 
         return $pdf->download("laporan-penjualan-{$jenisLaporan}-{$tahun}.pdf");
     }
@@ -144,28 +179,82 @@ class LaporanController extends Controller
         $tahun = $request->input('tahun', date('Y'));
 
         [$reportData] = $this->buildReportData($jenisLaporan, $tahun);
-
+        $toko = Toko::first();
         $user = Auth::guard('web')->user();
-        ActivityLog::log('export_csv', "Export CSV laporan penjualan {$jenisLaporan} tahun {$tahun}", 'user', $user->id_user, $user->username);
+
+        if ($user) {
+            ActivityLog::log('export_csv', "Export CSV laporan penjualan {$jenisLaporan} tahun {$tahun}", 'user', $user->id_user, $user->username);
+        }
 
         $filename = "laporan-penjualan-{$jenisLaporan}-{$tahun}.csv";
 
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function () use ($reportData, $jenisLaporan) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, [$jenisLaporan === 'tahunan' ? 'Tahun' : 'Bulan', 'Total Pesanan', 'Total Omzet (Rp)']);
+        $totalPesanan = (int) array_sum(array_column($reportData, 'total_pesanan'));
+        $totalOmzet = (float) array_sum(array_column($reportData, 'total_omzet'));
+        $periodeLabel = $jenisLaporan === 'bulanan' ? "Tahun {$tahun}" : "Rekap Tahunan";
 
+        $callback = function () use ($reportData, $jenisLaporan, $tahun, $toko, $user, $periodeLabel, $totalPesanan, $totalOmzet) {
+            $file = fopen('php://output', 'w');
+
+            // UTF-8 BOM untuk kompatibilitas penuh Microsoft Excel
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Metadata Identitas Usaha & Dokumen
+            fputcsv($file, [strtoupper($toko->nama_toko ?? 'Bayeng Putra Helm')], ',', '"', '\\');
+            fputcsv($file, ['Alamat: ' . ($toko->alamat ?? 'Jl. RE Martadinata No.49, Cijoho, Kuningan, Jawa Barat')], ',', '"', '\\');
+            fputcsv($file, ['Kontak: ' . ($toko->telepon ?? '089664269624')], ',', '"', '\\');
+            fwrite($file, "\r\n");
+            fputcsv($file, ['LAPORAN PENJUALAN', strtoupper($periodeLabel)], ',', '"', '\\');
+            fputcsv($file, ['Tanggal Ekspor', now()->format('d/m/Y H:i:s') . ' WIB'], ',', '"', '\\');
+            fputcsv($file, ['Dicetak Oleh', ($user->nama_lengkap ?? $user->username ?? 'Administrator')], ',', '"', '\\');
+            fwrite($file, "\r\n");
+
+            // Baris Header Kolom
+            fputcsv($file, [
+                'No',
+                $jenisLaporan === 'tahunan' ? 'Tahun' : 'Bulan',
+                'Total Pesanan',
+                'Total Omzet (Rp)',
+                'Kontribusi Omzet (%)'
+            ], ',', '"', '\\');
+
+            // Data Rows
+            $no = 1;
             foreach ($reportData as $row) {
+                $omzet = (float) $row['total_omzet'];
+                $kontribusi = $totalOmzet > 0 ? number_format(($omzet / $totalOmzet) * 100, 1, ',', '') . '%' : '0,0%';
+
                 fputcsv($file, [
-                    $row['label'],
-                    $row['total_pesanan'],
-                    $row['total_omzet'],
-                ]);
+                    $no++,
+                    $row['label'] ?? '-',
+                    (int) $row['total_pesanan'],
+                    $omzet,
+                    $kontribusi,
+                ], ',', '"', '\\');
             }
+
+            // Separator & Summary Rows
+            fwrite($file, "\r\n");
+            fputcsv($file, [
+                '',
+                'TOTAL KESELURUHAN',
+                $totalPesanan,
+                $totalOmzet,
+                '100,0%',
+            ], ',', '"', '\\');
+
+            $avgOmzet = $totalPesanan > 0 ? round($totalOmzet / $totalPesanan) : 0;
+            fputcsv($file, [
+                '',
+                'Rata-rata Omzet per Pesanan',
+                '-',
+                $avgOmzet,
+                '-',
+            ], ',', '"', '\\');
 
             fclose($file);
         };
