@@ -267,7 +267,7 @@
                         </div>
                     @endif
 
-                    {{-- Row 4: Total & Action Buttons --}}
+                    {{-- Row 4: Total & Action Button --}}
                     <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                         <div>
                             <span class="text-[10px] text-slate-400 block leading-none">{{ $metodeLabel }}</span>
@@ -276,19 +276,10 @@
                             </span>
                         </div>
 
-                        <div class="flex items-center gap-1.5">
-                            @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
-                                <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                   class="px-2.5 py-1 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors">
-                                    Serahkan
-                                </a>
-                            @endif
-
-                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                               class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors">
-                                Detail
-                            </a>
-                        </div>
+                        <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                           class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors">
+                            Detail
+                        </a>
                     </div>
                 </div>
             @endforeach
@@ -405,20 +396,10 @@
 
                                 {{-- 7. Aksi --}}
                                 <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-1.5 justify-end">
-                                        @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
-                                            <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                               class="px-2.5 py-1 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors"
-                                               title="Serahkan Pesanan ke Pelanggan">
-                                                Serahkan
-                                            </a>
-                                        @endif
-
-                                        <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                                           class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors">
-                                            Detail
-                                        </a>
-                                    </div>
+                                    <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                                       class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors">
+                                        Detail
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
