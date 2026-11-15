@@ -14,7 +14,7 @@
                     <span class="hidden sm:inline">Sebelumnya</span>
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="h-8 px-2.5 sm:px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-500 font-medium text-xs transition-colors inline-flex items-center gap-1 shadow-2xs">
+                <a href="{{ $paginator->previousPageUrl() }}" wire:navigate class="h-8 px-2.5 sm:px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-500 font-medium text-xs transition-colors inline-flex items-center gap-1 shadow-2xs">
                     <span>&larr;</span>
                     <span class="hidden sm:inline">Sebelumnya</span>
                 </a>
@@ -37,7 +37,7 @@
                                 {{ $page }}
                             </span>
                         @else
-                            <a href="{{ $url }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-700 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50/50 transition-colors text-xs font-semibold shadow-2xs">
+                            <a href="{{ $url }}" wire:navigate class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-700 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50/50 transition-colors text-xs font-semibold shadow-2xs">
                                 {{ $page }}
                             </a>
                         @endif
@@ -47,7 +47,7 @@
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="h-8 px-2.5 sm:px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-500 font-medium text-xs transition-colors inline-flex items-center gap-1 shadow-2xs">
+                <a href="{{ $paginator->nextPageUrl() }}" wire:navigate class="h-8 px-2.5 sm:px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-500 font-medium text-xs transition-colors inline-flex items-center gap-1 shadow-2xs">
                     <span class="hidden sm:inline">Selanjutnya</span>
                     <span>&rarr;</span>
                 </a>

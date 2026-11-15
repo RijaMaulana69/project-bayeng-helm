@@ -38,12 +38,17 @@
         @enderror
     </div>
 
-    {{-- 3. Rekap Pendapatan Karyawan (Hari Ini & Bulan Ini) --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {{-- 3. Rekap Transaksi (Kasir: Rekap Kasir Hari Ini; Owner: Hari Ini & Bulan Ini) --}}
+    @php
+        $isOwner = auth('web')->user()?->isOwner() ?? false;
+    @endphp
+    <div class="grid grid-cols-1 {{ $isOwner ? 'md:grid-cols-2' : 'max-w-md' }} gap-3">
         {{-- Card A: Hari Ini --}}
         <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Pendapatan Hari Ini</h3>
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                    Pendapatan Hari Ini
+                </h3>
                 <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
                     {{ $rekapPendapatan['hari_ini']['count'] }} Pesanan
                 </span>
@@ -79,7 +84,8 @@
             </div>
         </div>
 
-        {{-- Card B: Bulan Ini --}}
+        {{-- Card B: Bulan Ini (Khusus Owner) --}}
+        @if($isOwner)
         <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between gap-2">
                 <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Pendapatan Bulan Ini</h3>
@@ -111,6 +117,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 
     {{-- 4. Clean Minimalist Status Tabs --}}
@@ -131,6 +138,7 @@
                 $isActive = ($currentStatus === $tab['id']) || ($tab['id'] === 'all' && (!$currentStatus || $currentStatus === 'all'));
             @endphp
             <a href="{{ route('admin.pesanan.index', array_merge(request()->except('status', 'page'), ['status' => $tab['id']])) }}"
+               wire:navigate
                class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $isActive ? 'bg-slate-900 text-white font-semibold shadow-2xs' : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
                 <span>{{ $tab['label'] }}</span>
                 <span class="text-[11px] {{ $isActive ? 'text-slate-300' : 'text-slate-400' }}">
@@ -176,6 +184,7 @@
 
                 @if($hasFilters)
                     <a href="{{ route('admin.pesanan.index') }}" 
+                       wire:navigate
                        class="h-9 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 text-xs font-medium rounded-lg transition-colors inline-flex items-center justify-center gap-1 shrink-0"
                        title="Reset Filter">
                         <i class="fa-solid fa-rotate-left text-xs"></i>
@@ -210,7 +219,7 @@
                     {{-- Row 1: No. Transaksi, Waktu, Pickup & Status --}}
                     <div class="flex items-center justify-between gap-2">
                         <div class="min-w-0">
-                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="font-semibold text-xs text-slate-900 hover:text-blue-600 block truncate">
+                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" wire:navigate class="font-semibold text-xs text-slate-900 hover:text-blue-600 block truncate">
                                 {{ $pesanan->no_pesanan }}
                             </a>
                             <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
@@ -277,6 +286,7 @@
                         </div>
 
                         <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                           wire:navigate
                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors">
                             Detail
                         </a>
@@ -319,6 +329,7 @@
                                 {{-- 1. No. Transaksi & Waktu --}}
                                 <td class="py-3.5 px-4">
                                     <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                                       wire:navigate
                                        class="font-medium text-slate-900 hover:text-blue-600 transition-colors block">
                                         {{ $pesanan->no_pesanan }}
                                     </a>
@@ -397,6 +408,7 @@
                                 {{-- 7. Aksi --}}
                                 <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                     <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                                       wire:navigate
                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors">
                                         Detail
                                     </a>
@@ -432,6 +444,7 @@
             @if($hasFilters)
                 <div class="pt-2">
                     <a href="{{ route('admin.pesanan.index') }}" 
+                       wire:navigate
                        class="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
                         <i class="fa-solid fa-rotate-left text-xs"></i>
                         <span>Reset Filter</span>

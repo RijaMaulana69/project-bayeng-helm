@@ -56,6 +56,7 @@
     <div class="flex items-center justify-between gap-3">
         <div>
             <a href="{{ route('admin.produk.index') }}" 
+               wire:navigate
                class="text-xs text-slate-500 hover:text-slate-800 font-medium inline-flex items-center gap-1.5 transition-colors mb-1">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 <span>Kembali ke Katalog</span>
@@ -369,6 +370,7 @@
         {{-- Action Buttons --}}
         <div class="flex items-center justify-end gap-2.5 pt-2">
             <a href="{{ route('admin.produk.index') }}" 
+               wire:navigate
                class="h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium text-xs transition-colors">
                 Batal
             </a>

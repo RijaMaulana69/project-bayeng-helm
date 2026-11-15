@@ -97,43 +97,53 @@
 
 @push('scripts')
 <script>
-    const ctx = document.getElementById('reportChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($chart_labels ?? []) !!},
-            datasets: [{
-                label: 'Omzet (Rp)',
-                data: {!! json_encode($chart_data ?? []) !!},
-                backgroundColor: 'rgba(37, 99, 235, 0.7)',
-                borderColor: '#2563eb',
-                borderWidth: 1,
-                borderRadius: 6,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(ctx) {
-                            return 'Rp ' + ctx.raw.toLocaleString('id-ID');
+    (function() {
+        const canvas = document.getElementById('reportChart');
+        if (!canvas) return;
+
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($chart_labels ?? []) !!},
+                datasets: [{
+                    label: 'Omzet (Rp)',
+                    data: {!! json_encode($chart_data ?? []) !!},
+                    backgroundColor: 'rgba(37, 99, 235, 0.7)',
+                    borderColor: '#2563eb',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return 'Rp ' + ctx.raw.toLocaleString('id-ID');
+                            }
                         }
                     }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(val) {
-                            return 'Rp ' + (val / 1000000).toFixed(0) + ' jt';
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(val) {
+                                return 'Rp ' + (val / 1000000).toFixed(0) + ' jt';
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    })();
 </script>
 @endpush

@@ -139,6 +139,7 @@
     {{-- 2. Stat Overview Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <a href="{{ route('admin.atribut.index', ['tab' => 'merk']) }}" 
+           wire:navigate
            class="p-4 rounded-xl border transition-all {{ $tab === 'merk' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'merk' ? 'text-slate-300' : 'text-slate-400' }}">
@@ -155,6 +156,7 @@
         </a>
 
         <a href="{{ route('admin.atribut.index', ['tab' => 'kategori']) }}" 
+           wire:navigate
            class="p-4 rounded-xl border transition-all {{ $tab === 'kategori' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'kategori' ? 'text-slate-300' : 'text-slate-400' }}">
@@ -171,6 +173,7 @@
         </a>
 
         <a href="{{ route('admin.atribut.index', ['tab' => 'warna']) }}" 
+           wire:navigate
            class="p-4 rounded-xl border transition-all {{ $tab === 'warna' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'warna' ? 'text-slate-300' : 'text-slate-400' }}">
@@ -192,18 +195,21 @@
         {{-- Tab Pills --}}
         <div class="flex items-center gap-1.5 border-b sm:border-b-0 border-slate-200 pb-2 sm:pb-0">
             <a href="{{ route('admin.atribut.index', ['tab' => 'merk']) }}" 
+               wire:navigate
                class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1.5 {{ $tab === 'merk' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80' }}">
                 <i class="fa-solid fa-tag text-[10px]"></i>
                 <span>Merk ({{ $totalMerk }})</span>
             </a>
 
             <a href="{{ route('admin.atribut.index', ['tab' => 'kategori']) }}" 
+               wire:navigate
                class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1.5 {{ $tab === 'kategori' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80' }}">
                 <i class="fa-solid fa-layer-group text-[10px]"></i>
                 <span>Kategori ({{ $totalKategori }})</span>
             </a>
 
             <a href="{{ route('admin.atribut.index', ['tab' => 'warna']) }}" 
+               wire:navigate
                class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1.5 {{ $tab === 'warna' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80' }}">
                 <i class="fa-solid fa-palette text-[10px]"></i>
                 <span>Warna Swatch ({{ $totalWarna }})</span>
@@ -221,6 +227,7 @@
                    class="w-full h-8 pl-8 pr-7 rounded-lg bg-white border border-slate-200/90 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all">
             @if($search)
                 <a href="{{ route('admin.atribut.index', ['tab' => $tab]) }}" 
+                   wire:navigate
                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
                     <i class="fa-solid fa-xmark"></i>
                 </a>

@@ -41,11 +41,14 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Pesanan Masuk Terbaru');
         $response->assertSee('Peringatan Stok Menipis');
 
-        // Dynamic pickup verification tool & period filter presence
-        $response->assertSee(route('admin.pickup.validasi'));
-        $response->assertSee('Scan / Kode Pickup (PKP-...)');
+        // Owner executive monitoring tools & period filter presence
+        $response->assertSee(route('admin.owner.transaksi-karyawan.index'));
+        $response->assertSee(route('admin.owner.barang-masuk.index'));
         $response->assertSee('Filter Periode:');
         $response->assertSee('Bulan Ini');
+
+        // Verify Owner does NOT have cashier pickup tools
+        $response->assertDontSee('Scan / Kode Pickup (PKP-...)');
 
         // Verify elimination of AI slop rainbow gradients & legacy classes
         $response->assertDontSee('linear-gradient(135deg, #2563eb, #1d4ed8)');
@@ -107,7 +110,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_mobile_bottom_navigation_bar_is_rendered(): void
     {
-        $user = User::firstOrCreate(
+        $owner = User::firstOrCreate(
             ['username' => 'admin_dash_test'],
             [
                 'nama_lengkap' => 'Admin Dashboard Tester',
@@ -116,12 +119,21 @@ class AdminDashboardTest extends TestCase
             ]
         );
 
-        $response = $this->actingAs($user, 'web')->get(route('admin.dashboard'));
-
+        // Owner mobile navigation: Executive links (Trx Kasir, Brg Masuk, Laporan), no operational cashier buttons
+        $response = $this->actingAs($owner, 'web')->get(route('admin.dashboard'));
         $response->assertStatus(200);
-        // Assert presence of mobile bottom navigation
         $response->assertSee('lg:hidden fixed bottom-0 inset-x-0');
-        $response->assertSee('Kasir Pickup');
-        $response->assertSee('Stok');
+        $response->assertSee('Trx Kasir');
+        $response->assertSee('Brg Masuk');
+        $response->assertSee('Laporan');
+
+        // Karyawan mobile navigation: Operational cashier buttons (Transaksi, Stok)
+        $karyawan = User::where('id_role', 2)->first();
+        if ($karyawan) {
+            $respKaryawan = $this->actingAs($karyawan, 'web')->get(route('admin.dashboard'));
+            $respKaryawan->assertStatus(200);
+            $respKaryawan->assertSee('Transaksi');
+            $respKaryawan->assertSee('Stok');
+        }
     }
 }

@@ -74,10 +74,54 @@ class SecurityTest extends TestCase
         $karyawan = User::where('id_role', 2)->first();
 
         if ($karyawan) {
-            $response = $this->actingAs($karyawan, 'web')
-                ->get('/admin/user');
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/user')
+                ->assertStatus(403);
 
-            $response->assertStatus(403);
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/atribut')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->delete('/admin/produk/1')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/laporan-penjualan')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/activity-log')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/pengaturan')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/transaksi-karyawan')
+                ->assertStatus(403);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/barang-masuk')
+                ->assertStatus(403);
+
+            // But karyawan CAN access operational routes
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/produk')
+                ->assertStatus(200);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/produk/create')
+                ->assertStatus(200);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/pesanan')
+                ->assertStatus(200);
+
+            $this->actingAs($karyawan, 'web')
+                ->get('/admin/pickup')
+                ->assertRedirect(route('admin.pesanan.index', ['status' => 'ready']));
         } else {
             $this->markTestSkipped('No user with id_role = 2 (Karyawan) found.');
         }

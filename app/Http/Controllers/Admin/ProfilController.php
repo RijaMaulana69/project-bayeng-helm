@@ -23,6 +23,7 @@ class ProfilController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'password'      => [
                 'nullable',
+                'confirmed',
                 'string',
                 'min:8',
                 'regex:/[a-z]/',
@@ -30,8 +31,9 @@ class ProfilController extends Controller
                 'regex:/[0-9]/',
             ],
         ], [
-            'password.regex' => 'Password harus mengandung huruf besar, huruf kecil, dan angka.',
-            'password.min'   => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+            'password.regex'     => 'Password harus mengandung huruf besar, huruf kecil, dan angka.',
+            'password.min'       => 'Password minimal 8 karakter.',
         ]);
 
         $user = Auth::guard('web')->user();
@@ -48,7 +50,7 @@ class ProfilController extends Controller
 
         ActivityLog::log('update_profil', 'Mengubah profil: ' . $user->nama_lengkap, 'user', $user->id_user, $user->username);
 
-        return redirect()->route('admin.profil.index')
+        return redirect()->route('admin.profil')
             ->with('success', 'Profil berhasil diperbarui.');
     }
 }

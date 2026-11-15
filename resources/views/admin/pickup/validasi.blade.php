@@ -7,6 +7,7 @@
 
     {{-- Navigasi Kembali --}}
     <a href="{{ route('admin.pesanan.index') }}" 
+       wire:navigate
        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <i class="fa-solid fa-arrow-left text-[11px]"></i>
         <span>Kembali ke Transaksi</span>
@@ -128,10 +129,12 @@
             @else
                 <div class="pt-1 flex items-center gap-2">
                     <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                       wire:navigate
                        class="flex-1 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs rounded-lg inline-flex items-center justify-center transition-colors">
                         Detail Pesanan
                     </a>
                     <a href="{{ route('admin.pesanan.index') }}" 
+                       wire:navigate
                        class="flex-1 h-10 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg inline-flex items-center justify-center transition-colors">
                         Kembali ke Transaksi
                     </a>

@@ -70,20 +70,25 @@
 
 @push('scripts')
 <script>
-    document.getElementById('input-logo').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const wrapper = document.getElementById('preview-wrapper');
-        const img = document.getElementById('preview-logo');
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (ev) {
-                img.src = ev.target.result;
-                wrapper.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            wrapper.style.display = 'none';
-        }
-    });
+    (function() {
+        const inputLogo = document.getElementById('input-logo');
+        if (!inputLogo) return;
+
+        inputLogo.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const wrapper = document.getElementById('preview-wrapper');
+            const img = document.getElementById('preview-logo');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    img.src = ev.target.result;
+                    wrapper.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                wrapper.style.display = 'none';
+            }
+        });
+    })();
 </script>
 @endpush

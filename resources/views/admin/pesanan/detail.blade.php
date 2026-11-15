@@ -24,6 +24,7 @@
 
     {{-- Navigasi Kembali --}}
     <a href="{{ route('admin.pesanan.index') }}" 
+       wire:navigate
        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors">
         <i class="fa-solid fa-arrow-left text-[11px]"></i>
         <span>Kembali ke Transaksi</span>

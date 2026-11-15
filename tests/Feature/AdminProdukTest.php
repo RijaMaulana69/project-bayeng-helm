@@ -28,7 +28,7 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Pusat Produk & Inventori', false);
+        $response->assertSee('Katalog & Stok', false);
         $response->assertSee('Tambah Produk Baru');
     }
 
@@ -131,5 +131,32 @@ class AdminProdukTest extends TestCase
 
         $deleteResponse->assertRedirect(route('admin.produk.index'));
         $this->assertNull(Helm::find($helm->id_helm));
+    }
+
+    public function test_karyawan_can_view_catalog_and_create_products_without_cost_prices_or_delete_action(): void
+    {
+        $karyawan = User::where('id_role', 2)->first();
+
+        if (!$karyawan) {
+            $this->markTestSkipped('No user with id_role = 2 (Karyawan) found.');
+        }
+
+        $response = $this->actingAs($karyawan, 'web')
+            ->get(route('admin.produk.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Harga Jual');
+        $response->assertDontSee('Modal: Rp');
+        $response->assertSee('Tambah Produk Baru');
+
+        // Can access create page
+        $this->actingAs($karyawan, 'web')
+            ->get(route('admin.produk.create'))
+            ->assertStatus(200);
+
+        // Cannot delete product (Owner only)
+        $this->actingAs($karyawan, 'web')
+            ->delete(route('admin.produk.destroy', 1))
+            ->assertStatus(403);
     }
 }

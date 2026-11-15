@@ -210,12 +210,20 @@ class AdminPesananTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Pendapatan Hari Ini');
-        $response->assertSee('Pendapatan Bulan Ini');
+        $response->assertDontSee('Pendapatan Bulan Ini');
         $response->assertSee('Tunai Toko');
         $response->assertSee('Online / QRIS');
         $response->assertSee('Masukkan kode pickup');
         $response->assertSee('Validasi');
         $response->assertSee(route('admin.pickup.validasi'));
+
+        // Owner CAN see monthly revenue recap
+        $owner = User::where('id_role', 1)->first();
+        if ($owner) {
+            $ownerResponse = $this->actingAs($owner, 'web')->get(route('admin.pesanan.index'));
+            $ownerResponse->assertStatus(200);
+            $ownerResponse->assertSee('Pendapatan Bulan Ini');
+        }
     }
 
     public function test_transaksi_index_pagination_renders_numbered_pages(): void

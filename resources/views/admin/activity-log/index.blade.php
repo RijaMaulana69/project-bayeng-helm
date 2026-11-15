@@ -37,7 +37,7 @@
                     <i class="fas fa-filter me-1"></i> Filter
                 </button>
                 @if(request()->hasAny(['action', 'date_from', 'date_to']))
-                    <a href="{{ route('admin.activity-log.index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('admin.activity-log.index') }}" wire:navigate class="btn btn-outline-secondary">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif

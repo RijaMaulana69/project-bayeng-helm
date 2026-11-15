@@ -7,7 +7,7 @@
 <div class="card card-bayeng">
     <div class="card-header d-flex align-items-center justify-content-between">
         <h5 class="mb-0"><i class="fas fa-users-gear me-2"></i>Daftar Karyawan</h5>
-        <a href="{{ route('admin.user.create') }}" class="btn btn-primary-admin">
+        <a href="{{ route('admin.user.create') }}" wire:navigate class="btn btn-primary-admin">
             <i class="fas fa-plus me-1"></i> Tambah Karyawan
         </a>
     </div>
@@ -42,7 +42,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('admin.user.edit', $user->id_user) }}" class="btn btn-outline-warning" title="Edit">
+                                    <a href="{{ route('admin.user.edit', $user->id_user) }}" wire:navigate class="btn btn-outline-warning" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if ($user->id_user !== auth()->id())
@@ -71,24 +71,24 @@
 
 @push('scripts')
 <script>
-    document.querySelectorAll('.btn-delete').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const form = this.closest('form');
-            Swal.fire({
-                title: 'Hapus Karyawan?',
-                text: 'Data yang dihapus tidak dapat dikembalikan!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-delete');
+        if (!btn) return;
+        e.preventDefault();
+        const form = btn.closest('form');
+        Swal.fire({
+            title: 'Hapus Karyawan?',
+            text: 'Data yang dihapus tidak dapat dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                form.submit();
+            }
         });
     });
 </script>

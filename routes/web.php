@@ -75,19 +75,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profil', [\App\Http\Controllers\Admin\ProfilController::class, 'index'])->name('profil');
         Route::put('profil', [\App\Http\Controllers\Admin\ProfilController::class, 'update'])->name('profil.update');
 
-        // Manajemen Produk & Atribut (karyawan + owner)
-        Route::get('atribut', [\App\Http\Controllers\Admin\AtributController::class, 'index'])->name('atribut.index');
-        Route::resource('produk', \App\Http\Controllers\Admin\ProdukController::class)->except(['show']);
-        Route::resource('merk', \App\Http\Controllers\Admin\MerkController::class)->except(['show']);
-        Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)->except(['show']);
-        Route::resource('warna', \App\Http\Controllers\Admin\WarnaController::class)->except(['show', 'create', 'edit']);
-        Route::put('warna/{warna}', [\App\Http\Controllers\Admin\WarnaController::class, 'update'])->name('warna.update');
+        // Manajemen Produk & Cek Stok (Karyawan & Owner: kelola produk & catat stok masuk)
+        Route::resource('produk', \App\Http\Controllers\Admin\ProdukController::class)->except(['show', 'destroy']);
         Route::resource('stok', \App\Http\Controllers\Admin\StokController::class)->only(['index', 'store']);
 
-        // Manajemen Pesanan Online (karyawan + owner)
+        // Manajemen Pesanan Online & Kasir Gerai (Karyawan + Owner)
         Route::get('pesanan', [\App\Http\Controllers\Admin\PesananController::class, 'index'])->name('pesanan.index');
         Route::get('pesanan/{pesanan}', [\App\Http\Controllers\Admin\PesananController::class, 'show'])->name('pesanan.show');
         Route::put('pesanan/{pesanan}/status', [\App\Http\Controllers\Admin\PesananController::class, 'updateStatus'])->name('pesanan.update-status');
+
+        // Riwayat & Buku Kasir Karyawan (Hari ini & Bulan ini)
+        Route::get('riwayat-kasir', [\App\Http\Controllers\Admin\KaryawanRiwayatController::class, 'index'])->name('karyawan.riwayat');
 
         // Validasi Pickup (kasir scan/input kode)
         Route::get('pickup', [\App\Http\Controllers\Admin\PickupController::class, 'index'])->name('pickup.index');
@@ -98,6 +96,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // OWNER ONLY
         // ============================================================
         Route::middleware('role:owner')->group(function () {
+            // Hapus Produk Helm (Owner Only)
+            Route::delete('produk/{produk}', [\App\Http\Controllers\Admin\ProdukController::class, 'destroy'])->name('produk.destroy');
+
+            // Master Atribut & Taksonomi Produk (Owner Only)
+            Route::get('atribut', [\App\Http\Controllers\Admin\AtributController::class, 'index'])->name('atribut.index');
+            Route::resource('merk', \App\Http\Controllers\Admin\MerkController::class)->except(['show']);
+            Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)->except(['show']);
+            Route::resource('warna', \App\Http\Controllers\Admin\WarnaController::class)->except(['show', 'create', 'edit']);
+            Route::put('warna/{warna}', [\App\Http\Controllers\Admin\WarnaController::class, 'update'])->name('warna.update');
+
+            // FITUR OWNER 1: Monitoring & Transaksi Karyawan
+            Route::get('transaksi-karyawan', [\App\Http\Controllers\Admin\OwnerTransaksiController::class, 'index'])->name('owner.transaksi-karyawan.index');
+            Route::get('transaksi-karyawan/{pesanan}', [\App\Http\Controllers\Admin\OwnerTransaksiController::class, 'show'])->name('owner.transaksi-karyawan.show');
+
+            // FITUR OWNER 2: Riwayat & Log Barang Masuk
+            Route::get('barang-masuk', [\App\Http\Controllers\Admin\OwnerBarangMasukController::class, 'index'])->name('owner.barang-masuk.index');
+
             // User / Karyawan (supports both admin.user.* and admin.owner.user.*)
             Route::resource('user', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
 
@@ -117,6 +132,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             // Owner prefix aliases to ensure complete compatibility
             Route::prefix('owner')->name('owner.')->group(function () {
+                Route::get('transaksi-karyawan', fn() => redirect()->route('admin.owner.transaksi-karyawan.index'))->name('transaksi-karyawan');
+                Route::get('barang-masuk', fn() => redirect()->route('admin.owner.barang-masuk.index'))->name('barang-masuk');
                 Route::get('user', fn() => redirect()->route('admin.user.index'))->name('user.index');
                 Route::get('laporan-penjualan', fn() => redirect()->route('admin.laporan.penjualan'))->name('laporan.penjualan');
                 Route::get('activity-log', fn() => redirect()->route('admin.activity-log.index'))->name('activity-log');

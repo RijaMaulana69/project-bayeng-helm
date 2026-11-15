@@ -13,13 +13,23 @@
 
     {{-- 1. Header Kasir & Validasi Cepat --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
-        <div>
-            <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                Halo, {{ $user->nama_lengkap }}
-            </h1>
-            <p class="text-xs text-slate-400 mt-0.5">
-                Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
-            </p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                    Halo, {{ $user->nama_lengkap }}
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
+                </p>
+            </div>
+            <div>
+                <a href="{{ route('admin.karyawan.riwayat') }}" 
+                   wire:navigate
+                   class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-clock-rotate-left text-xs text-blue-600"></i>
+                    <span>Riwayat Kasir</span>
+                </a>
+            </div>
         </div>
 
         {{-- Clean Voucher Pickup Input Bar --}}
@@ -48,6 +58,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {{-- 1. Siap Diambil di Gerai --}}
             <a href="{{ route('admin.pickup.index') }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -69,6 +80,7 @@
 
             {{-- 2. Perlu Disiapkan di Rak --}}
             <a href="{{ route('admin.pesanan.index', ['status' => 'processing']) }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-sky-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -90,6 +102,7 @@
 
             {{-- 3. Verifikasi Bukti Transfer --}}
             <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -112,7 +125,8 @@
             </a>
 
             {{-- 4. Stok Fisik Habis di Rak --}}
-            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'habis']) }}" 
+            <a href="{{ route('admin.produk.index', ['stok_filter' => 'habis']) }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-rose-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -144,7 +158,7 @@
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Ambil Pesanan</h3>
                 </div>
-                <a href="{{ route('admin.pickup.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.pickup.index') }}" wire:navigate class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Lihat Semua</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
@@ -229,7 +243,7 @@
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok</h3>
                 </div>
-                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.produk.index', ['stok_filter' => 'kritis_habis']) }}" wire:navigate class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Kelola Stok</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
@@ -243,7 +257,7 @@
                         $sampleVarians = $helm->varians->take(2)->map(fn($v) => $v->warna . ' (' . $v->ukuran . ')')->join(', ');
                         $extraVariansCount = $helm->varians->count() - 2;
                     @endphp
-                    <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'search' => $helm->nama_helm]) }}" class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
+                    <a href="{{ route('admin.produk.index', ['search' => $helm->nama_helm]) }}" wire:navigate class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
                         <div class="min-w-0 flex-1">
                             <h4 class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                                 {{ $helm->nama_helm }}
@@ -300,24 +314,21 @@
                 </p>
             </div>
 
-            {{-- Quick Pickup Code Validator --}}
-            <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="flex items-center gap-1.5">
-                @csrf
-                <div class="relative">
-                    <i class="fa-solid fa-qrcode absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" 
-                           name="kode_pickup" 
-                           placeholder="Scan / Kode Pickup (PKP-...)" 
-                           required 
-                           autocomplete="off"
-                           class="w-52 sm:w-60 h-9 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
-                </div>
-                <button type="submit" 
-                        class="h-9 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0">
-                    <span>Cek</span>
-                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                </button>
-            </form>
+            {{-- Quick Navigation to Owner Monitoring Features --}}
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" 
+                   wire:navigate
+                   class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-cash-register text-xs text-blue-600"></i>
+                    <span>Transaksi Karyawan</span>
+                </a>
+                <a href="{{ route('admin.owner.barang-masuk.index') }}" 
+                   wire:navigate
+                   class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-dolly text-xs text-emerald-600"></i>
+                    <span>Barang Masuk</span>
+                </a>
+            </div>
         </div>
 
         {{-- Dynamic Period Filter Tabs for Owner --}}
@@ -337,6 +348,7 @@
                     @endphp
                     @foreach ($periods as $key => $label)
                         <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
+                           wire:navigate
                            class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all {{ $selected_period === $key ? 'bg-white text-blue-600 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
                             {{ $label }}
                         </a>
@@ -367,7 +379,8 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             {{-- Antrean Siap Diambil di Toko --}}
-            <a href="{{ route('admin.pickup.index') }}" 
+            <a href="{{ route('admin.owner.transaksi-karyawan.index', ['status' => 'ready']) }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -390,13 +403,14 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-emerald-600">
-                    <span>Buka Kasir Pickup</span>
+                    <span>Pantau Antrean Kasir</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
             {{-- Pesanan Masuk Hari Ini --}}
-            <a href="{{ route('admin.pesanan.index') }}" 
+            <a href="{{ route('admin.owner.transaksi-karyawan.index', ['period' => 'today']) }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-blue-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -422,13 +436,14 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-blue-600">
-                    <span>Lihat Semua Pesanan</span>
+                    <span>Audit Transaksi Karyawan</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
             {{-- Stok Kritis (< 5) --}}
-            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" 
+            <a href="{{ route('admin.owner.barang-masuk.index') }}" 
+               wire:navigate
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -455,7 +470,7 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-amber-600">
-                    <span>Update Stok Masuk</span>
+                    <span>Lihat Riwayat Barang Masuk</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
@@ -565,6 +580,7 @@
                 </div>
 
                 <a href="{{ route('admin.owner.laporan.penjualan') }}" 
+                   wire:navigate
                    class="h-7 px-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium inline-flex items-center gap-1 transition-colors">
                     <span>Laporan Detail</span>
                     <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
@@ -600,7 +616,7 @@
                         </button>
                     </div>
 
-                    <a href="{{ route('admin.pesanan.index') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                    <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" wire:navigate class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                         <span>Semua</span>
                         <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </a>
@@ -641,7 +657,7 @@
                         
                         <div class="min-w-0 space-y-1">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="font-mono font-bold text-xs text-blue-600 hover:underline">
+                                <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" wire:navigate class="font-mono font-bold text-xs text-blue-600 hover:underline">
                                     #{{ $pesanan->no_pesanan }}
                                 </a>
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border {{ $statusBadgeClass }}">
@@ -663,8 +679,8 @@
                             <span class="text-xs sm:text-sm font-bold text-slate-900 block tracking-tight">
                                 {{ format_rupiah($pesanan->grand_total) }}
                             </span>
-                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="text-[11px] font-medium text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center gap-1">
-                                <span>Detail</span>
+                            <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" wire:navigate class="text-[11px] font-medium text-slate-400 hover:text-blue-600 transition-colors inline-flex items-center gap-1">
+                                <span>Audit</span>
                                 <i class="fa-solid fa-chevron-right text-[8px]"></i>
                             </a>
                         </div>
@@ -683,8 +699,8 @@
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok Menipis</h3>
                     <p class="text-[11px] text-slate-400">SKU varian kritis &lt; 5 unit di etalase</p>
                 </div>
-                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
-                    <span>Atur Stok</span>
+                <a href="{{ route('admin.owner.barang-masuk.index') }}" wire:navigate class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                    <span>Log Masuk</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
             </div>
@@ -719,10 +735,11 @@
                             <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold {{ $isZero ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200/80' }}">
                                 {{ $isZero ? 'Habis (0)' : 'Sisa ' . $varian->stok }}
                             </span>
-                            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'search' => $helm->nama_helm ?? '']) }}" 
+                            <a href="{{ route('admin.owner.barang-masuk.index', ['search' => $helm->nama_helm ?? '']) }}" 
+                               wire:navigate
                                class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center text-xs transition-colors"
-                               title="Tambah Stok">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
+                               title="Riwayat Masuk">
+                                <i class="fa-solid fa-dolly text-[10px]"></i>
                             </a>
                         </div>
                     </div>
@@ -737,8 +754,8 @@
 
             <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Total {{ $varian_habis_count }} varian stok 0 &bull; {{ $varian_menipis_count }} menipis</span>
-                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="font-semibold text-blue-600 hover:underline">
-                    Restok Cepat &rarr;
+                <a href="{{ route('admin.owner.barang-masuk.index') }}" wire:navigate class="font-semibold text-blue-600 hover:underline">
+                    Riwayat Barang Masuk &rarr;
                 </a>
             </div>
         </div>
@@ -752,7 +769,6 @@
 
 @if($isOwner)
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
     function dashboardHub() {
         return {
@@ -782,6 +798,11 @@
             initChart() {
                 const canvas = document.getElementById('salesChart');
                 if (!canvas) return;
+
+                const existingChart = Chart.getChart(canvas);
+                if (existingChart) {
+                    existingChart.destroy();
+                }
 
                 const ctx = canvas.getContext('2d');
                 const initialDataset = this.getCurrentDataset();

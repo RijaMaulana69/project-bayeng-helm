@@ -18,6 +18,7 @@ class StokMasuk extends Model
         'jumlah',
         'harga_awal',
         'harga_jual',
+        'tgl_masuk',
         'keterangan',
     ];
 

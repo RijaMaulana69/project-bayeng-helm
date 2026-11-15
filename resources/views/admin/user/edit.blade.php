@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="d-flex gap-2 justify-content-end mt-4">
-                        <a href="{{ route('admin.user.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('admin.user.index') }}" wire:navigate class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i> Batal
                         </a>
                         <button type="submit" class="btn btn-primary-admin">
