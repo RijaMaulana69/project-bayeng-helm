@@ -4,37 +4,131 @@
 @section('page-title', 'Transaksi Karyawan')
 
 @section('content')
-<div class="space-y-4" x-data="{ showFilter: false }">
+<div class="space-y-4">
 
-    {{-- 1. Header Section --}}
+    {{-- 1. Header Ringkas --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Transaksi Karyawan
-        </h1>
+        <div class="flex items-center gap-2.5">
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Transaksi Karyawan
+            </h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+                {{ $pesanans->total() }} Transaksi
+            </span>
+        </div>
 
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-            <button type="button" 
-                    @click="showFilter = !showFilter"
-                    class="h-9 px-3.5 rounded-lg border border-slate-200/90 hover:bg-slate-50 text-slate-700 font-medium text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
-                <i class="fa-solid fa-filter text-[11px] text-slate-500"></i>
-                <span>Filter Lanjutan</span>
-                @if($selectedKaryawan !== 'all' || $selectedStatus !== 'all' || $selectedMetode !== 'all')
-                    <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-                @endif
-            </button>
-
+        <div class="flex items-center gap-2">
             <a href="{{ route('admin.owner.laporan.penjualan') }}" 
                wire:navigate
                class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors">
-                <i class="fa-solid fa-file-invoice-dollar text-[11px]"></i>
-                <span>Laporan Omzet</span>
+                <i class="fa-solid fa-file-lines text-[11px]"></i>
+                <span>Laporan Penjualan</span>
             </a>
         </div>
     </div>
 
-    {{-- 2. Period Filter Bar (Pills) --}}
-    <div class="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
-        <div class="flex items-center gap-1.5 text-xs overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
+    {{-- 2. Ringkasan Kas & Omzet --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {{-- Card 1: Omzet Kasir Selesai --}}
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Omzet Kasir Selesai</span>
+                <i class="fa-solid fa-circle-check text-xs text-emerald-600"></i>
+            </div>
+            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
+                {{ format_rupiah($kpi['total_omzet']) }}
+            </div>
+            <p class="text-[11px] text-slate-500">
+                {{ $kpi['completed_count'] }} transaksi tuntas
+            </p>
+        </div>
+
+        {{-- Card 2: Uang Tunai Laci (Kas Masuk Fisik) --}}
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Uang Tunai Laci</span>
+                <i class="fa-solid fa-money-bill-wave text-xs text-amber-600"></i>
+            </div>
+            <div class="text-base sm:text-xl font-bold text-amber-700 tracking-tight font-mono">
+                {{ format_rupiah($kpi['tunai_total']) }}
+            </div>
+            <p class="text-[11px] text-slate-500">
+                {{ $kpi['tunai_count'] }} transaksi pembayaran tunai
+            </p>
+        </div>
+
+        {{-- Card 3: Non-Tunai / QRIS --}}
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Online / Non-Tunai</span>
+                <i class="fa-solid fa-qrcode text-xs text-blue-600"></i>
+            </div>
+            <div class="text-base sm:text-xl font-bold text-blue-700 tracking-tight font-mono">
+                {{ format_rupiah($kpi['online_total']) }}
+            </div>
+            <p class="text-[11px] text-slate-500">
+                {{ $kpi['online_count'] }} transaksi non-tunai
+            </p>
+        </div>
+
+        {{-- Card 4: Order Dalam Proses --}}
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Total Transaksi</span>
+                <i class="fa-solid fa-clock text-xs text-slate-500"></i>
+            </div>
+            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
+                {{ $kpi['total_transaksi'] }} <span class="text-xs font-normal text-slate-500">Order</span>
+            </div>
+            <p class="text-[11px] text-slate-500">
+                {{ $kpi['pending_count'] }} dalam proses berjalan
+            </p>
+        </div>
+    </div>
+
+    {{-- 3. Aktivitas Staf Kasir (Filter Cepat) --}}
+    @if(count($cashierStats) > 0)
+    <div class="bg-white px-4 py-3 rounded-xl border border-slate-200/90 shadow-2xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-users text-slate-500 text-xs"></i>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Aktivitas Staf Kasir</span>
+            </div>
+            <span class="text-[11px] text-slate-400">Pilih staf untuk memfilter data transaksi</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 pt-2.5">
+            {{-- Tombol Semua Kasir --}}
+            <a href="{{ route('admin.owner.transaksi-karyawan.index', array_merge(request()->except(['karyawan', 'page']), ['karyawan' => 'all'])) }}"
+               wire:navigate
+               class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-1.5 {{ $selectedKaryawan === 'all' || empty($selectedKaryawan) ? 'bg-slate-900 text-white shadow-2xs' : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100' }}">
+                <span>Semua Kasir</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded font-mono {{ $selectedKaryawan === 'all' || empty($selectedKaryawan) ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700' }}">
+                    {{ $kpi['total_transaksi'] }}
+                </span>
+            </a>
+
+            @foreach ($cashierStats as $stat)
+                @php
+                    $isFiltered = ($selectedKaryawan === $stat['user']->username);
+                @endphp
+                <a href="{{ route('admin.owner.transaksi-karyawan.index', array_merge(request()->except(['karyawan', 'page']), ['karyawan' => $stat['user']->username])) }}"
+                   wire:navigate
+                   class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all inline-flex items-center gap-1.5 {{ $isFiltered ? 'bg-slate-900 text-white shadow-2xs' : 'bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100' }}">
+                    <span class="font-semibold">{{ $stat['user']->nama_lengkap }}</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-mono {{ $isFiltered ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700' }}">
+                        {{ $stat['selesai_count'] }} selesai · {{ format_rupiah($stat['total_omzet']) }}
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- 4. Toolbar Filter & Pencarian Terpadu --}}
+    <div class="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs space-y-3">
+        {{-- Tab Periode Cepat --}}
+        <div class="flex items-center gap-1.5 text-xs overflow-x-auto pb-1 sm:pb-0">
             <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 shrink-0">Periode:</span>
             @php
                 $periodTabs = [
@@ -55,58 +149,19 @@
             @endforeach
         </div>
 
-        {{-- Search Input --}}
-        <form method="GET" action="{{ route('admin.owner.transaksi-karyawan.index') }}" class="w-full sm:w-72 flex items-center gap-1.5">
-            @foreach (request()->except(['search', 'page']) as $k => $v)
-                <input type="hidden" name="{{ $k }}" value="{{ $v }}">
-            @endforeach
-            <div class="relative flex-1">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" 
-                       name="search" 
-                       value="{{ request('search') }}"
-                       placeholder="Cari no. transaksi / pelanggan / kasir..." 
-                       class="w-full h-8 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-slate-400 focus:outline-none transition-colors">
-            </div>
-            <button type="submit" class="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors">
-                Cari
-            </button>
-        </form>
-    </div>
-
-    {{-- Advanced Filter Dropdown Bar --}}
-    <div x-show="showFilter" 
-         x-cloak 
-         x-transition:enter="transition ease-out duration-150"
-         x-transition:enter-start="opacity-0 -translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-        <form method="GET" action="{{ route('admin.owner.transaksi-karyawan.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+        {{-- Form Filter Detail & Search --}}
+        <form method="GET" action="{{ route('admin.owner.transaksi-karyawan.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs pt-2 border-t border-slate-100">
             <input type="hidden" name="period" value="{{ $selectedPeriod }}">
-            @if(request('search'))
-                <input type="hidden" name="search" value="{{ request('search') }}">
+            @if($selectedKaryawan !== 'all')
+                <input type="hidden" name="karyawan" value="{{ $selectedKaryawan }}">
             @endif
 
-            {{-- Filter Karyawan --}}
-            <div class="space-y-1">
-                <label class="font-semibold text-slate-700">Pilih Staf Kasir</label>
-                <select name="karyawan" class="w-full h-9 px-2.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-slate-400">
-                    <option value="all">Semua Karyawan</option>
-                    @foreach ($karyawanUsers as $kUser)
-                        <option value="{{ $kUser->username }}" {{ $selectedKaryawan === $kUser->username ? 'selected' : '' }}>
-                            {{ $kUser->nama_lengkap }} ({{ $kUser->username }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
             {{-- Filter Status --}}
-            <div class="space-y-1">
-                <label class="font-semibold text-slate-700">Status Pesanan</label>
-                <select name="status" class="w-full h-9 px-2.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-slate-400">
+            <div class="sm:col-span-3">
+                <select name="status" class="w-full h-8.5 px-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400">
                     <option value="all" {{ $selectedStatus === 'all' ? 'selected' : '' }}>Semua Status</option>
-                    <option value="completed" {{ $selectedStatus === 'completed' ? 'selected' : '' }}>Selesai (Diambil)</option>
-                    <option value="ready" {{ $selectedStatus === 'ready' ? 'selected' : '' }}>Siap Diambil di Gerai</option>
+                    <option value="completed" {{ $selectedStatus === 'completed' ? 'selected' : '' }}>Selesai</option>
+                    <option value="ready" {{ $selectedStatus === 'ready' ? 'selected' : '' }}>Siap Diambil</option>
                     <option value="processing" {{ $selectedStatus === 'processing' ? 'selected' : '' }}>Sedang Disiapkan</option>
                     <option value="paid" {{ $selectedStatus === 'paid' ? 'selected' : '' }}>Sudah Bayar</option>
                     <option value="unpaid_pickup" {{ $selectedStatus === 'unpaid_pickup' ? 'selected' : '' }}>Bayar di Kasir</option>
@@ -115,10 +170,9 @@
                 </select>
             </div>
 
-            {{-- Filter Metode Pembayaran --}}
-            <div class="space-y-1">
-                <label class="font-semibold text-slate-700">Metode Bayar</label>
-                <select name="metode_bayar" class="w-full h-9 px-2.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-slate-400">
+            {{-- Filter Metode Bayar --}}
+            <div class="sm:col-span-3">
+                <select name="metode_bayar" class="w-full h-8.5 px-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400">
                     <option value="all" {{ $selectedMetode === 'all' ? 'selected' : '' }}>Semua Metode</option>
                     <option value="tunai" {{ $selectedMetode === 'tunai' ? 'selected' : '' }}>Tunai di Gerai</option>
                     <option value="transfer" {{ $selectedMetode === 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
@@ -127,198 +181,83 @@
                 </select>
             </div>
 
-            {{-- Submit Filter --}}
-            <div class="flex items-end gap-2">
-                <button type="submit" class="flex-1 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs transition-colors cursor-pointer inline-flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-check text-[11px]"></i>
-                    <span>Terapkan</span>
+            {{-- Search Box --}}
+            <div class="sm:col-span-4 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" 
+                       name="search" 
+                       value="{{ request('search') }}"
+                       placeholder="No. transaksi / pelanggan / kasir..." 
+                       class="w-full h-8.5 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-slate-400 focus:outline-none transition-colors">
+            </div>
+
+            {{-- Tombol Terapkan & Reset --}}
+            <div class="sm:col-span-2 flex items-center gap-1.5">
+                <button type="submit" class="flex-1 h-8.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition-colors cursor-pointer inline-flex items-center justify-center">
+                    Cari
                 </button>
-                <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" wire:navigate class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs inline-flex items-center justify-center transition-colors">
-                    Reset
-                </a>
+                @if(request()->hasAny(['search', 'status', 'metode_bayar', 'karyawan']) && (request('status') !== 'all' || request('metode_bayar') !== 'all' || request('karyawan') !== 'all' || request('search')))
+                    <a href="{{ route('admin.owner.transaksi-karyawan.index', ['period' => $selectedPeriod]) }}" 
+                       wire:navigate 
+                       class="h-8.5 px-2.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs inline-flex items-center justify-center transition-colors"
+                       title="Reset filter">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                @endif
             </div>
         </form>
     </div>
 
-    {{-- 3. Summary Metric Cards (Executive Oversight) --}}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {{-- Card 1: Total Omzet Selesai --}}
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
-            <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[11px] font-bold uppercase tracking-wider">Omzet Kasir Selesai</span>
-                <i class="fa-solid fa-sack-dollar text-xs text-emerald-600"></i>
-            </div>
-            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
-                {{ format_rupiah($kpi['total_omzet']) }}
-            </div>
-            <p class="text-[10px] text-slate-400">
-                Dari {{ $kpi['completed_count'] }} transaksi tuntas
-            </p>
-        </div>
-
-        {{-- Card 2: Setoran Tunai Kasir (Fisik Laci) --}}
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
-            <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[11px] font-bold uppercase tracking-wider">Uang Tunai Laci</span>
-                <i class="fa-solid fa-money-bill-wave text-xs text-amber-600"></i>
-            </div>
-            <div class="text-base sm:text-xl font-bold text-amber-700 tracking-tight font-mono">
-                {{ format_rupiah($kpi['tunai_total']) }}
-            </div>
-            <p class="text-[10px] text-slate-400">
-                {{ $kpi['tunai_count'] }} transaksi pembayaran tunai
-            </p>
-        </div>
-
-        {{-- Card 3: Pembayaran Online / QRIS --}}
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
-            <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[11px] font-bold uppercase tracking-wider">Online / Non-Tunai</span>
-                <i class="fa-solid fa-qrcode text-xs text-blue-600"></i>
-            </div>
-            <div class="text-base sm:text-xl font-bold text-blue-700 tracking-tight font-mono">
-                {{ format_rupiah($kpi['online_total']) }}
-            </div>
-            <p class="text-[10px] text-slate-400">
-                {{ $kpi['online_count'] }} transaksi non-tunai
-            </p>
-        </div>
-
-        {{-- Card 4: Total Volume Transaksi --}}
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-1">
-            <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[11px] font-bold uppercase tracking-wider">Total Transaksi</span>
-                <i class="fa-solid fa-receipt text-xs text-slate-600"></i>
-            </div>
-            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
-                {{ $kpi['total_transaksi'] }} <span class="text-xs font-normal text-slate-500">Order</span>
-            </div>
-            <p class="text-[10px] text-slate-400">
-                {{ $kpi['pending_count'] }} dalam proses berjalan
-            </p>
-        </div>
-    </div>
-
-    {{-- 4. Kinerja Ringkas Kasir (Leaderboard / Staf Gerai) --}}
-    @if(count($cashierStats) > 0)
-    <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-3">
-        <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                <i class="fa-solid fa-users text-blue-600 text-xs"></i>
-                <span>Aktivitas Staf Kasir</span>
-            </h3>
-            <span class="text-[11px] text-slate-400">Total {{ count($cashierStats) }} staf kasir terdaftar</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-            @foreach ($cashierStats as $stat)
-                @php
-                    $isFiltered = ($selectedKaryawan === $stat['user']->username);
-                @endphp
-                <a href="{{ route('admin.owner.transaksi-karyawan.index', array_merge(request()->except(['karyawan', 'page']), ['karyawan' => $stat['user']->username])) }}"
-                   wire:navigate
-                   class="p-3 rounded-lg border transition-all flex items-center justify-between gap-2.5 {{ $isFiltered ? 'bg-blue-50/50 border-blue-300 ring-1 ring-blue-400' : 'bg-slate-50/60 border-slate-200/70 hover:bg-slate-100/70' }}">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="w-8 h-8 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                            {{ strtoupper(substr($stat['user']->nama_lengkap, 0, 1)) }}
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-xs font-bold text-slate-900 truncate">
-                                {{ $stat['user']->nama_lengkap }}
-                            </p>
-                            <p class="text-[10px] text-slate-400 font-mono truncate">
-                                {{ '@' . $stat['user']->username }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="text-xs font-bold text-slate-900 font-mono block">
-                            {{ $stat['selesai_count'] }}x Selesai
-                        </span>
-                        <span class="text-[10px] text-emerald-600 font-mono font-medium block">
-                            {{ format_rupiah($stat['total_omzet']) }}
-                        </span>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    </div>
-    @endif
-
     {{-- 5. Tabel Daftar Transaksi --}}
     <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
-        {{-- Table Header --}}
-        <div class="p-3.5 sm:p-4 border-b border-slate-100 flex items-center justify-between gap-3">
-            <div>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">
-                    Daftar Transaksi Karyawan
-                </h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">
-                    Menampilkan rincian transaksi gerai beserta staf kasir penanggung jawab
-                </p>
-            </div>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
-                {{ $pesanans->total() }} Transaksi
-            </span>
-        </div>
-
         {{-- Desktop Table View --}}
         <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 text-[11px] font-medium bg-slate-50/50">
-                        <th class="py-3 px-4 font-medium">No. Transaksi</th>
-                        <th class="py-3 px-4 font-medium">Staf Kasir</th>
-                        <th class="py-3 px-4 font-medium">Pelanggan</th>
-                        <th class="py-3 px-4 font-medium">Item Produk</th>
-                        <th class="py-3 px-4 font-medium">Pembayaran</th>
-                        <th class="py-3 px-4 font-medium text-right">Nominal</th>
-                        <th class="py-3 px-4 font-medium">Status</th>
-                        <th class="py-3 px-4 font-medium text-right">Aksi</th>
+                    <tr class="border-b border-slate-200/80 text-slate-500 text-[11px] font-semibold bg-slate-50/70">
+                        <th class="py-3 px-4">No. Transaksi</th>
+                        <th class="py-3 px-4">Staf Kasir</th>
+                        <th class="py-3 px-4">Pelanggan</th>
+                        <th class="py-3 px-4">Item Produk</th>
+                        <th class="py-3 px-4">Pembayaran</th>
+                        <th class="py-3 px-4 text-right">Nominal</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($pesanans as $pesanan)
                         @php
-                            // Ambil log staf kasir terakhir yang mengubah status
                             $staffLog = $pesanan->logs->first(function($l) {
                                 return !in_array(strtolower($l->diubah_oleh ?? ''), ['pelanggan', 'system', '']);
                             });
                             $kasirUser = $staffLog ? ($usersByUsername[$staffLog->diubah_oleh] ?? null) : null;
                             $kasirNama = $kasirUser ? $kasirUser->nama_lengkap : ($staffLog->diubah_oleh ?? 'Kasir Gerai');
                         @endphp
-                        <tr class="hover:bg-slate-50/60 transition-colors">
+                        <tr class="hover:bg-slate-50/70 transition-colors">
                             {{-- 1. No Transaksi & Kode Pickup --}}
-                            <td class="py-3.5 px-4 whitespace-nowrap">
+                            <td class="py-3 px-4 whitespace-nowrap">
                                 <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" 
                                    wire:navigate
-                                   class="font-medium text-slate-900 hover:text-blue-600 transition-colors block">
+                                   class="font-semibold text-slate-900 hover:text-blue-600 transition-colors block">
                                     {{ $pesanan->no_pesanan }}
                                 </a>
                                 <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5 font-mono">
                                     <span>{{ $pesanan->kode_pickup ?? '-' }}</span>
-                                    <span class="text-slate-300">·</span>
+                                    <span class="text-slate-300">&bull;</span>
                                     <span>{{ $pesanan->created_at->translatedFormat('d M, H:i') }}</span>
                                 </div>
                             </td>
 
-                            {{-- 2. Staf Kasir --}}
-                            <td class="py-3.5 px-4 whitespace-nowrap">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-6 h-6 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px] flex items-center justify-center shrink-0">
-                                        {{ strtoupper(substr($kasirNama, 0, 1)) }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-medium text-slate-900 truncate text-xs">{{ $kasirNama }}</p>
-                                        <span class="text-[10px] text-slate-400 font-mono">{{ $staffLog->diubah_oleh ?? 'kasir' }}</span>
-                                    </div>
-                                </div>
+                            {{-- 2. Staf Kasir (Clean Text) --}}
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <span class="font-medium text-slate-800">{{ $kasirNama }}</span>
                             </td>
 
                             {{-- 3. Pelanggan --}}
-                            <td class="py-3.5 px-4 max-w-[160px]">
+                            <td class="py-3 px-4 max-w-[150px]">
                                 <p class="font-medium text-slate-900 truncate">
-                                    {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Walk-in') }}
+                                    {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Langsung') }}
                                 </p>
                                 <p class="text-[11px] text-slate-400 font-mono truncate mt-0.5">
                                     {{ $pesanan->telepon ?? ($pesanan->pelanggan->telepon ?? '-') }}
@@ -326,7 +265,7 @@
                             </td>
 
                             {{-- 4. Item Produk --}}
-                            <td class="py-3.5 px-4 max-w-[200px]">
+                            <td class="py-3 px-4 max-w-[190px]">
                                 @php
                                     $firstDetail = $pesanan->details->first();
                                     $otherCount = $pesanan->details->count() - 1;
@@ -338,7 +277,7 @@
                                     <p class="text-[11px] text-slate-400 truncate mt-0.5">
                                         {{ $firstDetail->warna ?? '-' }}, {{ $firstDetail->ukuran ?? '-' }}
                                         @if($otherCount > 0)
-                                            <span class="text-blue-600 font-medium">+{{ $otherCount }} lainnya</span>
+                                            <span class="text-slate-600 font-medium">+{{ $otherCount }} lainnya</span>
                                         @endif
                                     </p>
                                 @else
@@ -347,14 +286,14 @@
                             </td>
 
                             {{-- 5. Pembayaran --}}
-                            <td class="py-3.5 px-4 whitespace-nowrap">
+                            <td class="py-3 px-4 whitespace-nowrap">
                                 @if($pesanan->metode_bayar === 'tunai')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">
                                         <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
-                                        <span>Tunai Gerai</span>
+                                        <span>Tunai</span>
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
                                         <i class="fa-solid fa-credit-card text-[10px]"></i>
                                         <span>{{ ucfirst($pesanan->metode_bayar) }}</span>
                                     </span>
@@ -362,12 +301,12 @@
                             </td>
 
                             {{-- 6. Nominal Total --}}
-                            <td class="py-3.5 px-4 text-right font-bold text-slate-900 font-mono whitespace-nowrap">
+                            <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono whitespace-nowrap">
                                 {{ format_rupiah($pesanan->grand_total) }}
                             </td>
 
                             {{-- 7. Status --}}
-                            <td class="py-3.5 px-4 whitespace-nowrap">
+                            <td class="py-3 px-4 text-center whitespace-nowrap">
                                 @php
                                     $badge = match($pesanan->status) {
                                         'completed' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -380,18 +319,18 @@
                                         default => 'bg-slate-100 text-slate-700 border-slate-200',
                                     };
                                 @endphp
-                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium border {{ $badge }}">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-medium border {{ $badge }}">
                                     {{ $pesanan->status_label }}
                                 </span>
                             </td>
 
                             {{-- 8. Aksi Detail --}}
-                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            <td class="py-3 px-4 text-right whitespace-nowrap">
                                 <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" 
                                    wire:navigate
                                    class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors">
-                                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
-                                    <span>Audit</span>
+                                    <span>Detail</span>
+                                    <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
                                 </a>
                             </td>
                         </tr>
@@ -424,14 +363,14 @@
                             <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" wire:navigate class="font-bold text-xs text-slate-900 hover:text-blue-600 block">
                                 {{ $pesanan->no_pesanan }}
                             </a>
-                            <span class="text-[11px] text-slate-400 font-mono">{{ $pesanan->kode_pickup }} · {{ $pesanan->created_at->translatedFormat('d M, H:i') }}</span>
+                            <span class="text-[11px] text-slate-400 font-mono">{{ $pesanan->kode_pickup }} &bull; {{ $pesanan->created_at->translatedFormat('d M, H:i') }}</span>
                         </div>
                         <span class="text-xs font-bold text-slate-900 font-mono">
                             {{ format_rupiah($pesanan->grand_total) }}
                         </span>
                     </div>
 
-                    <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-2 rounded-lg">
+                    <div class="flex items-center justify-between text-xs text-slate-600 bg-slate-50 px-2.5 py-1.5 rounded-lg">
                         <span class="text-[11px] text-slate-500">Staf Kasir:</span>
                         <span class="font-semibold text-slate-800">{{ $kasirNama }}</span>
                     </div>
@@ -445,10 +384,11 @@
 
                     <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                         <span class="text-[11px] font-medium text-slate-600">
-                            {{ $pesanan->metode_bayar === 'tunai' ? '💵 Tunai Gerai' : '💳 ' . ucfirst($pesanan->metode_bayar) }}
+                            {{ $pesanan->metode_bayar === 'tunai' ? 'Tunai' : ucfirst($pesanan->metode_bayar) }}
                         </span>
-                        <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" wire:navigate class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg">
-                            Audit Transaksi
+                        <a href="{{ route('admin.owner.transaksi-karyawan.show', $pesanan->id_pesanan) }}" wire:navigate class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg inline-flex items-center gap-1">
+                            <span>Detail</span>
+                            <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
                         </a>
                     </div>
                 </div>

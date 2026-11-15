@@ -88,16 +88,21 @@ class OwnerTransaksiController extends Controller
         $allFiltered = $summaryQuery->get();
 
         $completedOrders = $allFiltered->where('status', 'completed');
+        $tunaiCompleted = $completedOrders->where('metode_bayar', 'tunai');
+        $onlineCompleted = $completedOrders->where('metode_bayar', '!=', 'tunai');
+        $pendingOrders = $allFiltered->whereIn('status', ['pending', 'unpaid_pickup', 'paid', 'processing', 'ready']);
+
         $kpi = [
             'total_transaksi' => $allFiltered->count(),
             'total_omzet'     => (float) $completedOrders->sum('grand_total'),
             'total_potensi'   => (float) $allFiltered->sum('grand_total'),
-            'tunai_count'     => $allFiltered->where('metode_bayar', 'tunai')->count(),
-            'tunai_total'     => (float) $completedOrders->where('metode_bayar', 'tunai')->sum('grand_total'),
-            'online_count'    => $allFiltered->where('metode_bayar', '!=', 'tunai')->count(),
-            'online_total'    => (float) $completedOrders->where('metode_bayar', '!=', 'tunai')->sum('grand_total'),
+            'tunai_count'     => $tunaiCompleted->count(),
+            'tunai_total'     => (float) $tunaiCompleted->sum('grand_total'),
+            'online_count'    => $onlineCompleted->count(),
+            'online_total'    => (float) $onlineCompleted->sum('grand_total'),
             'completed_count' => $completedOrders->count(),
-            'pending_count'   => $allFiltered->whereIn('status', ['pending', 'unpaid_pickup', 'paid', 'processing', 'ready'])->count(),
+            'pending_count'   => $pendingOrders->count(),
+            'pending_total'   => (float) $pendingOrders->sum('grand_total'),
         ];
 
         // List of all employees (karyawan)
