@@ -42,10 +42,10 @@ class OwnerMonitoringTest extends TestCase
             ->get(route('admin.owner.transaksi-karyawan.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Transaksi Karyawan');
+        $response->assertSee('Transaksi Gerai');
         $response->assertSee('Omzet Kasir Selesai');
         $response->assertSee('Uang Tunai Laci');
-        $response->assertSee('Aktivitas Staf Kasir');
+        $response->assertSee('Kasir:');
     }
 
     public function test_owner_can_access_transaksi_karyawan_show(): void
@@ -59,7 +59,7 @@ class OwnerMonitoringTest extends TestCase
 
             $response->assertStatus(200);
             $response->assertSee($pesanan->no_pesanan);
-            $response->assertSee('Audit Transaksi Karyawan');
+            $response->assertSee('Detail Transaksi Gerai');
             $response->assertSee('Jejak Audit Pelayanan Kasir');
         }
     }
@@ -112,7 +112,7 @@ class OwnerMonitoringTest extends TestCase
         $response->assertDontSee('Katalog & Cek Stok');
 
         // Owner MUST see the monitoring menus
-        $response->assertSee('Transaksi Karyawan');
+        $response->assertSee('Transaksi Gerai');
         $response->assertSee('Riwayat Barang Masuk');
 
         // Verify Karyawan DOES see cashier operational menus

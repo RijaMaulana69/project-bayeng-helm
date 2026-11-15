@@ -162,13 +162,13 @@
                         </div>
                     </a>
 
-                    {{-- Transaksi Karyawan --}}
+                    {{-- Transaksi Gerai --}}
                     <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.transaksi-karyawan*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <div class="flex items-center gap-2.5">
                             <i class="w-4 text-center fa-solid fa-cash-register text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Transaksi Karyawan</span>
+                            <span>Transaksi Gerai</span>
                         </div>
                     </a>
 
@@ -527,7 +527,7 @@
                 <span class="text-[10px] mt-0.5">Ringkasan</span>
             </a>
 
-            {{-- 2. Transaksi Karyawan --}}
+            {{-- 2. Transaksi Gerai --}}
             <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" 
                wire:navigate
                class="flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-colors relative {{ request()->routeIs('admin.owner.transaksi-karyawan*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
@@ -678,7 +678,7 @@
                             </a>
                             <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.transaksi-karyawan*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-cash-register text-slate-400 w-4"></i>
-                                <span>Transaksi Karyawan</span>
+                                <span>Transaksi Gerai</span>
                             </a>
                             <a href="{{ route('admin.owner.barang-masuk.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.barang-masuk*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-dolly text-slate-400 w-4"></i>

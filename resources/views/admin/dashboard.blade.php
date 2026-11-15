@@ -315,7 +315,7 @@
                    wire:navigate
                    class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
                     <i class="fa-solid fa-cash-register text-xs text-blue-600"></i>
-                    <span>Transaksi Karyawan</span>
+                    <span>Transaksi Gerai</span>
                 </a>
                 <a href="{{ route('admin.owner.barang-masuk.index') }}" 
                    wire:navigate

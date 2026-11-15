@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Audit Transaksi ' . $pesanan->no_pesanan)
-@section('page-title', 'Audit Transaksi Karyawan')
+@section('title', 'Detail Transaksi ' . $pesanan->no_pesanan)
+@section('page-title', 'Detail Transaksi Gerai')
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-4">
@@ -12,7 +12,7 @@
            wire:navigate
            class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors">
             <i class="fa-solid fa-arrow-left text-[10px]"></i>
-            <span>Kembali ke Transaksi Karyawan</span>
+            <span>Kembali ke Transaksi Gerai</span>
         </a>
     </div>
 
