@@ -19,19 +19,18 @@
             $isPaid = in_array($pesanan->status, ['ready', 'paid']);
             $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
             $customerPhone = $pesanan->pelanggan->no_hp ?? ($pesanan->telepon_penerima ?? null);
-            $hasMultipleItems = $pesanan->details->count() > 1;
         @endphp
 
         {{-- Header: Kode Pickup & Data Pembeli --}}
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <span class="font-mono font-bold text-lg sm:text-xl text-slate-900 tracking-wide block">
+                <span class="font-bold text-lg sm:text-xl text-slate-900 tracking-wide block">
                     {{ $pesanan->kode_pickup }}
                 </span>
                 <p class="text-xs text-slate-600 mt-0.5 truncate">
-                    {{ $customerName }}@if($customerPhone) • <span class="font-mono text-slate-400">{{ $customerPhone }}</span>@endif
+                    {{ $customerName }}@if($customerPhone) • <span class="text-slate-400">{{ $customerPhone }}</span>@endif
                 </p>
-                <p class="text-[11px] font-mono text-slate-400 mt-0.5">
+                <p class="text-[11px] text-slate-400 mt-0.5">
                     {{ $pesanan->no_pesanan }}
                 </p>
             </div>
@@ -61,7 +60,7 @@
                     <div class="p-3.5 flex items-center justify-between gap-3 text-xs">
                         <div class="min-w-0 flex-1">
                             <p class="font-semibold text-slate-800 truncate">
-                                <span class="font-mono text-slate-500 font-bold">{{ $item->jumlah }}x</span> {{ $helmName }}
+                                <span class="font-bold text-slate-900">{{ $item->jumlah }}x</span> {{ $helmName }}
                             </p>
                             @if($variantText)
                                 <p class="text-[11px] text-slate-500 truncate mt-0.5">
@@ -69,11 +68,9 @@
                                 </p>
                             @endif
                         </div>
-                        @if($hasMultipleItems)
-                            <div class="text-right font-mono font-medium text-slate-600 shrink-0">
-                                {{ format_rupiah($item->subtotal) }}
-                            </div>
-                        @endif
+                        <div class="text-right font-semibold text-slate-800 text-xs sm:text-sm shrink-0">
+                            {{ format_rupiah($item->subtotal) }}
+                        </div>
                     </div>
                 @endforeach
 
@@ -87,7 +84,7 @@
                             <span class="text-[11px] text-amber-700 font-medium">Bayar di kasir ({{ ucfirst($pesanan->metode_bayar ?? 'Tunai') }})</span>
                         @endif
                     </div>
-                    <span class="font-mono text-base font-bold {{ $isPaid ? 'text-slate-800' : 'text-amber-900' }}">
+                    <span class="text-base sm:text-lg font-bold tracking-tight {{ $isPaid ? 'text-slate-900' : 'text-amber-900' }}">
                         {{ format_rupiah($pesanan->grand_total) }}
                     </span>
                 </div>

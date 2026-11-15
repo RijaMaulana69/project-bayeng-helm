@@ -84,35 +84,30 @@
                     <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
                     <button type="submit" class="w-full text-left p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group cursor-pointer">
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2 truncate">
-                                <span class="font-mono font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition-colors tracking-wide shrink-0">
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition-colors shrink-0">
                                     {{ $pesanan->kode_pickup }}
                                 </span>
-                                <span class="text-slate-300 text-xs shrink-0">•</span>
-                                <span class="text-xs font-semibold text-slate-700 truncate">
-                                    {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan Umum') }}
-                                </span>
-                                <span class="text-slate-300 text-xs shrink-0 hidden sm:inline">•</span>
-                                <span class="text-xs text-slate-500 truncate hidden sm:inline">
-                                    {{ $itemSummary }}
+                                <span class="text-xs text-slate-500 truncate">
+                                    {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan') }}
                                 </span>
                             </div>
-                            <p class="text-[11px] text-slate-400 truncate mt-0.5 sm:hidden">
+                            <p class="text-xs text-slate-700 truncate mt-1">
                                 {{ $itemSummary }}
                             </p>
                         </div>
 
                         <div class="text-right shrink-0 flex items-center gap-2">
                             @if($isPaid)
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                                     Lunas
                                 </span>
                             @else
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
                                     Bayar di Toko
                                 </span>
                             @endif
-                            <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-blue-600 transition-colors"></i>
+                            <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-blue-600 transition-colors"></i>
                         </div>
                     </button>
                 </form>
