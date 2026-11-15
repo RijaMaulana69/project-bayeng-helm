@@ -75,11 +75,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profil', [\App\Http\Controllers\Admin\ProfilController::class, 'index'])->name('profil');
         Route::put('profil', [\App\Http\Controllers\Admin\ProfilController::class, 'update'])->name('profil.update');
 
-        // Manajemen Produk (karyawan + owner)
+        // Manajemen Produk & Atribut (karyawan + owner)
+        Route::get('atribut', [\App\Http\Controllers\Admin\AtributController::class, 'index'])->name('atribut.index');
         Route::resource('produk', \App\Http\Controllers\Admin\ProdukController::class)->except(['show']);
         Route::resource('merk', \App\Http\Controllers\Admin\MerkController::class)->except(['show']);
         Route::resource('kategori', \App\Http\Controllers\Admin\KategoriController::class)->except(['show']);
         Route::resource('warna', \App\Http\Controllers\Admin\WarnaController::class)->except(['show', 'create', 'edit']);
+        Route::put('warna/{warna}', [\App\Http\Controllers\Admin\WarnaController::class, 'update'])->name('warna.update');
         Route::resource('stok', \App\Http\Controllers\Admin\StokController::class)->only(['index', 'store']);
 
         // Manajemen Pesanan Online (karyawan + owner)

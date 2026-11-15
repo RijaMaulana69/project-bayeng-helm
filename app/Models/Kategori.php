@@ -12,6 +12,8 @@ class Kategori extends Model
 
     protected $fillable = [
         'nama_kategori',
+        'deskripsi',
+        'icon',
     ];
 
     public function helms()

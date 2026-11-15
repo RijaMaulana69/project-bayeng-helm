@@ -299,6 +299,7 @@
                                    class="sr-only"
                                    @change="toggleWarna('{{ $w->nama_warna }}')"
                                    :checked="warnas.includes('{{ $w->nama_warna }}')">
+                            <span class="w-3 h-3 rounded-full border border-slate-300 shadow-2xs shrink-0" style="background-color: {{ $w->kode_hex ?: '#1e293b' }};"></span>
                             <span>{{ $w->nama_warna }}</span>
                         </label>
                     @endforeach

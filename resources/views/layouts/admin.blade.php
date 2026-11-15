@@ -135,24 +135,14 @@
                         </div>
                     </a>
 
-                    {{-- Master Data Atribut (Merk, Kategori, Warna) --}}
-                    <div class="pt-1.5 pl-6 space-y-0.5">
-                        <a href="{{ route('admin.merk.index') }}" 
-                           class="flex items-center gap-2 px-2.5 py-1.5 text-[11px] rounded-lg transition-colors {{ request()->routeIs('admin.merk*') ? 'text-blue-600 font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
-                            <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.merk*') ? 'bg-blue-600' : 'bg-slate-300' }}"></span>
-                            <span>Merk</span>
-                        </a>
-                        <a href="{{ route('admin.kategori.index') }}" 
-                           class="flex items-center gap-2 px-2.5 py-1.5 text-[11px] rounded-lg transition-colors {{ request()->routeIs('admin.kategori*') ? 'text-blue-600 font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
-                            <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.kategori*') ? 'bg-blue-600' : 'bg-slate-300' }}"></span>
-                            <span>Kategori</span>
-                        </a>
-                        <a href="{{ route('admin.warna.index') }}" 
-                           class="flex items-center gap-2 px-2.5 py-1.5 text-[11px] rounded-lg transition-colors {{ request()->routeIs('admin.warna*') ? 'text-blue-600 font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
-                            <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.warna*') ? 'bg-blue-600' : 'bg-slate-300' }}"></span>
-                            <span>Warna</span>
-                        </a>
-                    </div>
+                    {{-- Atribut & Taksonomi Produk (Merk, Kategori, Warna Swatch) --}}
+                    <a href="{{ route('admin.atribut.index') }}" 
+                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.atribut*') || request()->routeIs('admin.merk*') || request()->routeIs('admin.kategori*') || request()->routeIs('admin.warna*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <div class="flex items-center gap-2.5">
+                            <i class="w-4 text-center fa-solid fa-tags text-slate-400 group-hover:text-slate-600"></i>
+                            <span>Atribut & Taksonomi</span>
+                        </div>
+                    </a>
                 </div>
 
                 {{-- Group 2: Manajemen Bisnis (HANYA MUNCUL JIKA OWNER) --}}
@@ -600,17 +590,9 @@
                                 <i class="fa-solid fa-box-archive text-slate-400 w-4"></i>
                                 <span>Katalog Helm</span>
                             </a>
-                            <a href="{{ route('admin.merk.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
+                            <a href="{{ route('admin.atribut.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
                                 <i class="fa-solid fa-tags text-slate-400 w-4"></i>
-                                <span>Merk Helm</span>
-                            </a>
-                            <a href="{{ route('admin.kategori.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
-                                <i class="fa-solid fa-layer-group text-slate-400 w-4"></i>
-                                <span>Kategori</span>
-                            </a>
-                            <a href="{{ route('admin.warna.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
-                                <i class="fa-solid fa-palette text-slate-400 w-4"></i>
-                                <span>Warna</span>
+                                <span>Atribut & Taksonomi</span>
                             </a>
                         </div>
 
