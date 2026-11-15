@@ -12,30 +12,80 @@ class PesananController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Pesanan::with('pelanggan');
+        $query = Pesanan::with(['pelanggan', 'details.helm']);
 
-        if ($request->filled('status')) {
+        // Filter status pesanan
+        if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
 
+        // Filter metode pembayaran
+        if ($request->filled('metode_bayar') && $request->metode_bayar !== 'all') {
+            $query->where('metode_bayar', $request->metode_bayar);
+        }
+
+        // Pencarian multi-kolom
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('no_pesanan', 'like', "%{$search}%")
                   ->orWhere('kode_pickup', 'like', "%{$search}%")
-                  ->orWhere('penerima', 'like', "%{$search}%");
+                  ->orWhere('penerima', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function ($qp) use ($search) {
+                      $qp->where('nama', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('telepon', 'like', "%{$search}%");
+                  });
             });
         }
 
-        $pesanans = $query->orderBy('created_at', 'desc')->paginate(15);
+        $pesanans = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
-        return view('admin.pesanan.index', compact('pesanans'));
+        // Hitung total status untuk tab filter cepat
+        $rawCounts = Pesanan::selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status')
+            ->all();
+
+        $statusCounts = [
+            'all' => array_sum($rawCounts),
+            'pending' => $rawCounts['pending'] ?? 0,
+            'paid' => $rawCounts['paid'] ?? 0,
+            'processing' => $rawCounts['processing'] ?? 0,
+            'ready' => $rawCounts['ready'] ?? 0,
+            'completed' => $rawCounts['completed'] ?? 0,
+            'cancelled' => $rawCounts['cancelled'] ?? 0,
+        ];
+
+        return view('admin.pesanan.index', compact('pesanans', 'statusCounts'));
     }
 
     public function show(Pesanan $pesanan)
     {
-        $pesanan->load(['pelanggan', 'details', 'logs']);
-        return view('admin.pesanan.detail', compact('pesanan'));
+        $pesanan->load(['pelanggan', 'details.helm', 'logs']);
+
+        $statusLabels = [
+            'paid' => 'Konfirmasi Pembayaran (Sudah Bayar)',
+            'processing' => 'Proses & Siapkan Barang',
+            'ready' => 'Siap Diambil di Gerai (Ready)',
+            'completed' => 'Pesanan Selesai (Sudah Diserahkan)',
+            'cancelled' => 'Batalkan Pesanan',
+        ];
+
+        $allowedTransitions = [
+            'pending' => ['paid', 'cancelled'],
+            'unpaid_pickup' => ['processing', 'ready', 'cancelled'],
+            'paid' => ['processing', 'cancelled'],
+            'processing' => ['ready', 'cancelled'],
+            'ready' => ['completed', 'cancelled'],
+        ];
+
+        $allowed_statuses = [];
+        foreach ($allowedTransitions[$pesanan->status] ?? [] as $nextStatus) {
+            $allowed_statuses[$nextStatus] = $statusLabels[$nextStatus] ?? ucfirst($nextStatus);
+        }
+
+        return view('admin.pesanan.detail', compact('pesanan', 'allowed_statuses'));
     }
 
     public function updateStatus(Request $request, Pesanan $pesanan)
