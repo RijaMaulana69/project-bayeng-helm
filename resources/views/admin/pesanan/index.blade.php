@@ -13,15 +13,7 @@
         $hasFilters    = ($currentStatus && $currentStatus !== 'all') || ($currentMetode && $currentMetode !== 'all') || !empty($searchQuery);
     @endphp
 
-    {{-- 1. Header Ringkas --}}
-    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-        <h2 class="text-base font-bold text-slate-900">Transaksi Gerai</h2>
-        <p class="text-xs text-slate-500 mt-0.5">
-            Manajemen Pesanan masuk, kasir serah terima pickup, dan rekap pendapatan operasional.
-        </p>
-    </div>
-
-    {{-- 2. Bilah Cepat Validasi Kode Pickup --}}
+    {{-- 1. Bilah Cepat Validasi Kode Pickup --}}
     <div class="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
         <form method="POST" action="{{ route('admin.pickup.validasi') }}" class="flex items-center gap-2">
             @csrf
@@ -30,7 +22,7 @@
                 <input type="text"
                        name="kode_pickup"
                        class="w-full h-10 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400"
-                       placeholder="Scan / ketik kode pickup pelanggan (cth: PKP-XXXXXX)..."
+                       placeholder="Masukkan kode pickup..."
                        value="{{ old('kode_pickup') }}"
                        autocomplete="off"
                        required>
@@ -38,7 +30,7 @@
             <button type="submit" 
                     class="h-10 px-4 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer shrink-0">
                 <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
-                <span>Validasi Ambil</span>
+                <span>Validasi</span>
             </button>
         </form>
         @error('kode_pickup')
@@ -456,39 +448,8 @@
             </div>
         </div>
 
-        {{-- Clean Minimal Pagination --}}
-        @if ($pesanans->hasPages())
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-500">
-                <p class="text-center sm:text-left text-[11px]">
-                    Menampilkan <span class="font-semibold text-slate-800">{{ $pesanans->firstItem() ?? 0 }}-{{ $pesanans->lastItem() ?? 0 }}</span> dari <span class="font-semibold text-slate-800">{{ $pesanans->total() }}</span> transaksi
-                </p>
-                <div class="flex items-center gap-1.5">
-                    @if ($pesanans->onFirstPage())
-                        <span class="h-8 px-3 rounded-lg border border-slate-200 text-slate-300 text-xs inline-flex items-center cursor-not-allowed">
-                            &larr; Sebelumnya
-                        </span>
-                    @else
-                        <a href="{{ $pesanans->previousPageUrl() }}" class="h-8 px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium text-xs transition-colors inline-flex items-center">
-                            &larr; Sebelumnya
-                        </a>
-                    @endif
-
-                    <span class="px-2 text-xs text-slate-600 font-semibold">
-                        {{ $pesanans->currentPage() }} / {{ $pesanans->lastPage() }}
-                    </span>
-
-                    @if ($pesanans->hasMorePages())
-                        <a href="{{ $pesanans->nextPageUrl() }}" class="h-8 px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-medium text-xs transition-colors inline-flex items-center">
-                            Selanjutnya &rarr;
-                        </a>
-                    @else
-                        <span class="h-8 px-3 rounded-lg border border-slate-200 text-slate-300 text-xs inline-flex items-center cursor-not-allowed">
-                            Selanjutnya &rarr;
-                        </span>
-                    @endif
-                </div>
-            </div>
-        @endif
+        {{-- Pagination --}}
+        {{ $pesanans->onEachSide(1)->links('partials.pagination-admin') }}
 
     @else
         {{-- Empty State --}}

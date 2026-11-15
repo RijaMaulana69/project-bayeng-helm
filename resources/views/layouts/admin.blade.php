@@ -238,14 +238,20 @@
                             time: '',
                             updateClock() {
                                 const now = new Date();
+                                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                                const day = days[now.getDay()];
+                                const date = now.getDate();
+                                const month = months[now.getMonth()];
+                                const year = now.getFullYear();
                                 const h = String(now.getHours()).padStart(2, '0');
                                 const m = String(now.getMinutes()).padStart(2, '0');
-                                this.time = `${h}:${m} WIB`;
+                                this.time = `${day}, ${date} ${month} ${year} • ${h}:${m} WIB`;
                             }
                          }" 
                          x-init="updateClock(); setInterval(() => updateClock(), 1000)"
-                         class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <i class="fa-regular fa-clock text-[11px]"></i>
+                         class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 font-medium bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-lg">
+                        <i class="fa-regular fa-clock text-[11px] text-slate-400"></i>
                         <span x-text="time"></span>
                     </div>
                 </div>
@@ -362,10 +368,10 @@
                     <div class="relative" x-data="{ userMenu: false }" @click.outside="userMenu = false">
                         <button type="button" 
                                 @click="userMenu = !userMenu"
-                                class="flex items-center gap-2 py-1 px-1.5 sm:px-2 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
+                                class="flex items-center gap-2.5 py-1 px-1.5 sm:px-2 rounded-xl hover:bg-slate-100 transition-all cursor-pointer group"
                                 aria-label="Menu Pengguna">
-                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200/90 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:border-slate-300 transition-colors">
-                                {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
+                            <div class="w-8 h-8 rounded-full bg-slate-100/90 border border-slate-200/90 text-slate-600 flex items-center justify-center shrink-0 group-hover:bg-blue-50 group-hover:border-blue-200 group-hover:text-blue-600 transition-colors">
+                                <i class="fa-regular fa-user text-xs"></i>
                             </div>
                             <div class="hidden sm:block text-left">
                                 <span class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors block leading-tight">
@@ -390,13 +396,20 @@
                              class="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden z-50 divide-y divide-slate-100">
                             
                             {{-- User Summary --}}
-                            <div class="p-3.5 bg-slate-50/50">
-                                <p class="text-xs font-bold text-slate-900 truncate">{{ $authUser->nama_lengkap }}</p>
-                                <div class="flex items-center gap-1.5 mt-1">
-                                    <span class="inline-block text-[10px] font-semibold px-1.5 py-0.2 rounded border {{ $roleBadgeBg }}">
-                                        {{ $roleLabel }}
-                                    </span>
-                                    <span class="text-[11px] text-slate-400 font-mono truncate">{{ '@' . $authUser->username }}</span>
+                            <div class="p-3.5 bg-slate-50/70">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs">
+                                        <i class="fa-regular fa-user text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-bold text-slate-900 truncate">{{ $authUser->nama_lengkap }}</p>
+                                        <div class="flex items-center gap-1.5 mt-0.5">
+                                            <span class="inline-block text-[10px] font-semibold px-1.5 py-0.2 rounded border {{ $roleBadgeBg }}">
+                                                {{ $roleLabel }}
+                                            </span>
+                                            <span class="text-[11px] text-slate-400 font-mono truncate">{{ '@' . $authUser->username }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

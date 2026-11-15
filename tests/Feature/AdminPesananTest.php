@@ -41,7 +41,7 @@ class AdminPesananTest extends TestCase
         $response = $this->actingAs($admin, 'web')->get(route('admin.pesanan.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Manajemen Pesanan');
+        $response->assertSee('Transaksi');
         $response->assertSee($pesanan->no_pesanan);
         $response->assertSee($pesanan->kode_pickup);
         $response->assertSee('Perlu Verifikasi');
@@ -209,12 +209,46 @@ class AdminPesananTest extends TestCase
         $response = $this->actingAs($karyawan, 'web')->get(route('admin.pesanan.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Transaksi Gerai');
         $response->assertSee('Pendapatan Hari Ini');
         $response->assertSee('Pendapatan Bulan Ini');
         $response->assertSee('Tunai Toko');
         $response->assertSee('Online / QRIS');
-        $response->assertSee('Validasi Ambil');
+        $response->assertSee('Masukkan kode pickup');
+        $response->assertSee('Validasi');
         $response->assertSee(route('admin.pickup.validasi'));
+    }
+
+    public function test_transaksi_index_pagination_renders_numbered_pages(): void
+    {
+        $admin = User::where('id_role', 1)->first() ?? User::first();
+        $customer = Pelanggan::create([
+            'nama' => 'Pagination Customer ' . uniqid(),
+            'email' => 'pagin_' . uniqid() . '@test.com',
+            'telepon' => '0813' . rand(10000000, 99999999),
+            'password' => Hash::make('Password123!'),
+        ]);
+
+        for ($i = 1; $i <= 18; $i++) {
+            Pesanan::create([
+                'no_pesanan' => 'ORD-PAGIN-' . $i . '-' . uniqid(),
+                'id_pelanggan' => $customer->id_pelanggan,
+                'kode_pickup' => 'PKP-' . $i . '-' . uniqid(),
+                'total_belanja' => 100000,
+                'grand_total' => 100000,
+                'metode_bayar' => 'transfer',
+                'status' => 'pending',
+            ]);
+        }
+
+        $response = $this->actingAs($admin, 'web')->get(route('admin.pesanan.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Menampilkan');
+        $response->assertSee('transaksi');
+        $response->assertSee('Sebelumnya');
+        $response->assertSee('Selanjutnya');
+        // Numbered page links are present
+        $response->assertSee('1');
+        $response->assertSee('2');
     }
 }
