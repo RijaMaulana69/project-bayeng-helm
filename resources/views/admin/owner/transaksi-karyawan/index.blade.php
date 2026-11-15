@@ -30,8 +30,8 @@
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Omzet Kasir Selesai</span>
                 <i class="fa-solid fa-circle-check text-xs text-emerald-600"></i>
             </div>
-            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
-                Rp {{ number_format($kpi['total_omzet'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight tabular-nums">
+                {{ number_format($kpi['total_omzet'], 0, ',', '.') }}
             </div>
             <p class="text-[11px] text-slate-500">
                 {{ $kpi['completed_count'] }} transaksi tuntas
@@ -44,8 +44,8 @@
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Uang Tunai Laci</span>
                 <i class="fa-solid fa-money-bill-wave text-xs text-amber-600"></i>
             </div>
-            <div class="text-base sm:text-xl font-bold text-amber-700 tracking-tight font-mono">
-                Rp {{ number_format($kpi['tunai_total'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-bold text-amber-700 tracking-tight tabular-nums">
+                {{ number_format($kpi['tunai_total'], 0, ',', '.') }}
             </div>
             <p class="text-[11px] text-slate-500">
                 {{ $kpi['tunai_count'] }} transaksi tunai
@@ -58,8 +58,8 @@
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Online / Non-Tunai</span>
                 <i class="fa-solid fa-qrcode text-xs text-blue-600"></i>
             </div>
-            <div class="text-base sm:text-xl font-bold text-blue-700 tracking-tight font-mono">
-                Rp {{ number_format($kpi['online_total'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-bold text-blue-700 tracking-tight tabular-nums">
+                {{ number_format($kpi['online_total'], 0, ',', '.') }}
             </div>
             <p class="text-[11px] text-slate-500">
                 {{ $kpi['online_count'] }} transaksi non-tunai
@@ -72,7 +72,7 @@
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Total Transaksi</span>
                 <i class="fa-solid fa-clock text-xs text-slate-500"></i>
             </div>
-            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
+            <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight tabular-nums">
                 {{ $kpi['total_transaksi'] }} <span class="text-xs font-normal text-slate-500">Order</span>
             </div>
             <p class="text-[11px] text-slate-500">
@@ -229,8 +229,8 @@
                     </div>
 
                     <div class="text-right shrink-0">
-                        <div class="font-mono font-bold text-xs text-slate-900">
-                            Rp {{ number_format($pesanan->grand_total, 0, ',', '.') }}
+                        <div class="font-bold text-xs text-slate-900 tabular-nums">
+                            {{ number_format($pesanan->grand_total, 0, ',', '.') }}
                         </div>
                         <span class="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-medium border {{ $badge }}">
                             {{ $pesanan->status_label }}
@@ -372,8 +372,8 @@
                             </td>
 
                             {{-- Total --}}
-                            <td class="py-2.5 px-3.5 text-right font-bold text-slate-900 font-mono whitespace-nowrap">
-                                Rp {{ number_format($pesanan->grand_total, 0, ',', '.') }}
+                            <td class="py-2.5 px-3.5 text-right font-bold text-slate-900 tabular-nums whitespace-nowrap">
+                                {{ number_format($pesanan->grand_total, 0, ',', '.') }}
                             </td>
 
                             {{-- Status --}}

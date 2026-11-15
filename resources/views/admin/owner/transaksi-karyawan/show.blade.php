@@ -46,8 +46,8 @@
 
         <div class="text-left sm:text-right shrink-0">
             <span class="text-xs text-slate-400 block">Total Transaksi</span>
-            <span class="text-xl sm:text-2xl font-bold text-slate-900 font-mono">
-                {{ format_rupiah($pesanan->grand_total) }}
+            <span class="text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
+                {{ number_format($pesanan->grand_total, 0, ',', '.') }}
             </span>
         </div>
     </div>
