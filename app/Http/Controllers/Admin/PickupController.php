@@ -74,6 +74,11 @@ class PickupController extends Controller
         ActivityLog::log('pickup_completed', "Serah terima pesanan {$pesanan->no_pesanan} oleh kasir {$user->nama_lengkap}", 'user', $user->id_user, $user->username);
 
         $namaPelanggan = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
+
+        if ($request->input('redirect_to') === 'detail') {
+            return redirect()->route('admin.pesanan.show', $pesanan->id_pesanan)->with('success', "Pesanan {$pesanan->no_pesanan} berhasil diserahkan ke {$namaPelanggan}.");
+        }
+
         return redirect()->route('admin.pickup.index')->with('success', "Pesanan berhasil diserahkan ke {$namaPelanggan}.");
     }
 }
