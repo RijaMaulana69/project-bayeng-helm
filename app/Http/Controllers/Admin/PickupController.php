@@ -60,6 +60,7 @@ class PickupController extends Controller
         $user = Auth::guard('web')->user();
         ActivityLog::log('pickup_completed', "Serah terima pesanan {$pesanan->no_pesanan} oleh kasir {$user->nama_lengkap}", 'user', $user->id_user, $user->username);
 
-        return redirect()->route('admin.pickup.index')->with('success', "Pesanan {$pesanan->no_pesanan} berhasil diserahkan ke pelanggan!");
+        $namaPelanggan = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
+        return redirect()->route('admin.pickup.index')->with('success', "Pesanan berhasil diserahkan ke {$namaPelanggan}.");
     }
 }

@@ -663,48 +663,55 @@
         </div>
     </div>
 
-    {{-- Flash Notifications via SweetAlert2 --}}
-    @if(session('success') || session('error'))
-        <script>
-            (function() {
-                function triggerFlashAlert() {
-                    if (typeof Swal === 'undefined') return;
-                    @if(session('success'))
-                        Swal.fire({ 
-                            toast: true, 
-                            position: 'top', 
-                            icon: 'success', 
-                            title: '{{ addslashes(session('success')) }}', 
-                            showConfirmButton: false, 
-                            timer: 3500, 
-                            timerProgressBar: true,
-                            customClass: {
-                                popup: 'rounded-2xl shadow-2xl border border-slate-100 text-xs sm:text-sm mt-3'
-                            }
-                        });
-                    @endif
-                    @if(session('error'))
-                        Swal.fire({ 
-                            toast: true, 
-                            position: 'top', 
-                            icon: 'error', 
-                            title: '{{ addslashes(session('error')) }}', 
-                            showConfirmButton: false, 
-                            timer: 4000, 
-                            timerProgressBar: true,
-                            customClass: {
-                                popup: 'rounded-2xl shadow-2xl border border-slate-100 text-xs sm:text-sm mt-3'
-                            }
-                        });
-                    @endif
-                }
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', triggerFlashAlert);
-                } else {
-                    triggerFlashAlert();
-                }
-            })();
-        </script>
+    {{-- Global Floating Notification ("Ngambang di Atas") --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-init="setTimeout(() => show = false, 4000)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
+             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                    <i class="fa-solid fa-check text-xs"></i>
+                </div>
+                <p class="text-xs sm:text-sm font-medium text-slate-100 truncate">
+                    {{ session('success') }}
+                </p>
+            </div>
+            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-init="setTimeout(() => show = false, 4500)"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
+             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[340px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-7 h-7 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
+                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                </div>
+                <p class="text-xs sm:text-sm font-medium text-slate-100 truncate">
+                    {{ session('error') }}
+                </p>
+            </div>
+            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
     @endif
 
     @livewireScripts

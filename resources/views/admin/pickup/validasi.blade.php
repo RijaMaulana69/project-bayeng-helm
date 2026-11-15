@@ -3,7 +3,7 @@
 @section('page-title', 'Validasi Pickup')
 
 @section('content')
-<div class="max-w-xl mx-auto space-y-3">
+<div class="max-w-xl mx-auto space-y-3" x-data="{ showConfirm: false, submitting: false }">
 
     {{-- Navigasi Kembali --}}
     <a href="{{ route('admin.pickup.index') }}" 
@@ -90,71 +90,90 @@
                 </div>
             </div>
 
-            {{-- Tombol Serahkan --}}
+            {{-- Tombol Pemicu Konfirmasi --}}
             <div class="pt-1">
-                <form method="POST" 
-                      id="form-serahkan"
-                      action="{{ route('admin.pickup.serahkan', $pesanan->id_pesanan) }}"
-                      x-data="{ submitting: false }">
-                    @csrf
-                    <button type="button" 
-                            :disabled="submitting"
-                            @click="konfirmasiSerahkan()"
-                            class="w-full h-11 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-2xs">
-                        <template x-if="!submitting">
-                            <span class="inline-flex items-center gap-2">
-                                <i class="fa-solid fa-check text-xs"></i>
-                                <span>Serahkan Pesanan</span>
-                            </span>
-                        </template>
-                        <template x-if="submitting">
-                            <span class="inline-flex items-center gap-2">
-                                <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
-                                <span>Memproses...</span>
-                            </span>
-                        </template>
-                    </button>
-                </form>
+                <button type="button" 
+                        @click="showConfirm = true"
+                        class="w-full h-11 sm:h-12 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-2xs">
+                    <i class="fa-solid fa-check text-xs"></i>
+                    <span>Serahkan Pesanan</span>
+                </button>
             </div>
 
         </div>
     </div>
 
-</div>
+    {{-- Mobile-Friendly Action Sheet / Dialog Konfirmasi --}}
+    <div x-show="showConfirm" 
+         x-cloak
+         class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
+         role="dialog"
+         aria-modal="true">
+        
+        {{-- Backdrop --}}
+        <div x-show="showConfirm"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="if(!submitting) showConfirm = false"
+             class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
 
-<script>
-function konfirmasiSerahkan() {
-    const form = document.getElementById('form-serahkan');
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Serahkan Pesanan?',
-            html: '<p class="text-xs text-slate-500">Pastikan barang pesanan <b>{{ $pesanan->no_pesanan }}</b> sudah diserahkan ke pelanggan.</p>',
-            icon: 'question',
-            iconColor: '#059669',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Serahkan',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#059669',
-            cancelButtonColor: '#94a3b8',
-            reverseButtons: true,
-            customClass: {
-                popup: 'rounded-2xl shadow-2xl p-5 border border-slate-100 max-w-sm',
-                title: 'text-sm sm:text-base font-bold text-slate-900',
-                confirmButton: 'rounded-xl text-xs sm:text-sm font-semibold px-4 py-2.5 shadow-2xs',
-                cancelButton: 'rounded-xl text-xs sm:text-sm font-semibold px-4 py-2.5'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const alpineData = Alpine.$data(form);
-                if (alpineData) alpineData.submitting = true;
-                form.submit();
-            }
-        });
-    } else {
-        if (confirm('Serahkan pesanan ini ke pelanggan?')) {
-            form.submit();
-        }
-    }
-}
-</script>
+        {{-- Bottom Sheet di HP, Modal Tengah di Desktop --}}
+        <div x-show="showConfirm"
+             x-transition:enter="transition ease-out duration-250"
+             x-transition:enter-start="opacity-0 translate-y-full sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-full sm:translate-y-0 sm:scale-95"
+             class="relative w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl space-y-4">
+            
+            {{-- Handle Bar untuk Layar Mobile --}}
+            <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto sm:hidden -mt-1 mb-2"></div>
+
+            {{-- Teks Konfirmasi Alami & Ringkas --}}
+            <div class="text-center sm:text-left space-y-1">
+                <h3 class="text-base font-bold text-slate-900">
+                    Selesaikan Penyerahan?
+                </h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Helm siap diserahkan ke <span class="font-semibold text-slate-700">{{ $customerName }}</span>.
+                </p>
+            </div>
+
+            {{-- Form Aksi Ramah Jempol --}}
+            <form method="POST" 
+                  action="{{ route('admin.pickup.serahkan', $pesanan->id_pesanan) }}"
+                  @submit="submitting = true"
+                  class="space-y-2 pt-1">
+                @csrf
+                <button type="submit" 
+                        :disabled="submitting"
+                        class="w-full h-11 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-2xs">
+                    <template x-if="!submitting">
+                        <span>Ya, Selesaikan</span>
+                    </template>
+                    <template x-if="submitting">
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                            <span>Memproses...</span>
+                        </span>
+                    </template>
+                </button>
+
+                <button type="button" 
+                        @click="showConfirm = false"
+                        :disabled="submitting"
+                        class="w-full h-10 flex items-center justify-center text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer">
+                    Batal
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
 @endsection

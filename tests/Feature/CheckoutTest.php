@@ -14,7 +14,7 @@ class CheckoutTest extends TestCase
     {
         $pelanggan = Pelanggan::create([
             'nama' => 'Checkout Tester',
-            'email' => 'checkout_' . rand(1000, 9999) . '@test.com',
+            'email' => 'checkout_' . uniqid() . '@test.com',
             'telepon' => '081288887777',
             'password' => Hash::make('Password123!'),
         ]);
@@ -47,7 +47,7 @@ class CheckoutTest extends TestCase
     {
         $pelanggan = Pelanggan::create([
             'nama' => 'Buyer Tester',
-            'email' => 'buyer_' . rand(1000, 9999) . '@test.com',
+            'email' => 'buyer_' . uniqid() . '@test.com',
             'telepon' => '081266665555',
             'password' => Hash::make('Password123!'),
         ]);

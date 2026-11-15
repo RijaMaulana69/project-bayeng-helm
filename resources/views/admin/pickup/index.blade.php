@@ -5,59 +5,6 @@
 @section('content')
 <div class="space-y-4 max-w-5xl mx-auto" x-data="{ pickupFilter: 'all' }">
 
-    {{-- Notifikasi Mengambang di Atas (Floating Top Toast) --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" 
-             x-show="show" 
-             x-init="setTimeout(() => show = false, 4500)"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
-             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
-             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[360px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                    <i class="fa-solid fa-check text-xs"></i>
-                </div>
-                <div class="min-w-0">
-                    <p class="text-xs font-bold text-white truncate">Penyerahan Berhasil</p>
-                    <p class="text-[11px] text-slate-300 truncate mt-0.5">{{ session('success') }}</p>
-                </div>
-            </div>
-            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div x-data="{ show: true }" 
-             x-show="show" 
-             x-init="setTimeout(() => show = false, 5000)"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
-             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-             x-transition:leave-end="opacity-0 -translate-y-8 scale-95"
-             class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[92%] sm:w-auto sm:min-w-[360px] max-w-md px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700/80 flex items-center justify-between gap-3 backdrop-blur-md">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
-                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
-                </div>
-                <div class="min-w-0">
-                    <p class="text-xs font-bold text-white truncate">Gagal</p>
-                    <p class="text-[11px] text-slate-300 truncate mt-0.5">{{ session('error') }}</p>
-                </div>
-            </div>
-            <button type="button" @click="show = false" class="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
-        </div>
-    @endif
-
     {{-- 1. Search Bar / Pickup Input Bar --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
         <form method="POST" action="{{ route('admin.pickup.validasi') }}" class="flex items-center gap-2">
