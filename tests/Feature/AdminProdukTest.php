@@ -96,7 +96,7 @@ class AdminProdukTest extends TestCase
                 ],
             ]);
 
-        $response->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
+        $response->assertRedirect(route('admin.produk.index'));
 
         $helm = Helm::where('nama_helm', $namaHelm)->first();
         $this->assertNotNull($helm);
@@ -119,7 +119,7 @@ class AdminProdukTest extends TestCase
                 ],
             ]);
 
-        $updateResponse->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
+        $updateResponse->assertRedirect(route('admin.produk.index'));
 
         $helm->refresh();
         $this->assertEquals($namaHelm . ' Updated', $helm->nama_helm);
@@ -129,7 +129,7 @@ class AdminProdukTest extends TestCase
         $deleteResponse = $this->actingAs($admin, 'web')
             ->delete(route('admin.produk.destroy', $helm->id_helm));
 
-        $deleteResponse->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
+        $deleteResponse->assertRedirect(route('admin.produk.index'));
         $this->assertNull(Helm::find($helm->id_helm));
     }
 }

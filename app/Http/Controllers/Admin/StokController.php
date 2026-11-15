@@ -15,7 +15,7 @@ class StokController extends Controller
 {
     public function index(Request $request)
     {
-        return redirect()->route('admin.produk.index', array_merge(['tab' => 'stok'], $request->all()));
+        return redirect()->route('admin.produk.index', $request->all());
     }
 
     public function store(Request $request)
@@ -57,12 +57,12 @@ class StokController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.produk.index', ['tab' => 'stok'])
+            return redirect()->route('admin.produk.index')
                 ->with('success', "Berhasil menambahkan {$request->jumlah} unit stok untuk {$helm->nama_helm} ({$varian->warna}, {$varian->ukuran}).");
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->route('admin.produk.index', ['tab' => 'stok'])
+            return redirect()->route('admin.produk.index')
                 ->with('error', 'Gagal menambahkan stok: ' . $e->getMessage());
         }
     }

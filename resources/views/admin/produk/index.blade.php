@@ -16,7 +16,7 @@
             this.deleteModal = true;
         },
 
-        // Modal Restok
+        // Modal Restok Instan
         restockOpen: false, 
         selectedHelm: '', 
         selectedVarian: '', 
@@ -35,76 +35,74 @@
         }
      }">
 
-    {{-- 1. Header Section: Title & Unified Action --}}
+    {{-- 1. Header Section: Title & Actions --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                 Pusat Produk & Inventori
             </h2>
             <p class="text-xs text-slate-500 mt-0.5">
-                Katalog model helm, monitoring persediaan rak gerai, dan pencatatan restok masuk
+                Katalog helm gerai, rincian persediaan fisik varian, dan pencatatan restok masuk
             </p>
         </div>
 
         <div class="flex items-center gap-2 self-start sm:self-auto">
-            {{-- Tombol Tambah Produk (muncul saat tab katalog) --}}
+            {{-- Tombol Tambah Stok Masuk --}}
+            <button type="button" 
+                    @click="openRestock()"
+                    class="h-9 px-3.5 rounded-lg border border-slate-200/90 hover:bg-slate-50 text-slate-700 font-medium text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                <i class="fa-solid fa-boxes-stacked text-[11px] text-slate-500"></i>
+                <span>Tambah Stok Masuk</span>
+            </button>
+
+            {{-- Tombol Tambah Produk Baru --}}
             <a href="{{ route('admin.produk.create') }}" 
-               x-show="tab === 'katalog'"
-               class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center justify-center gap-2 shadow-2xs transition-colors">
+               class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors">
                 <i class="fa-solid fa-plus text-[11px]"></i>
                 <span>Tambah Produk Baru</span>
             </a>
-
-            {{-- Tombol Tambah Stok Masuk (muncul saat tab stok / riwayat) --}}
-            <button type="button" 
-                    x-show="tab !== 'katalog'"
-                    @click="openRestock()"
-                    class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center justify-center gap-2 shadow-2xs transition-colors cursor-pointer">
-                <i class="fa-solid fa-boxes-stacked text-[11px]"></i>
-                <span>Tambah Stok Masuk</span>
-            </button>
         </div>
     </div>
 
     {{-- 2. Stat Summary Overview --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {{-- Card 1: Total Model Helm --}}
-        <a href="{{ route('admin.produk.index', ['tab' => 'katalog']) }}" 
-           class="p-4 rounded-xl border transition-all {{ $tab === 'katalog' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
+        <a href="{{ route('admin.produk.index') }}" 
+           class="p-4 rounded-xl border transition-all {{ $tab === 'produk' && $stokFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between">
-                <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'katalog' ? 'text-slate-300' : 'text-slate-400' }}">
+                <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">
                     Total Model Helm
                 </span>
-                <i class="fa-solid fa-helmet-safety text-xs {{ $tab === 'katalog' ? 'text-slate-300' : 'text-slate-400' }}"></i>
+                <i class="fa-solid fa-helmet-safety text-xs {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}"></i>
             </div>
-            <span class="text-xl sm:text-2xl font-bold mt-1.5 block {{ $tab === 'katalog' ? 'text-white' : 'text-slate-900' }}">
+            <span class="text-xl sm:text-2xl font-bold mt-1.5 block {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-white' : 'text-slate-900' }}">
                 {{ number_format($totalProduk) }} Model
             </span>
-            <span class="text-[11px] mt-0.5 block {{ $tab === 'katalog' ? 'text-slate-300' : 'text-slate-500' }}">
+            <span class="text-[11px] mt-0.5 block {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-500' }}">
                 Tersebar di {{ $totalMerk }} merk helm resmi
             </span>
         </a>
 
-        {{-- Card 2: Total Unit Fisik --}}
-        <a href="{{ route('admin.produk.index', ['tab' => 'stok']) }}" 
-           class="p-4 rounded-xl border transition-all {{ $tab === 'stok' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
+        {{-- Card 2: Total Unit Fisik di Gerai --}}
+        <a href="{{ route('admin.produk.index', ['stok_filter' => 'tersedia']) }}" 
+           class="p-4 rounded-xl border transition-all {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between">
-                <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'stok' ? 'text-slate-300' : 'text-slate-400' }}">
+                <span class="text-[11px] font-medium uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-400' }}">
                     Total Unit Fisik Gerai
                 </span>
-                <i class="fa-solid fa-boxes-stacked text-xs {{ $tab === 'stok' ? 'text-slate-300' : 'text-slate-400' }}"></i>
+                <i class="fa-solid fa-boxes-stacked text-xs {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-400' }}"></i>
             </div>
-            <span class="text-xl sm:text-2xl font-bold mt-1.5 block {{ $tab === 'stok' ? 'text-white' : 'text-slate-900' }}">
+            <span class="text-xl sm:text-2xl font-bold mt-1.5 block {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-white' : 'text-slate-900' }}">
                 {{ number_format($totalStokFisik) }} Unit
             </span>
-            <span class="text-[11px] mt-0.5 block {{ $tab === 'stok' ? 'text-slate-300' : 'text-slate-500' }}">
+            <span class="text-[11px] mt-0.5 block {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-500' }}">
                 Dari {{ $totalVarian }} kombinasi warna & ukuran
             </span>
         </a>
 
         {{-- Card 3: Perlu Restok --}}
-        <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" 
-           class="p-4 rounded-xl border transition-all {{ $totalKritisHabis > 0 ? 'bg-amber-50/70 border-amber-200 hover:border-amber-300 text-amber-900' : 'bg-white border-slate-200/90 text-slate-800' }}">
+        <a href="{{ route('admin.produk.index', ['stok_filter' => 'kritis_habis']) }}" 
+           class="p-4 rounded-xl border transition-all {{ $stokFilter === 'kritis_habis' ? 'bg-amber-100/90 border-amber-300 text-amber-950 shadow-sm' : ($totalKritisHabis > 0 ? 'bg-amber-50/70 border-amber-200 hover:border-amber-300 text-amber-900' : 'bg-white border-slate-200/90 text-slate-800') }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-medium uppercase tracking-wider text-amber-800">
                     Perlu Restok (&le; 3 Unit)
@@ -120,31 +118,19 @@
         </a>
     </div>
 
-    {{-- 3. Unified Tab Navigation --}}
+    {{-- 3. Modern 2-Tab Navigation --}}
     <div class="flex items-center gap-1 border-b border-slate-200 text-xs">
-        {{-- Tab 1: Katalog & Etalase --}}
-        <a href="{{ route('admin.produk.index', ['tab' => 'katalog']) }}" 
-           class="px-4 py-2.5 font-medium border-b-2 transition-colors flex items-center gap-2 {{ $tab === 'katalog' ? 'border-slate-900 text-slate-900 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-            <i class="fa-solid fa-layer-group text-[11px]"></i>
-            <span>Katalog & Etalase</span>
+        {{-- Tab 1: Katalog & Stok Fisik --}}
+        <a href="{{ route('admin.produk.index') }}" 
+           class="px-4 py-2.5 font-medium border-b-2 transition-colors flex items-center gap-2 {{ $tab === 'produk' ? 'border-slate-900 text-slate-900 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+            <i class="fa-solid fa-boxes-stacked text-[11px]"></i>
+            <span>Katalog & Stok Fisik</span>
             <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
                 {{ $totalProduk }}
             </span>
         </a>
 
-        {{-- Tab 2: Rak Gudang & Restok Fisik --}}
-        <a href="{{ route('admin.produk.index', ['tab' => 'stok']) }}" 
-           class="px-4 py-2.5 font-medium border-b-2 transition-colors flex items-center gap-2 {{ $tab === 'stok' ? 'border-slate-900 text-slate-900 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-            <i class="fa-solid fa-boxes-stacked text-[11px]"></i>
-            <span>Rak Gudang & Restok</span>
-            @if($totalKritisHabis > 0)
-                <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
-                    {{ $totalKritisHabis }}
-                </span>
-            @endif
-        </a>
-
-        {{-- Tab 3: Riwayat Barang Masuk --}}
+        {{-- Tab 2: Riwayat Barang Masuk --}}
         <a href="{{ route('admin.produk.index', ['tab' => 'riwayat']) }}" 
            class="px-4 py-2.5 font-medium border-b-2 transition-colors flex items-center gap-2 {{ $tab === 'riwayat' ? 'border-slate-900 text-slate-900 font-semibold' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
             <i class="fa-solid fa-clock-rotate-left text-[11px]"></i>
@@ -153,24 +139,22 @@
     </div>
 
     {{-- ========================================================================= --}}
-    {{-- TAB 1: KATALOG & ETALASE                                                  --}}
+    {{-- TAB 1: KATALOG & STOK FISIK                                               --}}
     {{-- ========================================================================= --}}
-    @if ($tab === 'katalog')
+    @if ($tab === 'produk')
         {{-- Toolbar Filter & Search --}}
         <div class="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-3">
             <form method="GET" action="{{ route('admin.produk.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                <input type="hidden" name="tab" value="katalog">
-
                 {{-- Search Bar --}}
                 <div class="relative lg:col-span-2">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input type="text" 
                            name="search" 
                            value="{{ $search }}" 
-                           placeholder="Cari nama helm, merk, atau kategori..." 
+                           placeholder="Cari helm, merk, kategori, warna, ukuran..." 
                            class="w-full h-9 pl-8 pr-8 rounded-lg bg-slate-50 border border-slate-200/80 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all">
                     @if($search)
-                        <a href="{{ route('admin.produk.index', ['tab' => 'katalog']) }}" 
+                        <a href="{{ route('admin.produk.index', array_filter(['merk' => $idMerk, 'kategori' => $idKategori, 'stok_filter' => $stokFilter !== 'all' ? $stokFilter : null])) }}" 
                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
                             <i class="fa-solid fa-xmark"></i>
                         </a>
@@ -212,21 +196,31 @@
 
             {{-- Status Tabs --}}
             <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100 overflow-x-auto text-xs">
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'katalog_page'), ['tab' => 'katalog', 'stok_filter' => 'all'])) }}"
+                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'all'])) }}"
                    class="px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors {{ $stokFilter === 'all' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
                     Semua Produk ({{ $totalProduk }})
                 </a>
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'katalog_page'), ['tab' => 'katalog', 'stok_filter' => 'tersedia'])) }}"
-                   class="px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors {{ $stokFilter === 'tersedia' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
-                    Tersedia ({{ $totalProduk - $produkHabis }})
+
+                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'kritis_habis'])) }}"
+                   class="px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors inline-flex items-center gap-1 {{ $stokFilter === 'kritis_habis' ? 'bg-slate-900 text-white' : 'text-amber-800 hover:bg-amber-50' }}">
+                    <span>Perlu Restok (&le; 3)</span>
+                    <span class="text-[10px] {{ $stokFilter === 'kritis_habis' ? 'text-amber-300' : 'text-amber-700 font-bold' }}">
+                        ({{ $totalKritisHabis }})
+                    </span>
                 </a>
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'katalog_page'), ['tab' => 'katalog', 'stok_filter' => 'habis'])) }}"
+
+                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'tersedia'])) }}"
+                   class="px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors {{ $stokFilter === 'tersedia' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
+                    Stok Tersedia ({{ $totalProduk - $produkHabis }})
+                </a>
+
+                <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'habis'])) }}"
                    class="px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors {{ $stokFilter === 'habis' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' }}">
                     Habis Total ({{ $produkHabis }})
                 </a>
 
                 @if($search || $idMerk || $idKategori || $stokFilter !== 'all')
-                    <a href="{{ route('admin.produk.index', ['tab' => 'katalog']) }}" 
+                    <a href="{{ route('admin.produk.index') }}" 
                        class="ml-auto text-xs text-rose-600 hover:underline inline-flex items-center gap-1 whitespace-nowrap">
                         <i class="fa-solid fa-rotate-left text-[10px]"></i>
                         <span>Reset Filter</span>
@@ -235,15 +229,17 @@
             </div>
         </div>
 
-        {{-- Product Catalog List --}}
+        {{-- Product Catalog & Variant Stock List --}}
         @if ($produks->count() > 0)
             {{-- Mobile Flat Cards --}}
             <div class="md:hidden space-y-3">
                 @foreach ($produks as $produk)
                     @php
                         $isHabis = ($produk->stok <= 0);
+                        $hasCritical = $produk->varians->contains(fn($v) => $v->stok <= 3);
                     @endphp
-                    <div class="bg-white rounded-xl border border-slate-200/90 p-3.5 shadow-2xs space-y-3">
+                    <div class="bg-white rounded-xl border border-slate-200/90 p-3.5 shadow-2xs space-y-3"
+                         x-data="{ showVariants: false }">
                         <div class="flex items-start gap-3">
                             <div class="w-14 h-14 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
                                 <img src="{{ $produk->gambar_url }}" alt="{{ $produk->nama_helm }}" class="w-full h-full object-cover">
@@ -275,23 +271,60 @@
                             </div>
                         </div>
 
+                        {{-- Rincian Varian Rak Fisik (Mobile) --}}
+                        <div class="pt-2 border-t border-slate-100 text-xs">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <div class="flex items-center gap-1.5">
+                                    @if($isHabis)
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">
+                                            Habis (0 unit)
+                                        </span>
+                                    @elseif($hasCritical)
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                            {{ $produk->stok }} unit (Ada varian menipis)
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                            {{ $produk->stok }} unit tersedia
+                                        </span>
+                                    @endif
+                                    <span class="text-[11px] text-slate-400">({{ $produk->varians_count }} varian)</span>
+                                </div>
+
+                                <button type="button" 
+                                        @click="showVariants = !showVariants" 
+                                        class="text-[11px] text-blue-600 hover:underline font-medium inline-flex items-center gap-1 cursor-pointer">
+                                    <span x-text="showVariants ? 'Tutup Rincian' : 'Lihat Varian'"></span>
+                                    <i class="fa-solid fa-chevron-down text-[9px] transition-transform" :class="{ 'rotate-180': showVariants }"></i>
+                                </button>
+                            </div>
+
+                            {{-- Collapsible Varian List --}}
+                            <div x-show="showVariants" x-collapse class="pt-2 pb-1 space-y-1">
+                                <div class="grid grid-cols-2 gap-1.5 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    @foreach ($produk->varians as $v)
+                                        @php
+                                            $vHabis = ($v->stok <= 0);
+                                            $vKritis = ($v->stok > 0 && $v->stok <= 3);
+                                        @endphp
+                                        <div class="flex items-center justify-between bg-white px-2 py-1 rounded border border-slate-200/70 text-[11px]">
+                                            <span class="truncate font-medium text-slate-700">
+                                                {{ $v->warna }} <span class="font-bold font-mono text-slate-500">({{ $v->ukuran }})</span>
+                                            </span>
+                                            <span class="ml-1 shrink-0 font-bold font-mono {{ $vHabis ? 'text-rose-600' : ($vKritis ? 'text-amber-700' : 'text-slate-800') }}">
+                                                {{ $v->stok }} unit
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Footer & Actions --}}
                         <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="text-slate-500 text-[11px]">
-                                    {{ $produk->varians_count }} Varian
-                                </span>
-                                <span class="text-slate-300">·</span>
-                                @if($isHabis)
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">
-                                        Stok Habis
-                                    </span>
-                                @else
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                        {{ $produk->stok }} unit
-                                    </span>
-                                @endif
-                            </div>
+                            <span class="text-[11px] text-slate-400">
+                                Margin: {{ format_rupiah($produk->harga_jual - $produk->harga_awal) }}
+                            </span>
 
                             <div class="flex items-center gap-1">
                                 <a href="{{ route('katalog.detail', $produk->id_helm) }}" 
@@ -326,7 +359,7 @@
                 @endforeach
             </div>
 
-            {{-- Desktop Minimal Table --}}
+            {{-- Desktop Consolidated Minimal Table --}}
             <div class="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
                 <table class="w-full text-left text-xs">
                     <thead>
@@ -335,7 +368,7 @@
                             <th class="py-3 px-4">Kategori</th>
                             <th class="py-3 px-4 text-right">Harga Modal</th>
                             <th class="py-3 px-4 text-right">Harga Jual</th>
-                            <th class="py-3 px-4 text-center">Persediaan Fisik</th>
+                            <th class="py-3 px-4">Stok & Rincian Varian</th>
                             <th class="py-3 px-4 text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -343,8 +376,11 @@
                         @foreach ($produks as $produk)
                             @php
                                 $isHabis = ($produk->stok <= 0);
+                                $hasCritical = $produk->varians->contains(fn($v) => $v->stok <= 3);
                             @endphp
-                            <tr class="hover:bg-slate-50/60 transition-colors">
+                            <tr class="hover:bg-slate-50/60 transition-colors"
+                                x-data="{ expanded: false }">
+                                {{-- 1. Thumbnail & Nama Helm --}}
                                 <td class="py-3 px-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
@@ -361,37 +397,93 @@
                                     </div>
                                 </td>
 
+                                {{-- 2. Kategori --}}
                                 <td class="py-3 px-4 text-slate-600 whitespace-nowrap">
                                     <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-medium">
                                         {{ $produk->kategori->nama_kategori ?? '-' }}
                                     </span>
                                 </td>
 
+                                {{-- 3. Modal --}}
                                 <td class="py-3 px-4 text-right text-slate-500 font-mono whitespace-nowrap">
                                     {{ format_rupiah($produk->harga_awal) }}
                                 </td>
 
-                                <td class="py-3 px-4 text-right font-bold text-slate-900 font-mono whitespace-nowrap">
-                                    {{ format_rupiah($produk->harga_jual) }}
+                                {{-- 4. Jual & Margin --}}
+                                <td class="py-3 px-4 text-right whitespace-nowrap">
+                                    <span class="font-bold text-slate-900 font-mono block">
+                                        {{ format_rupiah($produk->harga_jual) }}
+                                    </span>
+                                    <span class="text-[10px] text-emerald-600 font-medium block">
+                                        +{{ format_rupiah($produk->harga_jual - $produk->harga_awal) }}
+                                    </span>
                                 </td>
 
-                                <td class="py-3 px-4 text-center whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-1.5">
+                                {{-- 5. Total Stok & Chips Varian Fisik --}}
+                                <td class="py-3 px-4 min-w-[240px]">
+                                    <div class="flex items-center gap-2 mb-1.5">
                                         @if($isHabis)
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200 whitespace-nowrap">
                                                 Habis (0 unit)
                                             </span>
+                                        @elseif($hasCritical)
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 whitespace-nowrap">
+                                                {{ $produk->stok }} unit (Menipis)
+                                            </span>
                                         @else
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 whitespace-nowrap">
                                                 {{ $produk->stok }} unit
                                             </span>
                                         @endif
-                                        <span class="text-[11px] text-slate-400">
+                                        <span class="text-[11px] text-slate-400 whitespace-nowrap">
                                             ({{ $produk->varians_count }} varian)
                                         </span>
                                     </div>
+
+                                    {{-- Chips Rincian Varian --}}
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        @php
+                                            $previewVarians = $produk->varians->take(3);
+                                            $remainingCount = $produk->varians->count() - 3;
+                                        @endphp
+                                        @foreach ($previewVarians as $v)
+                                            @php
+                                                $vHabis = ($v->stok <= 0);
+                                                $vKritis = ($v->stok > 0 && $v->stok <= 3);
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium' : 'bg-slate-50 border-slate-200/80 text-slate-600') }}">
+                                                <span class="truncate max-w-[80px]">{{ $v->warna }}</span>
+                                                <span class="font-bold font-mono">{{ $v->ukuran }}:{{ $v->stok }}</span>
+                                            </span>
+                                        @endforeach
+
+                                        @if($remainingCount > 0)
+                                            <button type="button" 
+                                                    @click="expanded = !expanded" 
+                                                    class="text-[10px] font-medium text-blue-600 hover:underline px-1 py-0.5 cursor-pointer">
+                                                <span x-text="expanded ? 'Tutup' : '+{{ $remainingCount }} lagi'"></span>
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    {{-- Expanded Remaining Variants --}}
+                                    @if($remainingCount > 0)
+                                        <div x-show="expanded" x-cloak class="flex items-center gap-1 flex-wrap pt-1.5">
+                                            @foreach ($produk->varians->slice(3) as $v)
+                                                @php
+                                                    $vHabis = ($v->stok <= 0);
+                                                    $vKritis = ($v->stok > 0 && $v->stok <= 3);
+                                                @endphp
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium' : 'bg-slate-50 border-slate-200/80 text-slate-600') }}">
+                                                    <span class="truncate max-w-[80px]">{{ $v->warna }}</span>
+                                                    <span class="font-bold font-mono">{{ $v->ukuran }}:{{ $v->stok }}</span>
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </td>
 
+                                {{-- 6. Aksi Cepat --}}
                                 <td class="py-3 px-4 text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1">
                                         <a href="{{ route('katalog.detail', $produk->id_helm) }}" 
@@ -444,7 +536,7 @@
                 </div>
                 @if($search || $idMerk || $idKategori || $stokFilter !== 'all')
                     <div class="pt-2">
-                        <a href="{{ route('admin.produk.index', ['tab' => 'katalog']) }}" 
+                        <a href="{{ route('admin.produk.index') }}" 
                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors">
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
                             <span>Reset Filter</span>
@@ -455,210 +547,7 @@
         @endif
 
     {{-- ========================================================================= --}}
-    {{-- TAB 2: RAK GUDANG & RESTOK FISIK                                          --}}
-    {{-- ========================================================================= --}}
-    @elseif ($tab === 'stok')
-        {{-- Toolbar Filter & Search Varian --}}
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('filter', 'stok_page'), ['tab' => 'stok', 'filter' => 'all'])) }}"
-                   class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $varianFilter === 'all' ? 'bg-slate-900 text-white font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
-                    <span>Semua Varian</span>
-                    <span class="text-[11px] {{ $varianFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">{{ $totalVarian }}</span>
-                </a>
-
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('filter', 'stok_page'), ['tab' => 'stok', 'filter' => 'kritis_habis'])) }}"
-                   class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $varianFilter === 'kritis_habis' ? 'bg-slate-900 text-white font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
-                    <span>Kritis & Habis (&le; 3)</span>
-                    <span class="text-[11px] {{ $varianFilter === 'kritis_habis' ? 'text-slate-300' : 'text-rose-500 font-semibold' }}">{{ $totalKritisHabis }}</span>
-                </a>
-
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('filter', 'stok_page'), ['tab' => 'stok', 'filter' => 'habis'])) }}"
-                   class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $varianFilter === 'habis' ? 'bg-slate-900 text-white font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
-                    <span>Habis Total (0)</span>
-                    <span class="text-[11px] {{ $varianFilter === 'habis' ? 'text-slate-300' : 'text-rose-500 font-semibold' }}">{{ $habisCount }}</span>
-                </a>
-
-                <a href="{{ route('admin.produk.index', array_merge(request()->except('filter', 'stok_page'), ['tab' => 'stok', 'filter' => 'aman'])) }}"
-                   class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $varianFilter === 'aman' ? 'bg-slate-900 text-white font-semibold' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
-                    <span>Stok Aman (> 3)</span>
-                    <span class="text-[11px] {{ $varianFilter === 'aman' ? 'text-slate-300' : 'text-slate-400' }}">{{ $amanCount }}</span>
-                </a>
-            </div>
-
-            {{-- Search Box Varian --}}
-            <form method="GET" action="{{ route('admin.produk.index') }}" class="relative min-w-[240px]">
-                <input type="hidden" name="tab" value="stok">
-                @if($varianFilter !== 'all')
-                    <input type="hidden" name="filter" value="{{ $varianFilter }}">
-                @endif
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" 
-                       name="search" 
-                       value="{{ $search }}" 
-                       placeholder="Cari helm, merk, warna, ukuran..." 
-                       class="w-full h-9 pl-8 pr-8 rounded-lg bg-white border border-slate-200/90 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all">
-                @if($search)
-                    <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => $varianFilter]) }}" 
-                       class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
-                        <i class="fa-solid fa-xmark"></i>
-                    </a>
-                @endif
-            </form>
-        </div>
-
-        {{-- Variant List --}}
-        @if ($varians->count() > 0)
-            {{-- Mobile Cards --}}
-            <div class="md:hidden space-y-2.5">
-                @foreach ($varians as $varian)
-                    @php
-                        $helm = $varian->helm;
-                        $merkName = $helm->merk->nama_merk ?? 'Helm';
-                        $isHabis = ($varian->stok <= 0);
-                        $isKritis = ($varian->stok > 0 && $varian->stok <= 3);
-                    @endphp
-                    <div class="bg-white rounded-xl border border-slate-200/90 p-3.5 shadow-2xs space-y-3">
-                        <div class="flex items-start gap-3">
-                            <div class="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
-                                @if($helm && $helm->gambar_url)
-                                    <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
-                                @else
-                                    <i class="fa-solid fa-helmet-safety text-slate-400 text-sm"></i>
-                                @endif
-                            </div>
-
-                            <div class="min-w-0 flex-1">
-                                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                                    {{ $merkName }}
-                                </span>
-                                <h3 class="font-bold text-slate-900 text-xs truncate">
-                                    {{ $helm->nama_helm ?? 'Helm' }}
-                                </h3>
-                                <p class="text-[11px] text-slate-500 mt-0.5">
-                                    Warna: <span class="font-medium text-slate-800">{{ $varian->warna }}</span> · Ukuran: <span class="font-medium text-slate-800">{{ $varian->ukuran }}</span>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-                            <div>
-                                <span class="text-[10px] text-slate-400 block">Stok Saat Ini</span>
-                                @if($isHabis)
-                                    <span class="text-xs font-bold text-rose-600">Habis (0 unit)</span>
-                                @elseif($isKritis)
-                                    <span class="text-xs font-bold text-amber-700">Kritis ({{ $varian->stok }} unit)</span>
-                                @else
-                                    <span class="text-xs font-semibold text-slate-700">{{ $varian->stok }} unit</span>
-                                @endif
-                            </div>
-
-                            <button type="button" 
-                                    @click="openRestock({{ $varian->id_helm }}, {{ $varian->id_varian }})"
-                                    class="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                <span>Restok</span>
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            {{-- Desktop Clean Table --}}
-            <div class="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="border-b border-slate-100 text-slate-400 text-[11px] font-medium">
-                            <th class="py-3 px-4">Produk Helm</th>
-                            <th class="py-3 px-4">Varian (Warna & Ukuran)</th>
-                            <th class="py-3 px-4 text-center">Status Rak</th>
-                            <th class="py-3 px-4 text-right">Stok Fisik</th>
-                            <th class="py-3 px-4 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @foreach ($varians as $varian)
-                            @php
-                                $helm = $varian->helm;
-                                $merkName = $helm->merk->nama_merk ?? 'Helm';
-                                $isHabis = ($varian->stok <= 0);
-                                $isKritis = ($varian->stok > 0 && $varian->stok <= 3);
-                            @endphp
-                            <tr class="hover:bg-slate-50/60 transition-colors">
-                                <td class="py-3 px-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
-                                            @if($helm && $helm->gambar_url)
-                                                <img src="{{ $helm->gambar_url }}" alt="{{ $helm->nama_helm }}" class="w-full h-full object-cover">
-                                            @else
-                                                <i class="fa-solid fa-helmet-safety text-slate-400 text-xs"></i>
-                                            @endif
-                                        </div>
-                                        <div class="min-w-0">
-                                            <span class="font-bold text-slate-900 block truncate">{{ $helm->nama_helm ?? 'Helm' }}</span>
-                                            <span class="text-[11px] text-slate-400">{{ $merkName }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td class="py-3 px-4 text-slate-700">
-                                    <span class="font-medium text-slate-900">{{ $varian->warna }}</span>
-                                    <span class="text-slate-400">·</span>
-                                    <span class="text-slate-600 font-mono font-bold">{{ $varian->ukuran }}</span>
-                                </td>
-
-                                <td class="py-3 px-4 text-center">
-                                    @if($isHabis)
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">
-                                            Habis Total
-                                        </span>
-                                    @elseif($isKritis)
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                                            Stok Kritis
-                                        </span>
-                                    @else
-                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
-                                            Tersedia
-                                        </span>
-                                    @endif
-                                </td>
-
-                                <td class="py-3 px-4 text-right">
-                                    <span class="font-bold font-mono text-sm {{ $isHabis ? 'text-rose-600' : ($isKritis ? 'text-amber-800' : 'text-slate-900') }}">
-                                        {{ $varian->stok }}
-                                    </span>
-                                    <span class="text-[11px] text-slate-400 ml-0.5">unit</span>
-                                </td>
-
-                                <td class="py-3 px-4 text-right">
-                                    <button type="button" 
-                                            @click="openRestock({{ $varian->id_helm }}, {{ $varian->id_varian }})"
-                                            class="h-7 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 text-xs font-medium inline-flex items-center gap-1 transition-colors cursor-pointer">
-                                        <i class="fa-solid fa-plus text-[10px]"></i>
-                                        <span>Restok</span>
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{ $varians->onEachSide(1)->links('partials.pagination-admin') }}
-        @else
-            <div class="bg-white rounded-xl border border-slate-200/90 p-8 text-center shadow-2xs space-y-2">
-                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-base">
-                    <i class="fa-solid fa-boxes-stacked"></i>
-                </div>
-                <h3 class="text-xs font-bold text-slate-800">Tidak Ada Varian Ditemukan</h3>
-                <p class="text-[11px] text-slate-400 max-w-xs mx-auto">
-                    Tidak ada persediaan varian helm yang cocok dengan filter atau kata kunci saat ini.
-                </p>
-            </div>
-        @endif
-
-    {{-- ========================================================================= --}}
-    {{-- TAB 3: RIWAYAT BARANG MASUK                                               --}}
+    {{-- TAB 2: RIWAYAT BARANG MASUK                                               --}}
     {{-- ========================================================================= --}}
     @elseif ($tab === 'riwayat')
         @if ($stok_masuks->count() > 0)
