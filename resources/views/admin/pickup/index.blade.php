@@ -42,7 +42,6 @@
         <div class="p-3.5 sm:p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white">
             <div>
                 <h2 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">Antrean Siap Ambil</h2>
-                <p class="text-[11px] text-slate-400 mt-0.5">Ketuk baris pesanan untuk langsung memproses penyerahan barang.</p>
             </div>
 
             {{-- Segmented Filter Tabs --}}
@@ -120,8 +119,8 @@
             @empty
                 <div class="p-12 text-center">
                     <i class="fa-regular fa-circle-check text-3xl text-emerald-500 mb-2"></i>
-                    <p class="text-xs font-semibold text-slate-700">Tidak ada antrean pickup</p>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Semua pesanan siap ambil sudah selesai diserahkan ke pelanggan.</p>
+                    <p class="text-xs font-semibold text-slate-700">Tidak ada antrean</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Semua pesanan siap ambil sudah selesai.</p>
                 </div>
             @endforelse
         </div>
