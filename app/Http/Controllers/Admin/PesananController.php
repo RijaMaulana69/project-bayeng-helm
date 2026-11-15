@@ -14,8 +14,14 @@ class PesananController extends Controller
     {
         $query = Pesanan::with(['pelanggan', 'details.helm']);
 
-        // Filter status pesanan
-        if ($request->filled('status') && $request->status !== 'all') {
+        $search = $request->filled('search') ? trim($request->search) : null;
+        $isSpecificCode = $search && (
+            str_starts_with(strtoupper($search), 'PKP-') ||
+            str_starts_with(strtoupper($search), 'ORD-')
+        );
+
+        // Filter status pesanan (diabaikan jika mencari kode unik spesifik seperti PKP- atau ORD- agar kasir cepat menemukan pesanan)
+        if ($request->filled('status') && $request->status !== 'all' && !$isSpecificCode) {
             if ($request->status === 'ready') {
                 $query->whereIn('status', ['ready', 'unpaid_pickup']);
             } else {
@@ -29,8 +35,7 @@ class PesananController extends Controller
         }
 
         // Pencarian multi-kolom
-        if ($request->filled('search')) {
-            $search = trim($request->search);
+        if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('no_pesanan', 'like', "%{$search}%")
                   ->orWhere('kode_pickup', 'like', "%{$search}%")
