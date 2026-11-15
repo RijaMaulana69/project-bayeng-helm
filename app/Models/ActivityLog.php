@@ -27,6 +27,14 @@ class ActivityLog extends Model
     }
 
     /**
+     * Relasi ke User (Admin / Karyawan)
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id_user');
+    }
+
+    /**
      * Log an activity
      */
     public static function log(string $action, string $description = '', ?string $userType = 'guest', ?int $userId = null, ?string $username = null): self

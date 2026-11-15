@@ -14,7 +14,10 @@ class PengaturanController extends Controller
     {
         $toko = Toko::first();
 
-        return view('admin.pengaturan.index', compact('toko'));
+        return view('admin.pengaturan.index', [
+            'toko'       => $toko,
+            'pengaturan' => $toko,
+        ]);
     }
 
     public function update(Request $request)

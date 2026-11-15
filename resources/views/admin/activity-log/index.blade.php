@@ -1,106 +1,219 @@
 @extends('layouts.admin')
 
-@section('title', 'Activity Log')
-@section('page-title', 'Activity Log')
+@section('title', 'Log Aktivitas')
+@section('page-title', 'Log Aktivitas')
 
 @section('content')
-{{-- Filter Bar --}}
-<div class="card card-bayeng mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label fw-semibold">Aksi</label>
-                <select name="action" class="form-select">
+<div class="space-y-4 max-w-6xl mx-auto">
+
+    {{-- 1. Header Minimalist --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Log Aktivitas & Audit Trail
+            </h1>
+            <p class="text-xs text-slate-500">
+                Rekam jejak kronologis keamanan, kasir, dan perubahan sistem
+            </p>
+        </div>
+
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs">
+                Total: <span class="font-mono text-slate-900">{{ number_format($logs->total(), 0, ',', '.') }}</span> aksi
+            </span>
+        </div>
+    </div>
+
+    {{-- 2. Filter Bar --}}
+    @php
+        $startDateVal = request('start_date', request('date_from', ''));
+        $endDateVal   = request('end_date', request('date_to', ''));
+        $hasFilter    = request()->filled('action') || !empty($startDateVal) || !empty($endDateVal);
+    @endphp
+    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs items-end">
+            {{-- Filter Aksi --}}
+            <div class="space-y-1">
+                <label class="block font-semibold text-slate-700">Jenis Aksi</label>
+                <select name="action" class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900 cursor-pointer">
                     <option value="">Semua Aksi</option>
-                    <option value="login_success" {{ request('action') == 'login_success' ? 'selected' : '' }}>Login Berhasil</option>
-                    <option value="login_failed" {{ request('action') == 'login_failed' ? 'selected' : '' }}>Login Gagal</option>
-                    <option value="login_blocked" {{ request('action') == 'login_blocked' ? 'selected' : '' }}>Login Diblokir</option>
-                    <option value="logout" {{ request('action') == 'logout' ? 'selected' : '' }}>Logout</option>
-                    <option value="checkout" {{ request('action') == 'checkout' ? 'selected' : '' }}>Checkout</option>
-                    <option value="update_status" {{ request('action') == 'update_status' ? 'selected' : '' }}>Update Status</option>
-                    <option value="pickup" {{ request('action') == 'pickup' ? 'selected' : '' }}>Pickup</option>
-                    <option value="create" {{ request('action') == 'create' ? 'selected' : '' }}>Create</option>
-                    <option value="update" {{ request('action') == 'update' ? 'selected' : '' }}>Update</option>
-                    <option value="delete" {{ request('action') == 'delete' ? 'selected' : '' }}>Delete</option>
+                    @foreach ($actions as $act)
+                        <option value="{{ $act }}" {{ request('action') === $act ? 'selected' : '' }}>
+                            {{ ucwords(str_replace('_', ' ', $act)) }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold">Dari Tanggal</label>
-                <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+
+            {{-- Dari Tanggal --}}
+            <div class="space-y-1">
+                <label class="block font-semibold text-slate-700">Dari Tanggal</label>
+                <input type="date" 
+                       name="start_date" 
+                       value="{{ $startDateVal }}" 
+                       class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900">
             </div>
-            <div class="col-md-3">
-                <label class="form-label fw-semibold">Sampai Tanggal</label>
-                <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
+
+            {{-- Sampai Tanggal --}}
+            <div class="space-y-1">
+                <label class="block font-semibold text-slate-700">Sampai Tanggal</label>
+                <input type="date" 
+                       name="end_date" 
+                       value="{{ $endDateVal }}" 
+                       class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900">
             </div>
-            <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary-admin flex-fill">
-                    <i class="fas fa-filter me-1"></i> Filter
+
+            {{-- Tombol Aksi --}}
+            <div class="flex items-center gap-2">
+                <button type="submit" 
+                        class="flex-1 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-filter text-[10px]"></i>
+                    <span>Filter</span>
                 </button>
-                @if(request()->hasAny(['action', 'date_from', 'date_to']))
-                    <a href="{{ route('admin.activity-log.index') }}" wire:navigate class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i>
+
+                @if($hasFilter)
+                    <a href="{{ route('admin.activity-log.index') }}" 
+                       wire:navigate
+                       title="Reset Filter"
+                       class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-xs"></i>
                     </a>
                 @endif
             </div>
         </form>
     </div>
-</div>
 
-{{-- Table --}}
-<div class="card card-bayeng">
-    <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-list-check me-2"></i>Log Aktivitas</h5>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
+    {{-- 3. Log Records Container --}}
+    <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+        {{-- Desktop Table (sm and up) --}}
+        <div class="hidden sm:block overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200">
                     <tr>
-                        <th>Waktu</th>
-                        <th>Aksi</th>
-                        <th>Username</th>
-                        <th>Deskripsi</th>
-                        <th>IP Address</th>
+                        <th class="py-3 px-4">Waktu</th>
+                        <th class="py-3 px-4">Aksi</th>
+                        <th class="py-3 px-4">Aktor / User</th>
+                        <th class="py-3 px-4">Deskripsi Aktivitas</th>
+                        <th class="py-3 px-4 text-right">Alamat IP</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-slate-100">
                     @forelse ($logs as $log)
-                        <tr>
-                            <td class="small text-nowrap">{{ $log->created_at->format('d M Y, H:i:s') }}</td>
-                            <td>
-                                @php
-                                    $badgeClass = match($log->action) {
-                                        'login_success' => 'bg-success',
-                                        'login_failed'  => 'bg-warning text-dark',
-                                        'login_blocked' => 'bg-danger',
-                                        'logout'        => 'bg-secondary',
-                                        'checkout'      => 'bg-info',
-                                        'create'        => 'bg-primary',
-                                        'update', 'update_status' => 'bg-warning text-dark',
-                                        'delete'        => 'bg-danger',
-                                        'pickup'        => 'bg-success',
-                                        default         => 'bg-secondary',
-                                    };
-                                @endphp
-                                <span class="badge {{ $badgeClass }}">{{ $log->action }}</span>
+                        @php
+                            $actionName = $log->action;
+                            $badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                            if (str_contains($actionName, 'success') || str_contains($actionName, 'completed')) {
+                                $badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                            } elseif (str_contains($actionName, 'failed') || str_contains($actionName, 'blocked') || str_contains($actionName, 'delete')) {
+                                $badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                            } elseif (str_contains($actionName, 'create') || str_contains($actionName, 'add')) {
+                                $badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                            } elseif (str_contains($actionName, 'update')) {
+                                $badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                            }
+                        @endphp
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <span class="font-mono text-slate-900 block font-medium">
+                                    {{ $log->created_at->format('d/m/Y H:i:s') }}
+                                </span>
+                                <span class="text-[10px] text-slate-400">
+                                    {{ $log->created_at->diffForHumans() }}
+                                </span>
                             </td>
-                            <td class="fw-semibold">{{ $log->username ?? ($log->user->username ?? '-') }}</td>
-                            <td>{{ $log->description ?? '-' }}</td>
-                            <td class="small text-muted font-monospace">{{ $log->ip_address ?? '-' }}</td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $badgeColor }}">
+                                    {{ ucwords(str_replace('_', ' ', $log->action)) }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <div class="font-medium text-slate-900">
+                                    {{ $log->user->nama_lengkap ?? ($log->username ?? 'Sistem / Tamu') }}
+                                </div>
+                                @if($log->username)
+                                    <div class="text-[10px] text-slate-400 font-mono">
+                                        {{ '@' . $log->username }}
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-slate-700 max-w-md">
+                                <p class="line-clamp-2 leading-relaxed">
+                                    {{ $log->description ?? '-' }}
+                                </p>
+                            </td>
+                            <td class="py-3 px-4 text-right whitespace-nowrap">
+                                <span class="font-mono text-[11px] bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded text-slate-600">
+                                    {{ $log->ip_address ?? '-' }}
+                                </span>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">Tidak ada log aktivitas</td>
+                            <td colspan="5" class="py-8 text-center text-slate-400">
+                                <i class="fa-solid fa-list-check text-2xl text-slate-300 block mb-1"></i>
+                                Tidak ada log aktivitas yang cocok dengan filter
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </div>
-    @if ($logs->hasPages())
-        <div class="card-footer">
-            {{ $logs->appends(request()->query())->links() }}
+
+        {{-- Mobile Cards (sm hidden) --}}
+        <div class="sm:hidden divide-y divide-slate-100">
+            @forelse ($logs as $log)
+                @php
+                    $actionName = $log->action;
+                    $badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                    if (str_contains($actionName, 'success') || str_contains($actionName, 'completed')) {
+                        $badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                    } elseif (str_contains($actionName, 'failed') || str_contains($actionName, 'blocked') || str_contains($actionName, 'delete')) {
+                        $badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                    } elseif (str_contains($actionName, 'create') || str_contains($actionName, 'add')) {
+                        $badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                    } elseif (str_contains($actionName, 'update')) {
+                        $badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                    }
+                @endphp
+                <div class="p-3.5 space-y-2 text-xs">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $badgeColor }}">
+                            {{ ucwords(str_replace('_', ' ', $log->action)) }}
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">
+                            {{ $log->created_at->format('d/m/Y H:i') }}
+                        </span>
+                    </div>
+
+                    <p class="text-slate-800 leading-relaxed font-medium">
+                        {{ $log->description ?? '-' }}
+                    </p>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-50">
+                        <div class="flex items-center gap-1.5 truncate">
+                            <i class="fa-regular fa-user text-slate-400 text-[10px]"></i>
+                            <span class="truncate">{{ $log->user->nama_lengkap ?? ($log->username ?? 'Tamu') }}</span>
+                        </div>
+                        <span class="font-mono text-[10px] bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200 text-slate-500 shrink-0">
+                            {{ $log->ip_address ?? '-' }}
+                        </span>
+                    </div>
+                </div>
+            @empty
+                <div class="py-8 text-center text-slate-400 text-xs">
+                    <i class="fa-solid fa-list-check text-2xl text-slate-300 block mb-1"></i>
+                    Tidak ada log aktivitas ditemukan
+                </div>
+            @endforelse
         </div>
-    @endif
+
+        {{-- Pagination Footer --}}
+        @if ($logs->hasPages())
+            <div class="p-3 sm:p-4 border-t border-slate-100 bg-slate-50/50">
+                {{ $logs->links('partials.pagination-admin') }}
+            </div>
+        @endif
+    </div>
+
 </div>
 @endsection

@@ -17,12 +17,14 @@ class ActivityLogController extends Controller
             $query->where('action', $request->action);
         }
 
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+        $startDate = $request->input('start_date', $request->input('date_from'));
+        if (!empty($startDate)) {
+            $query->whereDate('created_at', '>=', $startDate);
         }
 
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+        $endDate = $request->input('end_date', $request->input('date_to'));
+        if (!empty($endDate)) {
+            $query->whereDate('created_at', '<=', $endDate);
         }
 
         $logs = $query->paginate(20)->withQueryString();
