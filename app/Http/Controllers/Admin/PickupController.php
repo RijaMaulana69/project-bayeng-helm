@@ -12,13 +12,8 @@ class PickupController extends Controller
 {
     public function index()
     {
-        // Hanya pesanan yang sudah siap diambil di gerai yang masuk antrean kasir
-        $pesanan_ready = Pesanan::with(['pelanggan', 'details.helm'])
-            ->whereIn('status', ['ready', 'unpaid_pickup'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return view('admin.pickup.index', compact('pesanan_ready'));
+        // Alihkan antrean kasir pickup ke menu terpadu Transaksi (Tab Siap Ambil)
+        return redirect()->route('admin.pesanan.index', ['status' => 'ready']);
     }
 
     public function validasi(Request $request)

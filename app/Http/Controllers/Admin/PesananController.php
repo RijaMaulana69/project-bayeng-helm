@@ -16,7 +16,11 @@ class PesananController extends Controller
 
         // Filter status pesanan
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
+            if ($request->status === 'ready') {
+                $query->whereIn('status', ['ready', 'unpaid_pickup']);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // Filter metode pembayaran
@@ -52,12 +56,55 @@ class PesananController extends Controller
             'pending' => $rawCounts['pending'] ?? 0,
             'paid' => $rawCounts['paid'] ?? 0,
             'processing' => $rawCounts['processing'] ?? 0,
-            'ready' => $rawCounts['ready'] ?? 0,
+            'ready' => ($rawCounts['ready'] ?? 0) + ($rawCounts['unpaid_pickup'] ?? 0),
             'completed' => $rawCounts['completed'] ?? 0,
             'cancelled' => $rawCounts['cancelled'] ?? 0,
         ];
 
-        return view('admin.pesanan.index', compact('pesanans', 'statusCounts'));
+        // Rekap Pendapatan untuk Kasir / Karyawan (Hari ini & Bulan ini)
+        $todayStats = Pesanan::where('status', 'completed')
+            ->whereDate('created_at', today())
+            ->selectRaw("
+                COUNT(*) as total_count,
+                COALESCE(SUM(grand_total), 0) as total_omzet,
+                COALESCE(SUM(CASE WHEN metode_bayar = 'tunai' THEN grand_total ELSE 0 END), 0) as tunai_omzet,
+                COUNT(CASE WHEN metode_bayar = 'tunai' THEN 1 ELSE NULL END) as tunai_count,
+                COALESCE(SUM(CASE WHEN metode_bayar IN ('transfer', 'qris') THEN grand_total ELSE 0 END), 0) as online_omzet,
+                COUNT(CASE WHEN metode_bayar IN ('transfer', 'qris') THEN 1 ELSE NULL END) as online_count
+            ")->first();
+
+        $monthStats = Pesanan::where('status', 'completed')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->selectRaw("
+                COUNT(*) as total_count,
+                COALESCE(SUM(grand_total), 0) as total_omzet,
+                COALESCE(SUM(CASE WHEN metode_bayar = 'tunai' THEN grand_total ELSE 0 END), 0) as tunai_omzet,
+                COUNT(CASE WHEN metode_bayar = 'tunai' THEN 1 ELSE NULL END) as tunai_count,
+                COALESCE(SUM(CASE WHEN metode_bayar IN ('transfer', 'qris') THEN grand_total ELSE 0 END), 0) as online_omzet,
+                COUNT(CASE WHEN metode_bayar IN ('transfer', 'qris') THEN 1 ELSE NULL END) as online_count
+            ")->first();
+
+        $rekapPendapatan = [
+            'hari_ini' => [
+                'total' => (float) ($todayStats->total_omzet ?? 0),
+                'count' => (int) ($todayStats->total_count ?? 0),
+                'tunai' => (float) ($todayStats->tunai_omzet ?? 0),
+                'tunai_count' => (int) ($todayStats->tunai_count ?? 0),
+                'online' => (float) ($todayStats->online_omzet ?? 0),
+                'online_count' => (int) ($todayStats->online_count ?? 0),
+            ],
+            'bulan_ini' => [
+                'total' => (float) ($monthStats->total_omzet ?? 0),
+                'count' => (int) ($monthStats->total_count ?? 0),
+                'tunai' => (float) ($monthStats->tunai_omzet ?? 0),
+                'tunai_count' => (int) ($monthStats->tunai_count ?? 0),
+                'online' => (float) ($monthStats->online_omzet ?? 0),
+                'online_count' => (int) ($monthStats->online_count ?? 0),
+            ],
+        ];
+
+        return view('admin.pesanan.index', compact('pesanans', 'statusCounts', 'rekapPendapatan'));
     }
 
     public function show(Pesanan $pesanan)

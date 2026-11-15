@@ -170,4 +170,51 @@ class AdminPesananTest extends TestCase
             'status' => 'ready',
         ]);
     }
+
+    public function test_transaksi_index_displays_staff_revenue_recap_and_fast_pickup_box(): void
+    {
+        $karyawan = User::where('id_role', 2)->first() ?? User::first();
+
+        $customer = Pelanggan::create([
+            'nama' => 'Staff Recap Customer ' . uniqid(),
+            'email' => 'recap_' . uniqid() . '@test.com',
+            'telepon' => '0817' . rand(10000000, 99999999),
+            'password' => Hash::make('Password123!'),
+        ]);
+
+        // Create completed cash order today
+        Pesanan::create([
+            'no_pesanan' => 'ORD-CASH-' . uniqid(),
+            'id_pelanggan' => $customer->id_pelanggan,
+            'kode_pickup' => 'PKP-CSH',
+            'total_belanja' => 250000,
+            'grand_total' => 250000,
+            'metode_bayar' => 'tunai',
+            'status' => 'completed',
+            'created_at' => now(),
+        ]);
+
+        // Create completed online order today
+        Pesanan::create([
+            'no_pesanan' => 'ORD-ONL-' . uniqid(),
+            'id_pelanggan' => $customer->id_pelanggan,
+            'kode_pickup' => 'PKP-ONL',
+            'total_belanja' => 350000,
+            'grand_total' => 350000,
+            'metode_bayar' => 'transfer',
+            'status' => 'completed',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($karyawan, 'web')->get(route('admin.pesanan.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Transaksi Gerai');
+        $response->assertSee('Pendapatan Hari Ini');
+        $response->assertSee('Pendapatan Bulan Ini');
+        $response->assertSee('Tunai Toko');
+        $response->assertSee('Online / QRIS');
+        $response->assertSee('Validasi Ambil');
+        $response->assertSee(route('admin.pickup.validasi'));
+    }
 }

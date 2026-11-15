@@ -6,10 +6,10 @@
 <div class="max-w-xl mx-auto space-y-3" x-data="{ showConfirm: false, submitting: false }">
 
     {{-- Navigasi Kembali --}}
-    <a href="{{ route('admin.pickup.index') }}" 
+    <a href="{{ route('admin.pesanan.index') }}" 
        class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors">
         <i class="fa-solid fa-arrow-left text-[11px]"></i>
-        <span>Kembali</span>
+        <span>Kembali ke Transaksi</span>
     </a>
 
     {{-- Kartu Validasi Kasir --}}
@@ -18,7 +18,7 @@
         @php
             $isPaid = $pesanan->status === 'ready';
             $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
-            $customerPhone = $pesanan->pelanggan->no_hp ?? ($pesanan->telepon_penerima ?? null);
+            $customerPhone = $pesanan->pelanggan->telepon ?? ($pesanan->pelanggan->no_hp ?? ($pesanan->telepon_penerima ?? null));
         @endphp
 
         {{-- Header: Kode Pickup & Data Pembeli --}}

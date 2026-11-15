@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'nav_pickup_count' => $pickupCount,
                 'nav_pending_count' => $pendingCount,
+                'nav_transaksi_count' => $pickupCount + $pendingCount,
                 'nav_critical_stock_count' => $criticalStockCount,
             ]);
         });

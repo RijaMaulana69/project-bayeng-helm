@@ -98,31 +98,26 @@
                         </div>
                     </a>
 
-                    {{-- Kasir Pickup (BOPIS) --}}
-                    <a href="{{ route('admin.pickup.index') }}" 
-                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.pickup*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
-                        <div class="flex items-center gap-2.5">
-                            <i class="w-4 text-center fa-solid fa-qrcode text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Kasir Pickup</span>
-                        </div>
-                        @if(($nav_pickup_count ?? 0) > 0)
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
-                                {{ $nav_pickup_count }}
-                            </span>
-                        @endif
-                    </a>
-
-                    {{-- Pesanan Online --}}
+                    {{-- Transaksi (Pusat Kasir & Pesanan) --}}
                     <a href="{{ route('admin.pesanan.index') }}" 
-                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.pesanan*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.pesanan*') || request()->routeIs('admin.pickup*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <div class="flex items-center gap-2.5">
                             <i class="w-4 text-center fa-solid fa-receipt text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Pesanan Masuk</span>
+                            <span>Transaksi</span>
                         </div>
-                        @if(($nav_pending_count ?? 0) > 0)
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
-                                {{ $nav_pending_count }}
-                            </span>
+                        @if(($nav_transaksi_count ?? 0) > 0)
+                            <div class="flex items-center gap-1">
+                                @if(($nav_pickup_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700" title="{{ $nav_pickup_count }} Siap Ambil">
+                                        {{ $nav_pickup_count }}
+                                    </span>
+                                @endif
+                                @if(($nav_pending_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700" title="{{ $nav_pending_count }} Perlu Verifikasi">
+                                        {{ $nav_pending_count }}
+                                    </span>
+                                @endif
+                            </div>
                         @endif
                     </a>
 
@@ -310,7 +305,7 @@
 
                             <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto">
                                 @if($notifPickup > 0)
-                                    <a href="{{ route('admin.pickup.index') }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                    <a href="{{ route('admin.pesanan.index', ['status' => 'ready']) }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
                                         <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
                                             <i class="fa-solid fa-box-open"></i>
                                         </div>
@@ -457,42 +452,28 @@
     {{-- ======================================================== --}}
     <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-lg px-2 py-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] flex items-center justify-around">
         
-        {{-- 1. Kasir Pickup (Action-focused) --}}
-        <a href="{{ route('admin.pickup.index') }}" 
-           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.pickup*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-            <div class="relative">
-                <i class="fa-solid fa-qrcode text-base"></i>
-                @if(($nav_pickup_count ?? 0) > 0)
-                    <span class="absolute -top-1.5 -right-3 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-500 text-white ring-2 ring-white">
-                        {{ $nav_pickup_count }}
-                    </span>
-                @endif
-            </div>
-            <span class="text-[10px] mt-0.5">Pickup</span>
-        </a>
-
-        {{-- 2. Pesanan Online --}}
-        <a href="{{ route('admin.pesanan.index') }}" 
-           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.pesanan*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-            <div class="relative">
-                <i class="fa-solid fa-receipt text-base"></i>
-                @if(($nav_pending_count ?? 0) > 0)
-                    <span class="absolute -top-1.5 -right-3 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white ring-2 ring-white">
-                        {{ $nav_pending_count }}
-                    </span>
-                @endif
-            </div>
-            <span class="text-[10px] mt-0.5">Pesanan</span>
-        </a>
-
-        {{-- 3. Ringkasan / Dashboard (Center) --}}
+        {{-- 1. Ringkasan / Dashboard --}}
         <a href="{{ route('admin.dashboard') }}" 
            class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.dashboard') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
             <i class="fa-solid fa-chart-pie text-base"></i>
             <span class="text-[10px] mt-0.5">{{ $isOwner ? 'Ringkasan' : 'Kasir' }}</span>
         </a>
 
-        {{-- 4. Stok Helm --}}
+        {{-- 2. Transaksi (Pusat Kasir & Pesanan) --}}
+        <a href="{{ route('admin.pesanan.index') }}" 
+           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.pesanan*') || request()->routeIs('admin.pickup*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+            <div class="relative">
+                <i class="fa-solid fa-receipt text-base"></i>
+                @if(($nav_transaksi_count ?? 0) > 0)
+                    <span class="absolute -top-1.5 -right-3 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-500 text-white ring-2 ring-white">
+                        {{ $nav_transaksi_count }}
+                    </span>
+                @endif
+            </div>
+            <span class="text-[10px] mt-0.5">Transaksi</span>
+        </a>
+
+        {{-- 3. Stok Helm --}}
         <a href="{{ route('admin.stok.index') }}" 
            class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.stok*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
             <div class="relative">
@@ -504,6 +485,13 @@
                 @endif
             </div>
             <span class="text-[10px] mt-0.5">Stok</span>
+        </a>
+
+        {{-- 4. Katalog Helm --}}
+        <a href="{{ route('admin.produk.index') }}" 
+           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.produk*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+            <i class="fa-solid fa-helmet-safety text-base"></i>
+            <span class="text-[10px] mt-0.5">Katalog</span>
         </a>
 
         {{-- 5. Menu Drawer Trigger --}}
@@ -585,6 +573,22 @@
 
                     {{-- Drawer Navigation --}}
                     <div class="p-4 space-y-4 text-xs">
+                        {{-- Operasional Gerai --}}
+                        <div class="space-y-1">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Operasional Kasir</p>
+                            <a href="{{ route('admin.pesanan.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-receipt text-slate-400 w-4"></i>
+                                    <span>Transaksi</span>
+                                </div>
+                                @if(($nav_transaksi_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                        {{ $nav_transaksi_count }}
+                                    </span>
+                                @endif
+                            </a>
+                        </div>
+
                         {{-- Katalog & Atribut --}}
                         <div class="space-y-1">
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Katalog & Atribut</p>
