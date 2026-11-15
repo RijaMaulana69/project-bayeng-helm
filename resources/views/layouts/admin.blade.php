@@ -106,18 +106,9 @@
                             <span>Transaksi</span>
                         </div>
                         @if(($nav_transaksi_count ?? 0) > 0)
-                            <div class="flex items-center gap-1">
-                                @if(($nav_pickup_count ?? 0) > 0)
-                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700" title="{{ $nav_pickup_count }} Siap Ambil">
-                                        {{ $nav_pickup_count }}
-                                    </span>
-                                @endif
-                                @if(($nav_pending_count ?? 0) > 0)
-                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700" title="{{ $nav_pending_count }} Perlu Verifikasi">
-                                        {{ $nav_pending_count }}
-                                    </span>
-                                @endif
-                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                                {{ $nav_transaksi_count }}
+                            </span>
                         @endif
                     </a>
 
