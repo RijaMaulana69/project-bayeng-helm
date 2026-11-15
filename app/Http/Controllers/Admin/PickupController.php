@@ -26,7 +26,7 @@ class PickupController extends Controller
             'kode_pickup' => 'required|string|max:20',
         ]);
 
-        $pesanan = Pesanan::with(['pelanggan', 'details'])
+        $pesanan = Pesanan::with(['pelanggan', 'details.helm'])
             ->where('kode_pickup', strtoupper($request->kode_pickup))
             ->whereIn('status', ['ready', 'unpaid_pickup', 'paid', 'processing'])
             ->first();
