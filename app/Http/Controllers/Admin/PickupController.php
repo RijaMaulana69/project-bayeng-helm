@@ -12,7 +12,7 @@ class PickupController extends Controller
 {
     public function index()
     {
-        $pesanan_ready = Pesanan::with(['pelanggan', 'details'])
+        $pesanan_ready = Pesanan::with(['pelanggan', 'details.helm'])
             ->whereIn('status', ['ready', 'unpaid_pickup', 'paid', 'processing'])
             ->orderBy('created_at', 'desc')
             ->get();
