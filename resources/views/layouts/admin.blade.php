@@ -239,19 +239,19 @@
                             updateClock() {
                                 const now = new Date();
                                 const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                                 const day = days[now.getDay()];
                                 const date = now.getDate();
                                 const month = months[now.getMonth()];
                                 const year = now.getFullYear();
                                 const h = String(now.getHours()).padStart(2, '0');
                                 const m = String(now.getMinutes()).padStart(2, '0');
-                                this.time = `${day}, ${date} ${month} ${year} • ${h}:${m} WIB`;
+                                this.time = `${day}, ${date} ${month} ${year}, ${h}:${m} WIB`;
                             }
                          }" 
                          x-init="updateClock(); setInterval(() => updateClock(), 1000)"
-                         class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 font-medium bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-lg">
-                        <i class="fa-regular fa-clock text-[11px] text-slate-400"></i>
+                         class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                        <i class="fa-regular fa-clock text-xs text-slate-400"></i>
                         <span x-text="time"></span>
                     </div>
                 </div>

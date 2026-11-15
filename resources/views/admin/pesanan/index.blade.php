@@ -202,14 +202,14 @@
                     $extraItems    = $pesanan->details->count() - 1;
 
                     $statusBadge = match($pesanan->status) {
-                        'pending'       => ['label' => 'Perlu Verifikasi', 'class' => 'bg-amber-50 text-amber-700 border-amber-200/60', 'dot' => 'bg-amber-500'],
-                        'unpaid_pickup' => ['label' => 'Siap Ambil (COD)', 'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60', 'dot' => 'bg-emerald-500'],
-                        'paid'          => ['label' => 'Sudah Bayar',     'class' => 'bg-blue-50 text-blue-700 border-blue-200/60',       'dot' => 'bg-blue-500'],
-                        'processing'    => ['label' => 'Sedang Disiapkan', 'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/60',   'dot' => 'bg-indigo-500'],
-                        'ready'         => ['label' => 'Siap Ambil',      'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60', 'dot' => 'bg-emerald-500'],
-                        'completed'     => ['label' => 'Selesai',         'class' => 'bg-slate-50 text-slate-600 border-slate-200/60',     'dot' => 'bg-slate-400'],
-                        'cancelled'     => ['label' => 'Dibatalkan',       'class' => 'bg-rose-50 text-rose-700 border-rose-200/60',       'dot' => 'bg-rose-500'],
-                        default         => ['label' => ucfirst($pesanan->status), 'class' => 'bg-slate-50 text-slate-700 border-slate-200', 'dot' => 'bg-slate-400'],
+                        'pending'       => ['label' => 'Perlu Verifikasi',          'class' => 'bg-amber-50 text-amber-700 border-amber-200/80',   'dot' => 'bg-amber-500'],
+                        'unpaid_pickup' => ['label' => 'Siap Diambil (Bayar Kasir)', 'class' => 'bg-sky-50 text-sky-700 border-sky-200/80',        'dot' => 'bg-sky-500'],
+                        'paid'          => ['label' => 'Sudah Bayar',               'class' => 'bg-blue-50 text-blue-700 border-blue-200/80',       'dot' => 'bg-blue-500'],
+                        'processing'    => ['label' => 'Sedang Disiapkan',          'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'dot' => 'bg-indigo-500'],
+                        'ready'         => ['label' => 'Siap Diambil (Lunas)',       'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'dot' => 'bg-emerald-500'],
+                        'completed'     => ['label' => 'Selesai',                   'class' => 'bg-slate-100 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
+                        'cancelled'     => ['label' => 'Dibatalkan',                 'class' => 'bg-rose-50 text-rose-700 border-rose-200/80',        'dot' => 'bg-rose-500'],
+                        default         => ['label' => ucfirst($pesanan->status),   'class' => 'bg-slate-50 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
                     };
 
                     $metodeLabel = match($pesanan->metode_bayar) {
@@ -225,13 +225,13 @@
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-1.5 min-w-0">
                             <span class="font-bold text-xs text-slate-900 truncate">
-                                #{{ $pesanan->no_pesanan }}
+                                {{ $pesanan->no_pesanan }}
                             </span>
                             <span class="text-[10px] text-slate-400 shrink-0">
-                                • {{ $pesanan->created_at->format('d M, H:i') }}
+                                {{ $pesanan->created_at->format('d/m/Y H:i') }}
                             </span>
                         </div>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold border shrink-0 {{ $statusBadge['class'] }}">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold border shrink-0 {{ $statusBadge['class'] }}">
                             <span class="w-1.5 h-1.5 rounded-full {{ $statusBadge['dot'] }}"></span>
                             <span>{{ $statusBadge['label'] }}</span>
                         </span>
@@ -244,14 +244,15 @@
                                 {{ $customerName }}
                             </span>
                             @if($customerPhone)
-                                <span class="text-[11px] text-slate-400 truncate block">
+                                <span class="text-[11px] text-slate-400 font-mono truncate block">
                                     {{ $customerPhone }}
                                 </span>
                             @endif
                         </div>
 
                         @if($pesanan->kode_pickup)
-                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-mono font-bold text-xs border border-slate-200/80 shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-mono text-[11px] font-semibold border border-amber-200/80 shrink-0">
+                                <i class="fa-solid fa-qrcode text-[10px]"></i>
                                 {{ $pesanan->kode_pickup }}
                             </span>
                         @endif
@@ -287,8 +288,8 @@
                         <div class="flex items-center gap-1.5">
                             @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
                                 <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                   class="h-8 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors">
-                                    <i class="fa-solid fa-qrcode text-[10px]"></i>
+                                   class="h-8 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs">
+                                    <i class="fa-solid fa-hand-holding-hand text-[10px]"></i>
                                     <span>Serahkan</span>
                                 </a>
                             @endif
@@ -310,10 +311,10 @@
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="bg-slate-50/75 border-b border-slate-200/80 text-slate-500 uppercase tracking-wider text-[11px] font-semibold">
-                            <th class="py-2.5 px-3.5">Pesanan</th>
+                            <th class="py-2.5 px-3.5">No. Transaksi</th>
                             <th class="py-2.5 px-3.5">Pelanggan</th>
-                            <th class="py-2.5 px-3.5">Item</th>
-                            <th class="py-2.5 px-3.5">Metode</th>
+                            <th class="py-2.5 px-3.5">Produk</th>
+                            <th class="py-2.5 px-3.5">Pembayaran</th>
                             <th class="py-2.5 px-3.5 text-right">Total</th>
                             <th class="py-2.5 px-3.5 text-center">Status</th>
                             <th class="py-2.5 px-3.5 text-right">Aksi</th>
@@ -328,14 +329,14 @@
                                 $extraItems    = $pesanan->details->count() - 1;
 
                                 $statusBadge = match($pesanan->status) {
-                                    'pending'       => ['label' => 'Perlu Verifikasi', 'class' => 'bg-amber-50 text-amber-700 border-amber-200/60', 'dot' => 'bg-amber-500'],
-                                    'unpaid_pickup' => ['label' => 'Siap Ambil (COD)', 'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60', 'dot' => 'bg-emerald-500'],
-                                    'paid'          => ['label' => 'Sudah Bayar',     'class' => 'bg-blue-50 text-blue-700 border-blue-200/60',       'dot' => 'bg-blue-500'],
-                                    'processing'    => ['label' => 'Sedang Disiapkan', 'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/60',   'dot' => 'bg-indigo-500'],
-                                    'ready'         => ['label' => 'Siap Ambil',      'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60', 'dot' => 'bg-emerald-500'],
-                                    'completed'     => ['label' => 'Selesai',         'class' => 'bg-slate-50 text-slate-600 border-slate-200/60',     'dot' => 'bg-slate-400'],
-                                    'cancelled'     => ['label' => 'Dibatalkan',       'class' => 'bg-rose-50 text-rose-700 border-rose-200/60',       'dot' => 'bg-rose-500'],
-                                    default         => ['label' => ucfirst($pesanan->status), 'class' => 'bg-slate-50 text-slate-700 border-slate-200', 'dot' => 'bg-slate-400'],
+                                    'pending'       => ['label' => 'Perlu Verifikasi',          'class' => 'bg-amber-50 text-amber-700 border-amber-200/80',   'dot' => 'bg-amber-500'],
+                                    'unpaid_pickup' => ['label' => 'Siap Diambil (Bayar Kasir)', 'class' => 'bg-sky-50 text-sky-700 border-sky-200/80',        'dot' => 'bg-sky-500'],
+                                    'paid'          => ['label' => 'Sudah Bayar',               'class' => 'bg-blue-50 text-blue-700 border-blue-200/80',       'dot' => 'bg-blue-500'],
+                                    'processing'    => ['label' => 'Sedang Disiapkan',          'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'dot' => 'bg-indigo-500'],
+                                    'ready'         => ['label' => 'Siap Diambil (Lunas)',       'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'dot' => 'bg-emerald-500'],
+                                    'completed'     => ['label' => 'Selesai',                   'class' => 'bg-slate-100 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
+                                    'cancelled'     => ['label' => 'Dibatalkan',                 'class' => 'bg-rose-50 text-rose-700 border-rose-200/80',        'dot' => 'bg-rose-500'],
+                                    default         => ['label' => ucfirst($pesanan->status),   'class' => 'bg-slate-50 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
                                 };
 
                                 $metodeLabel = match($pesanan->metode_bayar) {
@@ -346,15 +347,16 @@
                                 };
                             @endphp
                             <tr class="hover:bg-slate-50/60 transition-colors">
-                                {{-- 1. No. Pesanan & Waktu --}}
+                                {{-- 1. No. Transaksi & Waktu --}}
                                 <td class="py-2.5 px-3.5">
-                                    <div class="flex items-center gap-1.5">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
                                         <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                                           class="font-bold text-slate-900 hover:text-blue-600 transition-colors">
-                                            #{{ $pesanan->no_pesanan }}
+                                           class="font-semibold text-slate-900 hover:text-blue-600 transition-colors">
+                                            {{ $pesanan->no_pesanan }}
                                         </a>
                                         @if($pesanan->kode_pickup)
-                                            <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-mono font-bold text-[10px] border border-slate-200">
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-mono text-[10px] font-semibold border border-amber-200/80">
+                                                <i class="fa-solid fa-qrcode text-[9px]"></i>
                                                 {{ $pesanan->kode_pickup }}
                                             </span>
                                         @endif
@@ -370,13 +372,13 @@
                                         {{ $customerName }}
                                     </p>
                                     @if($customerPhone)
-                                        <span class="text-[11px] text-slate-400 truncate block">
+                                        <span class="text-[11px] text-slate-400 font-mono truncate block mt-0.5">
                                             {{ $customerPhone }}
                                         </span>
                                     @endif
                                 </td>
 
-                                {{-- 3. Item Helm --}}
+                                {{-- 3. Produk --}}
                                 <td class="py-2.5 px-3.5 max-w-[200px]">
                                     @if($firstDetail)
                                         @php
@@ -385,57 +387,57 @@
                                             $variantText = implode(', ', $variantParts);
                                         @endphp
                                         <p class="font-medium text-slate-800 truncate">
-                                            <span class="font-bold">{{ $firstDetail->qty ?? 1 }}x</span> {{ $helmName }}
+                                            <span class="font-bold text-slate-900">{{ $firstDetail->qty ?? 1 }}x</span> {{ $helmName }}
                                         </p>
                                         @if($variantText)
-                                            <span class="text-[11px] text-slate-400 truncate block">
+                                            <span class="text-[11px] text-slate-400 truncate block mt-0.5">
                                                 {{ $variantText }}
                                             </span>
                                         @endif
                                         @if($extraItems > 0)
-                                            <span class="text-[10px] text-blue-600 font-medium block">
-                                                +{{ $extraItems }} item lainnya
+                                            <span class="text-[10px] text-blue-600 font-medium block mt-0.5">
+                                                +{{ $extraItems }} helm lainnya
                                             </span>
                                         @endif
                                     @else
-                                        <span class="text-slate-400 text-[11px]">-</span>
+                                        <span class="text-slate-400 text-xs italic">Tanpa rincian helm</span>
                                     @endif
                                 </td>
 
-                                {{-- 4. Metode Bayar --}}
-                                <td class="py-2.5 px-3.5">
+                                {{-- 4. Pembayaran --}}
+                                <td class="py-2.5 px-3.5 whitespace-nowrap">
                                     <span class="text-slate-700 font-medium">
                                         {{ $metodeLabel }}
                                     </span>
                                 </td>
 
                                 {{-- 5. Total --}}
-                                <td class="py-2.5 px-3.5 text-right font-bold text-slate-900">
+                                <td class="py-2.5 px-3.5 text-right font-bold text-slate-900 whitespace-nowrap">
                                     {{ format_rupiah($pesanan->grand_total) }}
                                 </td>
 
                                 {{-- 6. Status --}}
-                                <td class="py-2.5 px-3.5 text-center">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold border {{ $statusBadge['class'] }}">
+                                <td class="py-2.5 px-3.5 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold border {{ $statusBadge['class'] }}">
                                         <span class="w-1.5 h-1.5 rounded-full {{ $statusBadge['dot'] }}"></span>
                                         <span>{{ $statusBadge['label'] }}</span>
                                     </span>
                                 </td>
 
                                 {{-- 7. Aksi --}}
-                                <td class="py-2.5 px-3.5 text-right">
-                                    <div class="inline-flex items-center gap-1 justify-end">
+                                <td class="py-2.5 px-3.5 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5 justify-end">
                                         @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
                                             <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                               class="h-7 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] inline-flex items-center gap-1 transition-colors border border-emerald-200/80"
-                                               title="Serahkan Pesanan">
-                                                <i class="fa-solid fa-qrcode text-[9px]"></i>
+                                               class="h-7 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs inline-flex items-center gap-1 transition-colors shadow-2xs"
+                                               title="Serahkan Pesanan ke Pelanggan">
+                                                <i class="fa-solid fa-hand-holding-hand text-[10px]"></i>
                                                 <span>Serahkan</span>
                                             </a>
                                         @endif
 
                                         <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                                           class="h-7 px-2.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-[11px] inline-flex items-center gap-1 transition-colors">
+                                           class="h-7 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs inline-flex items-center gap-1 transition-colors">
                                             <span>Detail</span>
                                             <i class="fa-solid fa-chevron-right text-[8px] text-slate-400"></i>
                                         </a>
