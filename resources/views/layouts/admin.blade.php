@@ -112,27 +112,18 @@
                         @endif
                     </a>
 
-                    {{-- Update Stok Helm --}}
-                    <a href="{{ route('admin.stok.index') }}" 
-                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.stok*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                    {{-- Produk & Inventori (Katalog, Stok Fisik & Riwayat Masuk) --}}
+                    <a href="{{ route('admin.produk.index') }}" 
+                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.produk*') || request()->routeIs('admin.stok*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <div class="flex items-center gap-2.5">
                             <i class="w-4 text-center fa-solid fa-boxes-stacked text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Stok Fisik & Restok</span>
+                            <span>Produk & Inventori</span>
                         </div>
                         @if(($nav_critical_stock_count ?? 0) > 0)
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700" title="{{ $nav_critical_stock_count }} varian menipis/habis">
                                 {{ $nav_critical_stock_count }}
                             </span>
                         @endif
-                    </a>
-
-                    {{-- Katalog Helm --}}
-                    <a href="{{ route('admin.produk.index') }}" 
-                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.produk*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
-                        <div class="flex items-center gap-2.5">
-                            <i class="w-4 text-center fa-solid fa-helmet-safety text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Katalog Helm</span>
-                        </div>
                     </a>
 
                     {{-- Atribut & Taksonomi Produk (Merk, Kategori, Warna Swatch) --}}
@@ -324,7 +315,7 @@
                                 @endif
 
                                 @if($notifStock > 0)
-                                    <a href="{{ route('admin.stok.index') }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                    <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
                                         <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
                                             <i class="fa-solid fa-triangle-exclamation"></i>
                                         </div>
@@ -467,9 +458,9 @@
             <span class="text-[10px] mt-0.5">Transaksi</span>
         </a>
 
-        {{-- 3. Stok Helm --}}
-        <a href="{{ route('admin.stok.index') }}" 
-           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.stok*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
+        {{-- 3. Produk & Inventori --}}
+        <a href="{{ route('admin.produk.index') }}" 
+           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors relative {{ request()->routeIs('admin.produk*') || request()->routeIs('admin.stok*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
             <div class="relative">
                 <i class="fa-solid fa-boxes-stacked text-base"></i>
                 @if(($nav_critical_stock_count ?? 0) > 0)
@@ -478,17 +469,10 @@
                     </span>
                 @endif
             </div>
-            <span class="text-[10px] mt-0.5">Stok</span>
+            <span class="text-[10px] mt-0.5">Produk</span>
         </a>
 
-        {{-- 4. Katalog Helm --}}
-        <a href="{{ route('admin.produk.index') }}" 
-           class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors {{ request()->routeIs('admin.produk*') ? 'text-blue-600 font-bold' : 'text-slate-500 hover:text-slate-800' }}">
-            <i class="fa-solid fa-helmet-safety text-base"></i>
-            <span class="text-[10px] mt-0.5">Katalog</span>
-        </a>
-
-        {{-- 5. Menu Drawer Trigger --}}
+        {{-- 4. Menu Drawer Trigger --}}
         <button type="button" 
                 @click="mobileDrawer = true" 
                 class="flex flex-col items-center justify-center py-1 px-2.5 rounded-xl text-slate-500 hover:text-slate-800 transition-colors">
@@ -586,11 +570,18 @@
                         {{-- Katalog & Atribut --}}
                         <div class="space-y-1">
                             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Katalog & Atribut</p>
-                            <a href="{{ route('admin.produk.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
-                                <i class="fa-solid fa-box-archive text-slate-400 w-4"></i>
-                                <span>Katalog Helm</span>
+                            <a href="{{ route('admin.produk.index') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.produk*') || request()->routeIs('admin.stok*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-boxes-stacked text-slate-400 w-4"></i>
+                                    <span>Produk & Inventori</span>
+                                </div>
+                                @if(($nav_critical_stock_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">
+                                        {{ $nav_critical_stock_count }}
+                                    </span>
+                                @endif
                             </a>
-                            <a href="{{ route('admin.atribut.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50">
+                            <a href="{{ route('admin.atribut.index') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.atribut*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-tags text-slate-400 w-4"></i>
                                 <span>Atribut & Taksonomi</span>
                             </a>

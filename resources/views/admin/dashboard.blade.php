@@ -112,7 +112,7 @@
             </a>
 
             {{-- 4. Stok Fisik Habis di Rak --}}
-            <a href="{{ route('admin.stok.index') }}" 
+            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'habis']) }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-rose-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -229,7 +229,7 @@
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok</h3>
                 </div>
-                <a href="{{ route('admin.stok.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Kelola Stok</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
@@ -243,7 +243,7 @@
                         $sampleVarians = $helm->varians->take(2)->map(fn($v) => $v->warna . ' (' . $v->ukuran . ')')->join(', ');
                         $extraVariansCount = $helm->varians->count() - 2;
                     @endphp
-                    <a href="{{ route('admin.stok.index') }}" class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
+                    <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'search' => $helm->nama_helm]) }}" class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
                         <div class="min-w-0 flex-1">
                             <h4 class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                                 {{ $helm->nama_helm }}
@@ -428,7 +428,7 @@
             </a>
 
             {{-- Stok Kritis (< 5) --}}
-            <a href="{{ route('admin.stok.index') }}" 
+            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" 
                class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between">
@@ -683,7 +683,7 @@
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok Menipis</h3>
                     <p class="text-[11px] text-slate-400">SKU varian kritis &lt; 5 unit di etalase</p>
                 </div>
-                <a href="{{ route('admin.stok.index') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Atur Stok</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
@@ -719,7 +719,7 @@
                             <span class="px-2 py-0.5 rounded-lg text-[10px] font-bold {{ $isZero ? 'bg-rose-100 text-rose-700 border border-rose-300' : 'bg-amber-50 text-amber-700 border border-amber-200/80' }}">
                                 {{ $isZero ? 'Habis (0)' : 'Sisa ' . $varian->stok }}
                             </span>
-                            <a href="{{ route('admin.stok.index') }}" 
+                            <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'search' => $helm->nama_helm ?? '']) }}" 
                                class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 flex items-center justify-center text-xs transition-colors"
                                title="Tambah Stok">
                                 <i class="fa-solid fa-plus text-[10px]"></i>
@@ -737,7 +737,7 @@
 
             <div class="p-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Total {{ $varian_habis_count }} varian stok 0 &bull; {{ $varian_menipis_count }} menipis</span>
-                <a href="{{ route('admin.stok.index') }}" class="font-semibold text-blue-600 hover:underline">
+                <a href="{{ route('admin.produk.index', ['tab' => 'stok', 'filter' => 'kritis_habis']) }}" class="font-semibold text-blue-600 hover:underline">
                     Restok Cepat &rarr;
                 </a>
             </div>
