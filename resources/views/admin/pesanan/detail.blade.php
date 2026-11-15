@@ -62,23 +62,23 @@
             </div>
         </div>
 
-        {{-- 2. Kode Pickup & Pelanggan --}}
+        {{-- 2. Kode Pickup & Pelanggan (Mirrored dari Sisi Pembeli) --}}
         <div class="p-4 space-y-3">
             @if($pesanan->kode_pickup)
-                <div class="p-3 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between gap-3">
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-center justify-between gap-3">
                     <div>
-                        <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider block">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
                             Kode Pengambilan
                         </span>
-                        <span class="font-mono text-base font-bold text-slate-900 tracking-wider">
+                        <span class="font-mono text-xl sm:text-2xl font-bold text-slate-900 tracking-wider select-all">
                             {{ $pesanan->kode_pickup }}
                         </span>
                     </div>
                     <div class="text-right">
-                        <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider block">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
                             Pembayaran
                         </span>
-                        <span class="font-medium text-slate-700">
+                        <span class="text-xs font-semibold text-slate-800">
                             {{ $metodeBayar }}
                         </span>
                     </div>
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        {{-- 3. Rincian Barang & Total --}}
+        {{-- 3. Rincian Barang & Total (Thumbnail Visual + Rincian) --}}
         <div class="p-4 space-y-2.5">
             <div class="divide-y divide-slate-100">
                 @foreach ($pesanan->details as $item)
@@ -112,24 +112,40 @@
                         $variantParts = array_filter([$item->warna, $item->ukuran]);
                         $variantText = implode(', ', $variantParts);
                         $qty = $item->qty ?? ($item->jumlah ?? 1);
+                        $gambarUrl = $item->helm->gambar_url ?? null;
                     @endphp
-                    <div class="py-2 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
+                    <div class="py-2.5 first:pt-0 last:pb-0 flex items-center gap-3">
+                        {{-- Thumbnail Foto Helm --}}
+                        <div class="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                            @if($gambarUrl)
+                                <img src="{{ $gambarUrl }}" alt="{{ $helmName }}" class="w-full h-full object-cover">
+                            @else
+                                <i class="fa-solid fa-helmet-safety text-slate-400 text-sm"></i>
+                            @endif
+                        </div>
+
                         <div class="min-w-0 flex-1">
-                            <p class="text-slate-900 truncate">
-                                <span class="font-medium">{{ $qty }}x</span> {{ $helmName }}
+                            <p class="text-slate-900 truncate font-semibold">
+                                <span class="font-bold">{{ $qty }}x</span> {{ $helmName }}
                             </p>
                             @if($variantText)
                                 <span class="text-[11px] text-slate-400 block mt-0.5">{{ $variantText }}</span>
                             @endif
+                            <p class="text-[10px] text-slate-400 mt-0.5">
+                                {{ $qty }} &times; {{ format_rupiah($item->harga) }}
+                            </p>
                         </div>
-                        <span class="font-medium text-slate-900 shrink-0">
-                            {{ format_rupiah($item->subtotal) }}
-                        </span>
+
+                        <div class="text-right shrink-0">
+                            <span class="font-bold text-slate-900 text-xs">
+                                {{ format_rupiah($item->subtotal) }}
+                            </span>
+                        </div>
                     </div>
                 @endforeach
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between">
                 <span class="font-medium text-slate-500">Total Tagihan</span>
                 <span class="text-sm font-bold text-slate-900">
                     {{ format_rupiah($pesanan->grand_total) }}
@@ -141,7 +157,7 @@
         @if ($pesanan->bukti_bayar)
             <div class="p-4 space-y-2">
                 <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         Bukti Transfer
                     </span>
                     <a href="{{ $pesanan->bukti_bayar_url ?? asset('storage/' . $pesanan->bukti_bayar) }}" 
@@ -161,25 +177,34 @@
             </div>
         @endif
 
-        {{-- 5. Riwayat Alur Pesanan (Selaras dengan Pembeli, Ringkas untuk Kasir) --}}
+        {{-- 5. Riwayat Alur Pesanan (Selaras dengan Stepper Pembeli) --}}
         @if(count($pesanan->tracking_timeline) > 0)
-            <div class="p-4 space-y-2.5">
-                <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+            <div class="p-4 space-y-3">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                     Riwayat Pesanan
                 </span>
 
-                <div class="relative pl-5 space-y-3 before:absolute before:left-[7px] before:top-1.5 before:bottom-1.5 before:w-0.5 before:bg-slate-200">
+                <div class="relative pl-6 space-y-3.5 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
                     @foreach($pesanan->tracking_timeline as $index => $step)
                         @php
                             $isLatest = ($index === 0);
                         @endphp
                         <div class="relative">
-                            <div class="absolute -left-5 top-1 w-3.5 h-3.5 rounded-full {{ $isLatest ? 'bg-blue-600 ring-2 ring-blue-100' : 'bg-slate-300' }}"></div>
+                            @if($isLatest)
+                                <div class="absolute -left-6 top-0.5 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] ring-4 ring-blue-50 shadow-2xs">
+                                    <i class="fa-solid fa-check text-[9px]"></i>
+                                </div>
+                            @else
+                                <div class="absolute -left-6 top-1 w-6 h-6 rounded-full bg-white border-2 border-slate-300 text-slate-400 flex items-center justify-center text-[8px]">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+                                </div>
+                            @endif
+
                             <div class="flex items-center justify-between gap-2">
-                                <span class="font-medium {{ $isLatest ? 'text-slate-900 font-semibold' : 'text-slate-600' }}">
+                                <span class="text-xs font-semibold {{ $isLatest ? 'text-slate-900' : 'text-slate-600' }}">
                                     {{ $step['title'] }}
                                 </span>
-                                <span class="text-[11px] text-slate-400 shrink-0">
+                                <span class="text-[11px] text-slate-400 shrink-0 font-normal">
                                     {{ $step['time'] }}
                                 </span>
                             </div>
@@ -287,13 +312,13 @@
                 </div>
 
             @elseif($pesanan->status === 'completed')
-                <div class="py-1 text-center text-xs text-emerald-600 font-medium flex items-center justify-center gap-1.5">
+                <div class="py-1 text-center text-xs text-emerald-600 font-semibold flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
                     <span>Pesanan telah diserahkan</span>
                 </div>
 
             @elseif($pesanan->status === 'cancelled')
-                <div class="py-1 text-center text-xs text-rose-500 font-medium flex items-center justify-center gap-1.5">
+                <div class="py-1 text-center text-xs text-rose-500 font-semibold flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-circle-xmark text-rose-400"></i>
                     <span>Pesanan telah dibatalkan</span>
                 </div>
