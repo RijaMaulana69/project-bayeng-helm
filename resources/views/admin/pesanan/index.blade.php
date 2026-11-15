@@ -118,11 +118,11 @@
         @php
             $tabs = [
                 ['id' => 'all',        'label' => 'Semua',            'count' => $statusCounts['all'] ?? 0],
-                ['id' => 'ready',      'label' => 'Siap Ambil',       'count' => $statusCounts['ready'] ?? 0, 'dot' => 'bg-emerald-500'],
-                ['id' => 'pending',    'label' => 'Perlu Verifikasi', 'count' => $statusCounts['pending'] ?? 0, 'dot' => 'bg-amber-500'],
+                ['id' => 'ready',      'label' => 'Siap Diambil',     'count' => $statusCounts['ready'] ?? 0],
+                ['id' => 'pending',    'label' => 'Perlu Verifikasi', 'count' => $statusCounts['pending'] ?? 0],
                 ['id' => 'paid',       'label' => 'Sudah Bayar',      'count' => $statusCounts['paid'] ?? 0],
                 ['id' => 'processing', 'label' => 'Sedang Disiapkan', 'count' => $statusCounts['processing'] ?? 0],
-                ['id' => 'completed',  'label' => 'Riwayat Selesai',  'count' => $statusCounts['completed'] ?? 0],
+                ['id' => 'completed',  'label' => 'Selesai',          'count' => $statusCounts['completed'] ?? 0],
                 ['id' => 'cancelled',  'label' => 'Dibatalkan',       'count' => $statusCounts['cancelled'] ?? 0],
             ];
         @endphp
@@ -132,9 +132,6 @@
             @endphp
             <a href="{{ route('admin.pesanan.index', array_merge(request()->except('status', 'page'), ['status' => $tab['id']])) }}"
                class="px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors inline-flex items-center gap-1.5 {{ $isActive ? 'bg-slate-900 text-white font-semibold shadow-2xs' : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200/80 font-medium' }}">
-                @if(isset($tab['dot']) && $tab['count'] > 0)
-                    <span class="w-1.5 h-1.5 rounded-full {{ $tab['dot'] }}"></span>
-                @endif
                 <span>{{ $tab['label'] }}</span>
                 <span class="text-[11px] {{ $isActive ? 'text-slate-300' : 'text-slate-400' }}">
                     {{ $tab['count'] }}
@@ -201,17 +198,6 @@
                     $firstDetail   = $pesanan->details->first();
                     $extraItems    = $pesanan->details->count() - 1;
 
-                    $statusBadge = match($pesanan->status) {
-                        'pending'       => ['label' => 'Perlu Verifikasi',          'class' => 'bg-amber-50 text-amber-700 border-amber-200/80',   'dot' => 'bg-amber-500'],
-                        'unpaid_pickup' => ['label' => 'Siap Diambil (Bayar Kasir)', 'class' => 'bg-sky-50 text-sky-700 border-sky-200/80',        'dot' => 'bg-sky-500'],
-                        'paid'          => ['label' => 'Sudah Bayar',               'class' => 'bg-blue-50 text-blue-700 border-blue-200/80',       'dot' => 'bg-blue-500'],
-                        'processing'    => ['label' => 'Sedang Disiapkan',          'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'dot' => 'bg-indigo-500'],
-                        'ready'         => ['label' => 'Siap Diambil (Lunas)',       'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'dot' => 'bg-emerald-500'],
-                        'completed'     => ['label' => 'Selesai',                   'class' => 'bg-slate-100 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
-                        'cancelled'     => ['label' => 'Dibatalkan',                 'class' => 'bg-rose-50 text-rose-700 border-rose-200/80',        'dot' => 'bg-rose-500'],
-                        default         => ['label' => ucfirst($pesanan->status),   'class' => 'bg-slate-50 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
-                    };
-
                     $metodeLabel = match($pesanan->metode_bayar) {
                         'tunai'    => 'Bayar di Toko',
                         'transfer' => 'Transfer Bank',
@@ -221,40 +207,45 @@
                 @endphp
 
                 <div class="bg-white rounded-xl border border-slate-200/80 p-3 space-y-2">
-                    {{-- Row 1: No. Pesanan, Waktu & Status Badge --}}
+                    {{-- Row 1: No. Transaksi, Waktu, Pickup & Status --}}
                     <div class="flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-1.5 min-w-0">
-                            <span class="font-bold text-xs text-slate-900 truncate">
-                                {{ $pesanan->no_pesanan }}
-                            </span>
-                            <span class="text-[10px] text-slate-400 shrink-0">
-                                {{ $pesanan->created_at->format('d/m/Y H:i') }}
-                            </span>
-                        </div>
-                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold border shrink-0 {{ $statusBadge['class'] }}">
-                            <span class="w-1.5 h-1.5 rounded-full {{ $statusBadge['dot'] }}"></span>
-                            <span>{{ $statusBadge['label'] }}</span>
-                        </span>
-                    </div>
-
-                    {{-- Row 2: Customer, Phone & Pickup Code --}}
-                    <div class="flex items-center justify-between gap-2 text-xs">
                         <div class="min-w-0">
-                            <span class="font-medium text-slate-800 truncate block">
-                                {{ $customerName }}
-                            </span>
-                            @if($customerPhone)
-                                <span class="text-[11px] text-slate-400 font-mono truncate block">
-                                    {{ $customerPhone }}
-                                </span>
+                            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" class="font-semibold text-xs text-slate-900 hover:text-blue-600 block truncate">
+                                {{ $pesanan->no_pesanan }}
+                            </a>
+                            <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                <span>{{ $pesanan->created_at->format('d M Y, H:i') }}</span>
+                                @if($pesanan->kode_pickup)
+                                    <span class="text-slate-300">·</span>
+                                    <span class="font-mono text-slate-600 font-medium">{{ $pesanan->kode_pickup }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="shrink-0 text-right">
+                            @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']))
+                                <span class="text-xs font-semibold text-blue-600">Siap Diambil</span>
+                            @elseif($pesanan->status === 'pending')
+                                <span class="text-xs font-semibold text-amber-600">Perlu Verifikasi</span>
+                            @elseif($pesanan->status === 'paid')
+                                <span class="text-xs font-medium text-slate-700">Sudah Bayar</span>
+                            @elseif($pesanan->status === 'processing')
+                                <span class="text-xs font-medium text-indigo-600">Sedang Disiapkan</span>
+                            @elseif($pesanan->status === 'completed')
+                                <span class="text-xs font-medium text-slate-500">Selesai</span>
+                            @elseif($pesanan->status === 'cancelled')
+                                <span class="text-xs font-medium text-rose-500">Dibatalkan</span>
+                            @else
+                                <span class="text-xs font-medium text-slate-600">{{ ucfirst($pesanan->status) }}</span>
                             @endif
                         </div>
+                    </div>
 
-                        @if($pesanan->kode_pickup)
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-mono text-[11px] font-semibold border border-amber-200/80 shrink-0">
-                                <i class="fa-solid fa-qrcode text-[10px]"></i>
-                                {{ $pesanan->kode_pickup }}
-                            </span>
+                    {{-- Row 2: Customer & Phone --}}
+                    <div class="text-xs text-slate-700">
+                        <span class="font-medium text-slate-900">{{ $customerName }}</span>
+                        @if($customerPhone)
+                            <span class="text-slate-400 text-[11px] font-mono">({{ $customerPhone }})</span>
                         @endif
                     </div>
 
@@ -265,13 +256,13 @@
                             $variantParts = array_filter([$firstDetail->warna, $firstDetail->ukuran]);
                             $variantText = implode(', ', $variantParts);
                         @endphp
-                        <div class="text-[11px] text-slate-600 truncate">
-                            <span class="font-semibold text-slate-700">{{ $firstDetail->qty ?? 1 }}x</span> {{ $helmName }}
+                        <div class="text-[11px] text-slate-600">
+                            <span>{{ $firstDetail->qty ?? 1 }}x {{ $helmName }}</span>
                             @if($variantText)
-                                <span class="text-slate-400">({{ $variantText }})</span>
+                                <span class="text-slate-400">· {{ $variantText }}</span>
                             @endif
                             @if($extraItems > 0)
-                                <span class="text-blue-600 font-medium">+{{ $extraItems }} lainnya</span>
+                                <span class="text-slate-500">· +{{ $extraItems }} lainnya</span>
                             @endif
                         </div>
                     @endif
@@ -280,7 +271,7 @@
                     <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
                         <div>
                             <span class="text-[10px] text-slate-400 block leading-none">{{ $metodeLabel }}</span>
-                            <span class="text-xs sm:text-sm font-bold text-slate-900">
+                            <span class="text-xs font-semibold text-slate-900">
                                 {{ format_rupiah($pesanan->grand_total) }}
                             </span>
                         </div>
@@ -288,16 +279,14 @@
                         <div class="flex items-center gap-1.5">
                             @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
                                 <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                   class="h-8 px-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs">
-                                    <i class="fa-solid fa-hand-holding-hand text-[10px]"></i>
-                                    <span>Serahkan</span>
+                                   class="px-2.5 py-1 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors">
+                                    Serahkan
                                 </a>
                             @endif
 
                             <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                               class="h-8 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs inline-flex items-center gap-1 transition-colors">
-                                <span>Detail</span>
-                                <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
+                               class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors">
+                                Detail
                             </a>
                         </div>
                     </div>
@@ -306,18 +295,18 @@
         </div>
 
         {{-- B. DESKTOP VIEW (Clean Minimal Table) --}}
-        <div class="hidden md:block bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+        <div class="hidden md:block bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                     <thead>
-                        <tr class="bg-slate-50/75 border-b border-slate-200/80 text-slate-500 uppercase tracking-wider text-[11px] font-semibold">
-                            <th class="py-2.5 px-3.5">No. Transaksi</th>
-                            <th class="py-2.5 px-3.5">Pelanggan</th>
-                            <th class="py-2.5 px-3.5">Produk</th>
-                            <th class="py-2.5 px-3.5">Pembayaran</th>
-                            <th class="py-2.5 px-3.5 text-right">Total</th>
-                            <th class="py-2.5 px-3.5 text-center">Status</th>
-                            <th class="py-2.5 px-3.5 text-right">Aksi</th>
+                        <tr class="border-b border-slate-100 text-slate-400 text-[11px] font-medium">
+                            <th class="py-3 px-4 font-medium">No. Transaksi</th>
+                            <th class="py-3 px-4 font-medium">Pelanggan</th>
+                            <th class="py-3 px-4 font-medium">Produk</th>
+                            <th class="py-3 px-4 font-medium">Pembayaran</th>
+                            <th class="py-3 px-4 font-medium text-right">Total</th>
+                            <th class="py-3 px-4 font-medium">Status</th>
+                            <th class="py-3 px-4 font-medium text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -328,17 +317,6 @@
                                 $firstDetail   = $pesanan->details->first();
                                 $extraItems    = $pesanan->details->count() - 1;
 
-                                $statusBadge = match($pesanan->status) {
-                                    'pending'       => ['label' => 'Perlu Verifikasi',          'class' => 'bg-amber-50 text-amber-700 border-amber-200/80',   'dot' => 'bg-amber-500'],
-                                    'unpaid_pickup' => ['label' => 'Siap Diambil (Bayar Kasir)', 'class' => 'bg-sky-50 text-sky-700 border-sky-200/80',        'dot' => 'bg-sky-500'],
-                                    'paid'          => ['label' => 'Sudah Bayar',               'class' => 'bg-blue-50 text-blue-700 border-blue-200/80',       'dot' => 'bg-blue-500'],
-                                    'processing'    => ['label' => 'Sedang Disiapkan',          'class' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80', 'dot' => 'bg-indigo-500'],
-                                    'ready'         => ['label' => 'Siap Diambil (Lunas)',       'class' => 'bg-emerald-50 text-emerald-700 border-emerald-200/80', 'dot' => 'bg-emerald-500'],
-                                    'completed'     => ['label' => 'Selesai',                   'class' => 'bg-slate-100 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
-                                    'cancelled'     => ['label' => 'Dibatalkan',                 'class' => 'bg-rose-50 text-rose-700 border-rose-200/80',        'dot' => 'bg-rose-500'],
-                                    default         => ['label' => ucfirst($pesanan->status),   'class' => 'bg-slate-50 text-slate-700 border-slate-200',      'dot' => 'bg-slate-400'],
-                                };
-
                                 $metodeLabel = match($pesanan->metode_bayar) {
                                     'tunai'    => 'Bayar di Toko',
                                     'transfer' => 'Transfer Bank',
@@ -346,100 +324,99 @@
                                     default    => ucfirst($pesanan->metode_bayar ?? 'Online'),
                                 };
                             @endphp
-                            <tr class="hover:bg-slate-50/60 transition-colors">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
                                 {{-- 1. No. Transaksi & Waktu --}}
-                                <td class="py-2.5 px-3.5">
-                                    <div class="flex items-center gap-1.5 flex-wrap">
-                                        <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                                           class="font-semibold text-slate-900 hover:text-blue-600 transition-colors">
-                                            {{ $pesanan->no_pesanan }}
-                                        </a>
+                                <td class="py-3.5 px-4">
+                                    <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                                       class="font-medium text-slate-900 hover:text-blue-600 transition-colors block">
+                                        {{ $pesanan->no_pesanan }}
+                                    </a>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                        <span>{{ $pesanan->created_at->format('d M Y, H:i') }} WIB</span>
                                         @if($pesanan->kode_pickup)
-                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-mono text-[10px] font-semibold border border-amber-200/80">
-                                                <i class="fa-solid fa-qrcode text-[9px]"></i>
-                                                {{ $pesanan->kode_pickup }}
-                                            </span>
+                                            <span class="text-slate-300">·</span>
+                                            <span class="font-mono text-slate-600 font-medium">{{ $pesanan->kode_pickup }}</span>
                                         @endif
                                     </div>
-                                    <span class="text-[11px] text-slate-400 block mt-0.5">
-                                        {{ $pesanan->created_at->format('d M Y, H:i') }} WIB
-                                    </span>
                                 </td>
 
                                 {{-- 2. Pelanggan --}}
-                                <td class="py-2.5 px-3.5 max-w-[170px]">
-                                    <p class="font-medium text-slate-800 truncate">
+                                <td class="py-3.5 px-4 max-w-[170px]">
+                                    <p class="font-medium text-slate-900 truncate">
                                         {{ $customerName }}
                                     </p>
                                     @if($customerPhone)
-                                        <span class="text-[11px] text-slate-400 font-mono truncate block mt-0.5">
+                                        <p class="text-[11px] text-slate-400 font-mono truncate mt-0.5">
                                             {{ $customerPhone }}
-                                        </span>
+                                        </p>
                                     @endif
                                 </td>
 
                                 {{-- 3. Produk --}}
-                                <td class="py-2.5 px-3.5 max-w-[200px]">
+                                <td class="py-3.5 px-4 max-w-[220px]">
                                     @if($firstDetail)
                                         @php
                                             $helmName = $firstDetail->helm->nama_helm ?? ($firstDetail->nama_helm ?? 'Helm');
                                             $variantParts = array_filter([$firstDetail->warna, $firstDetail->ukuran]);
                                             $variantText = implode(', ', $variantParts);
                                         @endphp
-                                        <p class="font-medium text-slate-800 truncate">
-                                            <span class="font-bold text-slate-900">{{ $firstDetail->qty ?? 1 }}x</span> {{ $helmName }}
+                                        <p class="text-slate-800 truncate">
+                                            <span class="font-medium text-slate-900">{{ $firstDetail->qty ?? 1 }}x</span> {{ $helmName }}
                                         </p>
-                                        @if($variantText)
-                                            <span class="text-[11px] text-slate-400 truncate block mt-0.5">
-                                                {{ $variantText }}
-                                            </span>
-                                        @endif
-                                        @if($extraItems > 0)
-                                            <span class="text-[10px] text-blue-600 font-medium block mt-0.5">
-                                                +{{ $extraItems }} helm lainnya
-                                            </span>
-                                        @endif
+                                        <p class="text-[11px] text-slate-400 truncate mt-0.5">
+                                            {{ $variantText ?: 'Standar' }}
+                                            @if($extraItems > 0)
+                                                <span class="text-slate-500">· +{{ $extraItems }} lainnya</span>
+                                            @endif
+                                        </p>
                                     @else
-                                        <span class="text-slate-400 text-xs italic">Tanpa rincian helm</span>
+                                        <span class="text-slate-400 text-xs italic">Tanpa rincian</span>
                                     @endif
                                 </td>
 
                                 {{-- 4. Pembayaran --}}
-                                <td class="py-2.5 px-3.5 whitespace-nowrap">
-                                    <span class="text-slate-700 font-medium">
-                                        {{ $metodeLabel }}
-                                    </span>
+                                <td class="py-3.5 px-4 whitespace-nowrap text-slate-600">
+                                    {{ $metodeLabel }}
                                 </td>
 
                                 {{-- 5. Total --}}
-                                <td class="py-2.5 px-3.5 text-right font-bold text-slate-900 whitespace-nowrap">
+                                <td class="py-3.5 px-4 text-right font-semibold text-slate-900 whitespace-nowrap">
                                     {{ format_rupiah($pesanan->grand_total) }}
                                 </td>
 
-                                {{-- 6. Status --}}
-                                <td class="py-2.5 px-3.5 text-center whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold border {{ $statusBadge['class'] }}">
-                                        <span class="w-1.5 h-1.5 rounded-full {{ $statusBadge['dot'] }}"></span>
-                                        <span>{{ $statusBadge['label'] }}</span>
-                                    </span>
+                                {{-- 6. Status: tanpa background biru, teksnya aja biru untuk siap diambil --}}
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']))
+                                        <span class="text-xs font-semibold text-blue-600">Siap Diambil</span>
+                                    @elseif($pesanan->status === 'pending')
+                                        <span class="text-xs font-semibold text-amber-600">Perlu Verifikasi</span>
+                                    @elseif($pesanan->status === 'paid')
+                                        <span class="text-xs font-medium text-slate-700">Sudah Bayar</span>
+                                    @elseif($pesanan->status === 'processing')
+                                        <span class="text-xs font-medium text-indigo-600">Sedang Disiapkan</span>
+                                    @elseif($pesanan->status === 'completed')
+                                        <span class="text-xs font-medium text-slate-500">Selesai</span>
+                                    @elseif($pesanan->status === 'cancelled')
+                                        <span class="text-xs font-medium text-rose-500">Dibatalkan</span>
+                                    @else
+                                        <span class="text-xs font-medium text-slate-600">{{ ucfirst($pesanan->status) }}</span>
+                                    @endif
                                 </td>
 
                                 {{-- 7. Aksi --}}
-                                <td class="py-2.5 px-3.5 text-right whitespace-nowrap">
+                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                     <div class="inline-flex items-center gap-1.5 justify-end">
                                         @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
                                             <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
-                                               class="h-7 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs inline-flex items-center gap-1 transition-colors shadow-2xs"
+                                               class="px-2.5 py-1 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors"
                                                title="Serahkan Pesanan ke Pelanggan">
-                                                <i class="fa-solid fa-hand-holding-hand text-[10px]"></i>
-                                                <span>Serahkan</span>
+                                                Serahkan
                                             </a>
                                         @endif
 
                                         <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-                                           class="h-7 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs inline-flex items-center gap-1 transition-colors">
-                                            <span>Detail</span>
-                                            <i class="fa-solid fa-chevron-right text-[8px] text-slate-400"></i>
+                                           class="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors">
+                                            Detail
                                         </a>
                                     </div>
                                 </td>
