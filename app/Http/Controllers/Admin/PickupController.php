@@ -34,24 +34,19 @@ class PickupController extends Controller
             return redirect()->route('admin.pickup.index')->with('error', 'Kode pickup tidak ditemukan.');
         }
 
-        // Penjelasan status jika belum siap atau sudah selesai
-        if ($pesanan->status === 'completed') {
-            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} sudah diserahkan sebelumnya.");
-        }
+        if (!in_array($pesanan->status, ['ready', 'unpaid_pickup', 'completed'])) {
+            if ($pesanan->status === 'cancelled') {
+                return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} telah dibatalkan.");
+            }
 
-        if ($pesanan->status === 'cancelled') {
-            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} telah dibatalkan.");
-        }
+            if ($pesanan->status === 'pending') {
+                return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih menunggu verifikasi pembayaran di menu Pesanan.");
+            }
 
-        if ($pesanan->status === 'pending') {
-            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih menunggu verifikasi pembayaran di menu Pesanan.");
-        }
+            if (in_array($pesanan->status, ['paid', 'processing'])) {
+                return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih disiapkan di gudang. Silakan tandai siap ambil terlebih dahulu di menu Pesanan.");
+            }
 
-        if (in_array($pesanan->status, ['paid', 'processing'])) {
-            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih disiapkan di gudang. Silakan tandai siap ambil terlebih dahulu di menu Pesanan.");
-        }
-
-        if (!in_array($pesanan->status, ['ready', 'unpaid_pickup'])) {
             return redirect()->route('admin.pickup.index')->with('error', 'Pesanan tidak dalam status siap ambil.');
         }
 
