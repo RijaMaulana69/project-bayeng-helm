@@ -19,14 +19,14 @@
     {{-- 2. Form Card --}}
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-user-pen text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-user-pen text-xs"></i>
             </div>
             <div>
                 <h1 class="text-sm font-bold text-slate-900">
-                    Edit Data Karyawan
+                    Edit Karyawan
                 </h1>
-                <p class="text-xs text-slate-500 font-mono">
+                <p class="text-[11px] text-slate-400 font-mono">
                     {{ '@' . $user->username }}
                 </p>
             </div>

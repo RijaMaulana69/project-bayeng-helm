@@ -7,21 +7,14 @@
 <div class="space-y-4 max-w-6xl mx-auto">
 
     {{-- 1. Header Minimalist --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Log Aktivitas & Audit Trail
-            </h1>
-            <p class="text-xs text-slate-500">
-                Rekam jejak kronologis keamanan, kasir, dan perubahan sistem
-            </p>
-        </div>
+    <div class="flex items-center justify-between gap-3">
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Log Aktivitas
+        </h1>
 
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-            <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs">
-                Total: <span class="font-mono text-slate-900">{{ number_format($logs->total(), 0, ',', '.') }}</span> aksi
-            </span>
-        </div>
+        <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs shrink-0">
+            Total: <span class="font-mono text-slate-900">{{ number_format($logs->total(), 0, ',', '.') }}</span>
+        </span>
     </div>
 
     {{-- 2. Filter Bar --}}

@@ -11,29 +11,19 @@
     @endphp
 
     {{-- 1. Header Minimalist --}}
-    <div>
-        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Pengaturan Toko
-        </h1>
-        <p class="text-xs text-slate-500">
-            Identitas resmi gerai untuk nota, kop surat, dan laporan PDF
-        </p>
-    </div>
+    <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+        Pengaturan Toko
+    </h1>
 
     {{-- 2. Form Card --}}
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-store text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-store text-xs"></i>
             </div>
-            <div>
-                <h2 class="text-sm font-bold text-slate-900">
-                    Profil Identitas Gerai
-                </h2>
-                <p class="text-xs text-slate-400">
-                    Informasi ini dicantumkan pada kop resmi laporan penjualan
-                </p>
-            </div>
+            <h2 class="text-sm font-bold text-slate-900">
+                Profil Toko
+            </h2>
         </div>
 
         <form method="POST" 

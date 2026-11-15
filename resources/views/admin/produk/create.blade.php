@@ -63,12 +63,9 @@
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 <span>Kembali ke Katalog</span>
             </a>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                 Tambah Produk Helm Baru
-            </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Input informasi master helm, penetapan harga jual gerai, dan stok varian awal
-            </p>
+            </h1>
         </div>
     </div>
 

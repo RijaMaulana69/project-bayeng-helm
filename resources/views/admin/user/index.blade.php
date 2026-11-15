@@ -8,14 +8,9 @@
 
     {{-- 1. Header Minimalist --}}
     <div class="flex items-center justify-between gap-3">
-        <div>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Kelola Karyawan
-            </h1>
-            <p class="text-xs text-slate-500">
-                Manajemen akun operasional kasir & staf gerai
-            </p>
-        </div>
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Kelola Karyawan
+        </h1>
 
         <a href="{{ route('admin.user.create') }}" 
            wire:navigate
@@ -31,12 +26,9 @@
         <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             <p class="text-xs font-medium text-slate-700">
-                Total Karyawan Aktif: <span class="font-bold text-slate-900 font-mono">{{ count($users) }}</span> staf
+                Total Karyawan: <span class="font-bold text-slate-900 font-mono">{{ count($users) }}</span> staf aktif
             </p>
         </div>
-        <p class="text-[11px] text-slate-400 hidden sm:block">
-            Hak akses: Kasir gerai, validasi pickup, dan input stok
-        </p>
     </div>
 
     {{-- 3. Responsive List / Table --}}

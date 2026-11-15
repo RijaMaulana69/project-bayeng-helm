@@ -98,15 +98,10 @@
      }">
 
     {{-- 1. Header Section: Title & Unified Add Action --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Atribut & Taksonomi Helm
-            </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Standarisasi merk resmi, klasifikasi tipe helm, dan palet warna visual gerai
-            </p>
-        </div>
+    <div class="flex items-center justify-between gap-3">
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Atribut Helm
+        </h1>
 
         <div>
             {{-- Button Tambah berdasarkan Tab Aktif --}}
@@ -131,7 +126,7 @@
                     @click="openAddWarna()"
                     class="h-9 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
                 <i class="fa-solid fa-plus text-[11px]"></i>
-                <span>Tambah Warna Swatch</span>
+                <span>Tambah Warna</span>
             </button>
         </div>
     </div>

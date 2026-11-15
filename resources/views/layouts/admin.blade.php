@@ -162,7 +162,7 @@
                         </div>
                     </a>
 
-                    {{-- FITUR BARU 1: Transaksi Karyawan --}}
+                    {{-- Transaksi Karyawan --}}
                     <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.transaksi-karyawan*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -172,7 +172,7 @@
                         </div>
                     </a>
 
-                    {{-- FITUR BARU 2: Riwayat Barang Masuk --}}
+                    {{-- Barang Masuk --}}
                     <a href="{{ route('admin.owner.barang-masuk.index') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.barang-masuk*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -190,15 +190,15 @@
                         <span>Laporan Penjualan</span>
                     </a>
 
-                    {{-- Master Atribut & Taksonomi Produk --}}
+                    {{-- Atribut Helm --}}
                     <a href="{{ route('admin.atribut.index') }}" 
                        wire:navigate
                        class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.atribut*') || request()->routeIs('admin.merk*') || request()->routeIs('admin.kategori*') || request()->routeIs('admin.warna*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="w-4 text-center fa-solid fa-tags text-slate-400 group-hover:text-slate-600"></i>
-                        <span>Atribut & Taksonomi</span>
+                        <span>Atribut Helm</span>
                     </a>
 
-                    {{-- Manajemen Karyawan --}}
+                    {{-- Kelola Karyawan --}}
                     <a href="{{ route('admin.owner.user.index') }}" 
                        wire:navigate
                        class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.user*') || request()->routeIs('admin.user*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -206,12 +206,12 @@
                         <span>Kelola Karyawan</span>
                     </a>
 
-                    {{-- Audit Activity Log --}}
+                    {{-- Log Aktivitas --}}
                     <a href="{{ route('admin.owner.activity-log') }}" 
                        wire:navigate
                        class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.activity-log*') || request()->routeIs('admin.activity-log*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="w-4 text-center fa-solid fa-clock-rotate-left text-slate-400 group-hover:text-slate-600"></i>
-                        <span>Audit Log Aktivitas</span>
+                        <span>Log Aktivitas</span>
                     </a>
 
                     {{-- Pengaturan Toko --}}
@@ -600,7 +600,7 @@
                                 <i class="fa-solid fa-helmet-safety"></i>
                             </div>
                             <div>
-                                <p class="text-xs font-extrabold text-slate-900 leading-tight">BAYENG PRO</p>
+                                <p class="text-xs font-extrabold text-slate-900 leading-tight">BAYENG HELM</p>
                                 <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
                             </div>
                         </div>
@@ -671,7 +671,7 @@
                         {{-- Menu Khusus Owner --}}
                         @if($isOwner)
                         <div class="space-y-1">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Manajemen Bisnis (Owner)</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Manajemen Bisnis</p>
                             <a href="{{ route('admin.dashboard') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-chart-pie text-slate-400 w-4"></i>
                                 <span>Ringkasan Bisnis</span>
@@ -690,7 +690,7 @@
                             </a>
                             <a href="{{ route('admin.atribut.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.atribut*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-tags text-slate-400 w-4"></i>
-                                <span>Atribut & Taksonomi</span>
+                                <span>Atribut Helm</span>
                             </a>
                             <a href="{{ route('admin.owner.user.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.user*') || request()->routeIs('admin.user*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-users-gear text-slate-400 w-4"></i>
@@ -698,7 +698,7 @@
                             </a>
                             <a href="{{ route('admin.owner.activity-log') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.activity-log*') || request()->routeIs('admin.activity-log*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-clock-rotate-left text-slate-400 w-4"></i>
-                                <span>Audit Log Aktivitas</span>
+                                <span>Log Aktivitas</span>
                             </a>
                             <a href="{{ route('admin.owner.pengaturan') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.pengaturan*') || request()->routeIs('admin.pengaturan*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-sliders text-slate-400 w-4"></i>

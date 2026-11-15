@@ -18,14 +18,9 @@
 
     {{-- 1. Header Minimalist --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Laporan Penjualan
-            </h1>
-            <p class="text-xs text-slate-500">
-                Rekapitulasi transaksi selesai & omzet pendapatan gerai
-            </p>
-        </div>
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Laporan Penjualan
+        </h1>
 
         {{-- Export Action Buttons --}}
         <div class="flex items-center gap-2 self-start sm:self-auto">
@@ -94,7 +89,7 @@
 
         <div class="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
             <span class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-                Rata-rata Transaksi (AOV)
+                Rata-rata Transaksi
             </span>
             <p class="text-sm sm:text-lg font-bold text-blue-600 mt-0.5 font-mono">
                 Rp {{ number_format($avgOrder, 0, ',', '.') }}

@@ -13,15 +13,10 @@
 
     {{-- 1. Header Kasir & Validasi Cepat --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-                <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                    Halo, {{ $user->nama_lengkap }}
-                </h1>
-                <p class="text-xs text-slate-400 mt-0.5">
-                    Terminal kasir siap melayani transaksi dan pengambilan helm di gerai.
-                </p>
-            </div>
+        <div class="flex items-center justify-between gap-3">
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                Halo, {{ $user->nama_lengkap }}
+            </h1>
             <div>
                 <a href="{{ route('admin.karyawan.riwayat') }}" 
                    wire:navigate
@@ -139,7 +134,7 @@
                         <span class="text-2xl font-bold {{ $varian_habis_count > 0 ? 'text-rose-600' : 'text-slate-900' }}">
                             {{ $varian_habis_count }}
                         </span>
-                        <span class="text-xs text-slate-500 font-normal">Stok menipis</span>
+                        <span class="text-xs text-slate-500 font-normal">varian habis</span>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">
@@ -355,26 +350,15 @@
                     @endforeach
                 </div>
             </div>
-
-            <div class="text-[11px] text-slate-400 flex items-center gap-1">
-                <i class="fa-solid fa-rotate text-[10px]"></i>
-                <span>Data diperbarui otomatis</span>
-            </div>
         </div>
     </div>
 
     {{-- 2. Penting Hari Ini (Action Required) --}}
     <div>
         <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Penting Hari Ini
-                </h2>
-                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">
-                    Prioritas Kasir
-                </span>
-            </div>
-            <span class="text-[11px] text-slate-400 font-medium">Prioritas Kasir & Operasional</span>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Penting Hari Ini
+            </h2>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
@@ -403,7 +387,7 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-emerald-600">
-                    <span>Pantau Antrean Kasir</span>
+                    <span>Lihat Antrean</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
@@ -436,7 +420,7 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-blue-600">
-                    <span>Audit Transaksi Karyawan</span>
+                    <span>Lihat Transaksi</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
@@ -456,21 +440,21 @@
                         <span class="text-2xl font-bold {{ $total_stok_kritis > 0 ? 'text-rose-600' : 'text-slate-900' }}">
                             {{ $total_stok_kritis }}
                         </span>
-                        <span class="text-xs text-slate-500 font-normal">SKU varian perlu restok</span>
+                        <span class="text-xs text-slate-500 font-normal">varian kritis</span>
                     </div>
                     <div class="mt-2 flex items-center gap-1.5 flex-wrap">
                         @if($varian_habis_count > 0)
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80">
-                                {{ $varian_habis_count }} Habis (0 unit)
+                                {{ $varian_habis_count }} Habis
                             </span>
                         @endif
                         <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-                            {{ $varian_menipis_count }} Menipis (1-3)
+                            {{ $varian_menipis_count }} Menipis
                         </span>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-amber-600">
-                    <span>Lihat Riwayat Barang Masuk</span>
+                    <span>Lihat Barang Masuk</span>
                     <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
@@ -481,7 +465,9 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-500">Omzet Selesai Hari Ini</span>
+                <span class="text-xs font-medium text-slate-500">
+                    {{ $selected_period === 'today' ? 'Omzet Selesai Hari Ini' : 'Omzet Selesai' }}
+                </span>
                 <span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
                     {{ $selected_period === 'today' ? 'Hari Ini' : $selected_period }}
                 </span>
@@ -510,27 +496,27 @@
 
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-500">Rata-rata Order (AOV)</span>
+                <span class="text-xs font-medium text-slate-500">Rata-rata Transaksi</span>
                 <i class="fa-solid fa-chart-line text-xs text-slate-400"></i>
             </div>
             <p class="text-xl font-bold text-slate-900 mt-2 tracking-tight">
                 {{ format_rupiah($period_aov) }}
             </p>
             <div class="mt-1 text-[11px] text-slate-400">
-                <span>Nilai rata-rata belanja per transaksi</span>
+                <span>Rata-rata belanja per transaksi</span>
             </div>
         </div>
 
         <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-500">Katalog & SKU Aktif</span>
+                <span class="text-xs font-medium text-slate-500">Katalog Produk</span>
                 <i class="fa-solid fa-helmet-safety text-xs text-slate-400"></i>
             </div>
             <p class="text-xl font-bold text-slate-900 mt-2 tracking-tight">
                 {{ $total_produk }} <span class="text-xs font-normal text-slate-500">model</span>
             </p>
             <div class="mt-1 text-[11px] text-slate-400">
-                <span>{{ $total_varian }} varian ukuran & warna terdaftar</span>
+                <span>{{ $total_varian }} varian aktif</span>
             </div>
         </div>
     </div>
@@ -538,14 +524,9 @@
     {{-- 4. Tren Penjualan Bulanan (Interactive Chart.js) --}}
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-                <div class="flex items-center gap-2">
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Tren Penjualan Bulanan</h3>
-                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600" x-text="activeMetric === 'omzet' ? 'Omzet (Rp)' : 'Volume (Qty)'"></span>
-                </div>
-                <p class="text-[11px] text-slate-500 mt-0.5">
-                    Data transaksi selesai &bull; Beralih antara nilai Rupiah dan volume order
-                </p>
+            <div class="flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900">Tren Penjualan Bulanan</h3>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600" x-text="activeMetric === 'omzet' ? 'Omzet (Rp)' : 'Volume (Qty)'"></span>
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
@@ -598,10 +579,7 @@
         
         <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ orderFilter: 'all' }">
             <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Pesanan Masuk Terbaru</h3>
-                    <p class="text-[11px] text-slate-400">Daftar transaksi pelanggan terkini di gerai</p>
-                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900">Pesanan Masuk Terbaru</h3>
 
                 <div class="flex items-center gap-2">
                     <div class="inline-flex rounded-lg bg-slate-100 p-0.5 text-[11px]">
@@ -695,10 +673,7 @@
 
         <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div>
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok Menipis</h3>
-                    <p class="text-[11px] text-slate-400">SKU varian kritis &lt; 5 unit di etalase</p>
-                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok Menipis</h3>
                 <a href="{{ route('admin.owner.barang-masuk.index') }}" wire:navigate class="text-xs font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
                     <span>Log Masuk</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>

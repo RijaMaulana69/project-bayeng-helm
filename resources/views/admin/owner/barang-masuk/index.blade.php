@@ -8,14 +8,9 @@
 
     {{-- 1. Header Section --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Riwayat & Log Barang Masuk
-            </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Monitoring persediaan helm masuk ke gerai, audit restok fisik oleh staf, dan rekapitulasi nilai modal belanja stok.
-            </p>
-        </div>
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Riwayat Barang Masuk
+        </h1>
 
         <div class="flex items-center gap-2 self-start sm:self-auto">
             <button type="button" 

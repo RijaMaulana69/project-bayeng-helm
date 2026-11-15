@@ -61,12 +61,9 @@
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 <span>Kembali ke Katalog</span>
             </a>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                 Edit Produk Helm: {{ $produk->nama_helm }}
-            </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Perbarui rincian spesifikasi, harga jual, foto helm, dan penyesuaian varian fisik
-            </p>
+            </h1>
         </div>
 
         <a href="{{ route('katalog.detail', $produk->id_helm) }}" 

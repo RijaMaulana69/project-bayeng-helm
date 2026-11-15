@@ -8,14 +8,9 @@
 
     {{-- 1. Header Section --}}
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Monitoring & Transaksi Karyawan
-            </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Audit aktivitas pelayanan kasir gerai, pencatatan transaksi masuk, dan setoran uang tunai kasir.
-            </p>
-        </div>
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Transaksi Karyawan
+        </h1>
 
         <div class="flex items-center gap-2 self-start sm:self-auto">
             <button type="button" 

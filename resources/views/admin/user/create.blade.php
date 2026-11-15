@@ -19,17 +19,12 @@
     {{-- 2. Form Card --}}
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
         <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
-                <i class="fa-solid fa-user-plus text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-user-plus text-xs"></i>
             </div>
-            <div>
-                <h1 class="text-sm font-bold text-slate-900">
-                    Tambah Akun Karyawan Baru
-                </h1>
-                <p class="text-xs text-slate-500">
-                    Kredensial untuk operasional kasir & restok toko
-                </p>
-            </div>
+            <h1 class="text-sm font-bold text-slate-900">
+                Tambah Karyawan
+            </h1>
         </div>
 
         <form method="POST" action="{{ route('admin.user.store') }}" x-data="{ showPass: false }" class="p-4 sm:p-5 space-y-4 text-xs">
@@ -38,7 +33,7 @@
             {{-- Username --}}
             <div class="space-y-1">
                 <label for="username" class="block font-semibold text-slate-700">
-                    Username Login <span class="text-rose-500">*</span>
+                    Username <span class="text-rose-500">*</span>
                 </label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-mono text-xs">@</span>
@@ -47,10 +42,9 @@
                            name="username" 
                            value="{{ old('username') }}" 
                            required
-                           placeholder="contoh: ari_kasir"
+                           placeholder="username_kasir"
                            class="w-full h-10 pl-8 pr-3.5 rounded-xl bg-white border border-slate-200 font-mono text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all @error('username') border-rose-300 ring-1 ring-rose-400 @enderror">
                 </div>
-                <p class="text-[11px] text-slate-400">Digunakan untuk login ke panel admin kasir.</p>
                 @error('username')
                     <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                 @enderror
