@@ -225,8 +225,8 @@
                     </div>
                     <form action="{{ route('admin.logout') }}" method="POST" class="shrink-0">
                         @csrf
-                        <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Logout">
-                            <i class="fa-solid fa-power-off text-xs"></i>
+                        <button type="submit" class="w-8 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Keluar">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                         </button>
                     </form>
                 </div>
@@ -265,8 +265,8 @@
                     </div>
                 </div>
 
-                {{-- Right: Actions & User Info --}}
-                <div class="flex items-center gap-2 sm:gap-3">
+                {{-- Right: Notification + Profile + Logout --}}
+                <div class="flex items-center gap-2">
                     {{-- Operational Notification Bell Dropdown --}}
                     @php
                         $notifPickup = $nav_pickup_count ?? 0;
@@ -277,13 +277,11 @@
                     <div class="relative" x-data="{ notifOpen: false }" @click.outside="notifOpen = false">
                         <button type="button" 
                                 @click="notifOpen = !notifOpen" 
-                                class="relative w-8 h-8 rounded-lg border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors cursor-pointer"
-                                title="Notifikasi Toko">
-                            <i class="fa-regular fa-bell text-sm"></i>
+                                class="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                                aria-label="Notifikasi Toko">
+                            <i class="fa-regular fa-bell text-base"></i>
                             @if($notifTotal > 0)
-                                <span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center font-mono animate-pulse">
-                                    {{ $notifTotal > 9 ? '9+' : $notifTotal }}
-                                </span>
+                                <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
                             @endif
                         </button>
 
@@ -299,10 +297,10 @@
                              class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden z-50">
                             <div class="p-3.5 border-b border-slate-100 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xs font-bold text-slate-900">Notifikasi Toko</span>
+                                    <span class="text-xs font-bold text-slate-900">Notifikasi</span>
                                     @if($notifTotal > 0)
                                         <span class="px-1.5 py-0.2 rounded-md bg-rose-50 text-rose-700 text-[10px] font-bold border border-rose-200/80 font-mono">
-                                            {{ $notifTotal }} tugas
+                                            {{ $notifTotal }}
                                         </span>
                                     @endif
                                 </div>
@@ -371,27 +369,30 @@
                         </div>
                     </div>
 
-                    {{-- Link to Customer Web Store --}}
-                    <a href="{{ route('home') }}" target="_blank" 
-                       class="text-xs text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
-                        <span class="hidden sm:inline">Lihat Toko</span>
-                    </a>
+                    {{-- Subtle Vertical Divider --}}
+                    <div class="h-5 w-px bg-slate-200 mx-1"></div>
 
-                    {{-- User Profile Pill --}}
+                    {{-- User Profile Pill & Clean Logout Button --}}
                     @if($authUser)
-                    <div class="flex items-center gap-2 pl-2 sm:pl-3 border-l border-slate-200/80">
-                        <div class="w-7 h-7 rounded-lg bg-slate-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                            {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200/90 text-slate-700 font-semibold text-xs flex items-center justify-center shrink-0">
+                                {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
+                            </div>
+                            <div class="hidden sm:block text-left">
+                                <span class="text-xs font-semibold text-slate-800 block leading-tight">{{ $authUser->nama_lengkap }}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
+                            </div>
                         </div>
-                        <div class="hidden sm:block text-left">
-                            <span class="text-xs font-semibold text-slate-800 block leading-tight">{{ $authUser->nama_lengkap }}</span>
-                            <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
-                        </div>
-                        <form action="{{ route('admin.logout') }}" method="POST" class="ml-1">
+
+                        {{-- Clean Logout Action --}}
+                        <form action="{{ route('admin.logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer" title="Logout">
-                                <i class="fa-solid fa-power-off text-xs"></i>
+                            <button type="submit" 
+                                    class="h-8 px-2.5 rounded-lg text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors inline-flex items-center gap-1.5 cursor-pointer ml-1"
+                                    title="Keluar dari sistem">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-[11px]"></i>
+                                <span class="hidden sm:inline">Keluar</span>
                             </button>
                         </form>
                     </div>
@@ -602,8 +603,8 @@
                 <div class="p-4 border-t border-slate-100">
                     <form action="{{ route('admin.logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="w-full h-10 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors">
-                            <i class="fa-solid fa-power-off text-xs"></i>
+                        <button type="submit" class="w-full h-10 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
                             <span>Keluar dari Sistem</span>
                         </button>
                     </form>
