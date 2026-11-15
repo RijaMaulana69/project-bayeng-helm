@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\Helm;
 use App\Models\Kategori;
 use App\Models\Merk;
+use App\Models\StokMasuk;
 use App\Models\VarianHelm;
 use App\Models\Warna;
 use Illuminate\Http\Request;
@@ -17,22 +18,50 @@ class ProdukController extends Controller
 {
     public function index(Request $request)
     {
+        $tab = $request->get('tab', 'katalog'); // 'katalog', 'stok', 'riwayat'
         $search = $request->filled('search') ? trim($request->search) : null;
+
+        // Metrik Utama Persediaan & Katalog
+        $totalProduk      = Helm::count();
+        $totalVarian      = VarianHelm::count();
+        $totalStokFisik   = VarianHelm::sum('stok');
+        $habisCount       = VarianHelm::where('stok', '<=', 0)->count();
+        $kritisCount      = VarianHelm::where('stok', '>', 0)->where('stok', '<=', 3)->count();
+        $totalKritisHabis = $kritisCount + $habisCount;
+        $amanCount        = VarianHelm::where('stok', '>', 3)->count();
+        $produkHabis      = Helm::where('stok', '<=', 0)->count();
+        $totalMerk        = Merk::count();
+
+        // Data Merk & Kategori untuk filter & form
+        $merks     = Merk::orderBy('nama_merk')->get();
+        $kategoris = Kategori::orderBy('nama_kategori')->get();
+        $helms     = Helm::with('varians')->orderBy('nama_helm', 'asc')->get();
+
+        // Format data varian untuk modal restok instan
+        $helm_variants = [];
+        foreach ($helms as $h) {
+            $helm_variants[$h->id_helm] = $h->varians->map(function ($v) {
+                return [
+                    'id_varian' => $v->id_varian,
+                    'label'     => $v->warna . ' - ' . $v->ukuran . ' (Stok: ' . $v->stok . ')',
+                    'stok'      => $v->stok,
+                    'warna'     => $v->warna,
+                    'ukuran'    => $v->ukuran,
+                ];
+            })->values()->toArray();
+        }
+
+        // ==========================================
+        // TAB 1: KATALOG & ETALASE
+        // ==========================================
         $idMerk = $request->filled('merk') && $request->merk !== 'all' ? $request->merk : null;
         $idKategori = $request->filled('kategori') && $request->kategori !== 'all' ? $request->kategori : null;
-        $stokFilter = $request->get('stok', 'all'); // 'all', 'tersedia', 'habis'
+        $stokFilter = $request->get('stok_filter', 'all');
 
-        // Statistik Keseluruhan
-        $totalProduk = Helm::count();
-        $totalStokFisik = VarianHelm::sum('stok');
-        $produkHabis = Helm::where('stok', '<=', 0)->count();
-        $totalMerk = Merk::count();
+        $katalogQuery = Helm::with(['merk', 'kategori'])->withCount('varians');
 
-        // Query Master Produk
-        $query = Helm::with(['merk', 'kategori'])->withCount('varians');
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
+        if ($search && $tab === 'katalog') {
+            $katalogQuery->where(function ($q) use ($search) {
                 $q->where('nama_helm', 'like', "%{$search}%")
                   ->orWhereHas('merk', function ($qm) use ($search) {
                       $qm->where('nama_merk', 'like', "%{$search}%");
@@ -43,37 +72,70 @@ class ProdukController extends Controller
             });
         }
 
-        if ($idMerk) {
-            $query->where('id_merk', $idMerk);
+        if ($idMerk) $katalogQuery->where('id_merk', $idMerk);
+        if ($idKategori) $katalogQuery->where('id_kategori', $idKategori);
+        if ($stokFilter === 'tersedia') $katalogQuery->where('stok', '>', 0);
+        elseif ($stokFilter === 'habis') $katalogQuery->where('stok', '<=', 0);
+
+        $produks = $katalogQuery->orderBy('id_helm', 'desc')->paginate(15, ['*'], 'katalog_page')->withQueryString();
+
+        // ==========================================
+        // TAB 2: RAK GUDANG & RESTOK FISIK
+        // ==========================================
+        $varianFilter = $request->get('filter', 'all');
+        $varianQuery = VarianHelm::with(['helm.merk', 'helm.kategori']);
+
+        if ($search && $tab === 'stok') {
+            $varianQuery->where(function ($q) use ($search) {
+                $q->where('warna', 'like', "%{$search}%")
+                  ->orWhere('ukuran', 'like', "%{$search}%")
+                  ->orWhereHas('helm', function ($qh) use ($search) {
+                      $qh->where('nama_helm', 'like', "%{$search}%")
+                         ->orWhereHas('merk', function ($qm) use ($search) {
+                             $qm->where('nama_merk', 'like', "%{$search}%");
+                         });
+                  });
+            });
         }
 
-        if ($idKategori) {
-            $query->where('id_kategori', $idKategori);
-        }
+        if ($varianFilter === 'habis') $varianQuery->where('stok', '<=', 0);
+        elseif ($varianFilter === 'kritis') $varianQuery->where('stok', '>', 0)->where('stok', '<=', 3);
+        elseif ($varianFilter === 'kritis_habis') $varianQuery->where('stok', '<=', 3);
+        elseif ($varianFilter === 'aman') $varianQuery->where('stok', '>', 3);
 
-        if ($stokFilter === 'tersedia') {
-            $query->where('stok', '>', 0);
-        } elseif ($stokFilter === 'habis') {
-            $query->where('stok', '<=', 0);
-        }
+        $varians = $varianQuery->orderBy('stok', 'asc')->paginate(15, ['*'], 'stok_page')->withQueryString();
 
-        $produks = $query->orderBy('id_helm', 'desc')->paginate(15)->withQueryString();
-
-        $merks = Merk::orderBy('nama_merk')->get();
-        $kategoris = Kategori::orderBy('nama_kategori')->get();
+        // ==========================================
+        // TAB 3: RIWAYAT BARANG MASUK
+        // ==========================================
+        $stok_masuks = StokMasuk::with(['helm.merk', 'user'])
+            ->orderBy('id_stok_masuk', 'desc')
+            ->paginate(15, ['*'], 'riwayat_page')
+            ->withQueryString();
 
         return view('admin.produk.index', compact(
-            'produks',
-            'merks',
-            'kategoris',
+            'tab',
+            'search',
             'totalProduk',
+            'totalVarian',
             'totalStokFisik',
+            'totalKritisHabis',
+            'kritisCount',
+            'habisCount',
+            'amanCount',
             'produkHabis',
             'totalMerk',
-            'search',
+            'merks',
+            'kategoris',
+            'helms',
+            'helm_variants',
+            'produks',
             'idMerk',
             'idKategori',
-            'stokFilter'
+            'stokFilter',
+            'varians',
+            'varianFilter',
+            'stok_masuks'
         ));
     }
 
@@ -154,7 +216,8 @@ class ProdukController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.produk.index')->with('success', "Produk {$helm->nama_helm} berhasil ditambahkan!");
+            return redirect()->route('admin.produk.index', ['tab' => 'katalog'])
+                ->with('success', "Produk {$helm->nama_helm} berhasil ditambahkan!");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menambahkan produk: ' . $e->getMessage())->withInput();
@@ -168,7 +231,6 @@ class ProdukController extends Controller
         $kategoris = Kategori::orderBy('nama_kategori')->get();
         $warnas = Warna::orderBy('nama_warna')->get();
 
-        // Dapatkan nama warna & ukuran yang aktif pada varian
         $existing_warnas = $produk->varians->pluck('warna')->unique()->values()->toArray();
         $existing_ukurans = $produk->varians->pluck('ukuran')->unique()->values()->toArray();
 
@@ -237,7 +299,6 @@ class ProdukController extends Controller
                 'gambar'      => $gambar,
             ]);
 
-            // Sinkronisasi varian tanpa memecah relasi cart/pesanan yang ada
             $keptVariantIds = [];
             $total_stok = 0;
 
@@ -266,7 +327,6 @@ class ProdukController extends Controller
                 }
             }
 
-            // Hapus varian usang yang tidak lagi dipilih (jika tidak terikat order/cart)
             $obsoleteVariants = VarianHelm::where('id_helm', $produk->id_helm)
                 ->whereNotIn('id_varian', $keptVariantIds)
                 ->get();
@@ -289,7 +349,8 @@ class ProdukController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.produk.index')->with('success', "Produk {$produk->nama_helm} berhasil diperbarui!");
+            return redirect()->route('admin.produk.index', ['tab' => 'katalog'])
+                ->with('success', "Produk {$produk->nama_helm} berhasil diperbarui!");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memperbarui produk: ' . $e->getMessage())->withInput();
@@ -317,7 +378,8 @@ class ProdukController extends Controller
             $user = Auth::guard('web')->user();
             ActivityLog::log('delete_produk', "Produk dihapus: {$nama}", 'user', $user->id_user, $user->username);
 
-            return redirect()->route('admin.produk.index')->with('success', "Produk {$nama} berhasil dihapus.");
+            return redirect()->route('admin.produk.index', ['tab' => 'katalog'])
+                ->with('success', "Produk {$nama} berhasil dihapus.");
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus produk: ' . $e->getMessage());
         }

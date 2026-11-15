@@ -28,8 +28,8 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Katalog Produk Helm');
-        $response->assertSee('Tambah Produk');
+        $response->assertSee('Pusat Produk & Inventori', false);
+        $response->assertSee('Tambah Produk Baru');
     }
 
     public function test_admin_can_search_and_filter_produk(): void
@@ -96,7 +96,7 @@ class AdminProdukTest extends TestCase
                 ],
             ]);
 
-        $response->assertRedirect(route('admin.produk.index'));
+        $response->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
 
         $helm = Helm::where('nama_helm', $namaHelm)->first();
         $this->assertNotNull($helm);
@@ -119,7 +119,7 @@ class AdminProdukTest extends TestCase
                 ],
             ]);
 
-        $updateResponse->assertRedirect(route('admin.produk.index'));
+        $updateResponse->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
 
         $helm->refresh();
         $this->assertEquals($namaHelm . ' Updated', $helm->nama_helm);
@@ -129,7 +129,7 @@ class AdminProdukTest extends TestCase
         $deleteResponse = $this->actingAs($admin, 'web')
             ->delete(route('admin.produk.destroy', $helm->id_helm));
 
-        $deleteResponse->assertRedirect(route('admin.produk.index'));
+        $deleteResponse->assertRedirect(route('admin.produk.index', ['tab' => 'katalog']));
         $this->assertNull(Helm::find($helm->id_helm));
     }
 }
