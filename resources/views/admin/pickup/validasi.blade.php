@@ -92,13 +92,26 @@
 
             {{-- Tombol Serahkan --}}
             <div class="pt-1">
-                <form method="POST" action="{{ route('admin.pickup.serahkan', $pesanan->id_pesanan) }}">
+                <form method="POST" 
+                      action="{{ route('admin.pickup.serahkan', $pesanan->id_pesanan) }}"
+                      x-data="{ submitting: false }"
+                      @submit="if(confirm('Serahkan pesanan ini ke pelanggan?')) { submitting = true; } else { $event.preventDefault(); }">
                     @csrf
                     <button type="submit" 
-                            class="w-full h-11 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs sm:text-sm rounded-xl transition-colors cursor-pointer shadow-2xs"
-                            onclick="return confirm('Serahkan pesanan ini ke pelanggan?')">
-                        <i class="fa-solid fa-check text-xs"></i>
-                        <span>Serahkan Pesanan</span>
+                            :disabled="submitting"
+                            class="w-full h-11 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-2xs">
+                        <template x-if="!submitting">
+                            <span class="inline-flex items-center gap-2">
+                                <i class="fa-solid fa-check text-xs"></i>
+                                <span>Serahkan Pesanan</span>
+                            </span>
+                        </template>
+                        <template x-if="submitting">
+                            <span class="inline-flex items-center gap-2">
+                                <i class="fa-solid fa-circle-notch fa-spin text-xs"></i>
+                                <span>Memproses...</span>
+                            </span>
+                        </template>
                     </button>
                 </form>
             </div>

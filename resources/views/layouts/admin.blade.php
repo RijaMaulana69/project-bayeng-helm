@@ -669,12 +669,15 @@
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({ 
                     toast: true, 
-                    position: 'top-end', 
+                    position: window.innerWidth < 640 ? 'top' : 'top-end', 
                     icon: 'success', 
                     title: '{{ session('success') }}', 
                     showConfirmButton: false, 
-                    timer: 3000, 
-                    timerProgressBar: true 
+                    timer: 3500, 
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-slate-100 text-xs sm:text-sm'
+                    }
                 });
             });
         </script>
@@ -685,12 +688,15 @@
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({ 
                     toast: true, 
-                    position: 'top-end', 
+                    position: window.innerWidth < 640 ? 'top' : 'top-end', 
                     icon: 'error', 
                     title: '{{ session('error') }}', 
                     showConfirmButton: false, 
                     timer: 4000, 
-                    timerProgressBar: true 
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'rounded-2xl shadow-xl border border-slate-100 text-xs sm:text-sm'
+                    }
                 });
             });
         </script>

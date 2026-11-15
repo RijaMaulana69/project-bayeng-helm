@@ -5,6 +5,54 @@
 @section('content')
 <div class="space-y-4 max-w-5xl mx-auto" x-data="{ pickupFilter: 'all' }">
 
+    {{-- Notifikasi Sukses / Error (Responsif Mobile & Desktop) --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             class="p-3.5 sm:p-4 bg-emerald-50 border border-emerald-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-check text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs sm:text-sm font-bold text-emerald-950 truncate">Penyerahan Berhasil</p>
+                    <p class="text-[11px] sm:text-xs text-emerald-700 mt-0.5 truncate">{{ session('success') }}</p>
+                </div>
+            </div>
+            <button type="button" @click="show = false" class="text-emerald-500 hover:text-emerald-800 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div x-data="{ show: true }" 
+             x-show="show" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="p-3.5 sm:p-4 bg-rose-50 border border-rose-200/90 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs sm:text-sm font-bold text-rose-950 truncate">Gagal</p>
+                    <p class="text-[11px] sm:text-xs text-rose-700 mt-0.5 truncate">{{ session('error') }}</p>
+                </div>
+            </div>
+            <button type="button" @click="show = false" class="text-rose-500 hover:text-rose-800 p-1.5 rounded-lg transition-colors cursor-pointer shrink-0" aria-label="Tutup">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+    @endif
+
     {{-- 1. Search Bar / Pickup Input Bar --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
         <form method="POST" action="{{ route('admin.pickup.validasi') }}" class="flex items-center gap-2">
@@ -45,24 +93,24 @@
             </div>
 
             {{-- Segmented Filter Tabs --}}
-            <div class="flex p-0.5 bg-slate-100 rounded-xl text-xs shrink-0">
+            <div class="w-full sm:w-auto flex p-0.5 bg-slate-100 rounded-xl text-[11px] sm:text-xs">
                 <button type="button" 
                         @click="pickupFilter = 'all'"
                         :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
-                        class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+                        class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-center transition-all cursor-pointer">
                     Semua ({{ $totalOrders }})
                 </button>
                 <button type="button" 
                         @click="pickupFilter = 'unpaid'"
                         :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-amber-700 font-medium'"
-                        class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
-                    Bayar di Toko ({{ $unpaidOrders }})
+                        class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-center transition-all cursor-pointer">
+                    <span class="sm:hidden">Bayar</span><span class="hidden sm:inline">Bayar di Toko</span> ({{ $unpaidOrders }})
                 </button>
                 <button type="button" 
                         @click="pickupFilter = 'ready'"
                         :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-emerald-700 font-medium'"
-                        class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
-                    Sudah Lunas ({{ $paidOrders }})
+                        class="flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-center transition-all cursor-pointer">
+                    <span class="sm:hidden">Lunas</span><span class="hidden sm:inline">Sudah Lunas</span> ({{ $paidOrders }})
                 </button>
             </div>
         </div>
