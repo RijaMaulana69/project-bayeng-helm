@@ -19,6 +19,7 @@
             $isPaid = in_array($pesanan->status, ['ready', 'paid']);
             $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
             $customerPhone = $pesanan->pelanggan->no_hp ?? ($pesanan->telepon_penerima ?? null);
+            $hasMultipleItems = $pesanan->details->count() > 1;
         @endphp
 
         {{-- Header: Kode Pickup & Data Pembeli --}}
@@ -49,66 +50,46 @@
         </div>
 
         <div class="p-4 sm:p-5 space-y-4">
-            {{-- Status Pembayaran --}}
-            @if($isPaid)
-                <div class="p-3 bg-emerald-50/70 border border-emerald-200/70 rounded-xl flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2 font-medium text-emerald-800">
-                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
-                        <span>Pembayaran Lunas</span>
-                    </div>
-                    <span class="text-[11px] font-medium text-emerald-700 uppercase font-mono">
-                        {{ $pesanan->metode_bayar ?? 'Online' }}
-                    </span>
-                </div>
-            @else
-                <div class="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl flex items-center justify-between gap-3 text-xs">
-                    <div>
-                        <span class="font-semibold text-amber-900 block">Total Tagihan Kasir</span>
-                        <span class="text-[11px] text-amber-700">Metode: {{ ucfirst($pesanan->metode_bayar ?? 'Tunai') }}</span>
-                    </div>
-                    <span class="font-mono font-bold text-sm text-amber-900">
-                        {{ format_rupiah($pesanan->grand_total) }}
-                    </span>
-                </div>
-            @endif
-
-            {{-- Daftar Barang --}}
-            <div>
-                <div class="flex items-center justify-between text-xs font-medium text-slate-400 mb-1.5 px-0.5">
-                    <span>Item Pesanan</span>
-                    <span>Subtotal</span>
-                </div>
-                <div class="border border-slate-200/80 rounded-xl divide-y divide-slate-100 overflow-hidden bg-white">
-                    @foreach ($pesanan->details as $item)
-                        @php
-                            $helmName = $item->helm->nama_helm ?? ($item->nama_helm ?? 'Helm');
-                            $variantParts = array_filter([$item->warna, $item->ukuran ? 'Ukuran ' . $item->ukuran : null]);
-                            $variantText = implode(' • ', $variantParts);
-                        @endphp
-                        <div class="p-3 flex items-center justify-between gap-3 text-xs">
-                            <div class="min-w-0 flex-1">
-                                <p class="font-semibold text-slate-800 truncate">
-                                    <span class="font-mono text-slate-500 font-bold">{{ $item->jumlah }}x</span> {{ $helmName }}
+            {{-- Daftar Barang & Tagihan --}}
+            <div class="border border-slate-200/80 rounded-xl divide-y divide-slate-100 overflow-hidden bg-white">
+                @foreach ($pesanan->details as $item)
+                    @php
+                        $helmName = $item->helm->nama_helm ?? ($item->nama_helm ?? 'Helm');
+                        $variantParts = array_filter([$item->warna, $item->ukuran]);
+                        $variantText = implode(', ', $variantParts);
+                    @endphp
+                    <div class="p-3.5 flex items-center justify-between gap-3 text-xs">
+                        <div class="min-w-0 flex-1">
+                            <p class="font-semibold text-slate-800 truncate">
+                                <span class="font-mono text-slate-500 font-bold">{{ $item->jumlah }}x</span> {{ $helmName }}
+                            </p>
+                            @if($variantText)
+                                <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                                    {{ $variantText }}
                                 </p>
-                                @if($variantText)
-                                    <p class="text-[11px] text-slate-400 truncate mt-0.5">
-                                        {{ $variantText }}
-                                    </p>
-                                @endif
-                            </div>
-                            <div class="text-right font-mono font-medium text-slate-700 shrink-0">
+                            @endif
+                        </div>
+                        @if($hasMultipleItems)
+                            <div class="text-right font-mono font-medium text-slate-600 shrink-0">
                                 {{ format_rupiah($item->subtotal) }}
                             </div>
-                        </div>
-                    @endforeach
-
-                    {{-- Total --}}
-                    <div class="p-3 bg-slate-50/60 flex items-center justify-between text-xs font-semibold border-t border-slate-200/70">
-                        <span class="text-slate-600">Total</span>
-                        <span class="font-mono text-sm font-bold {{ $isPaid ? 'text-slate-900' : 'text-amber-800' }}">
-                            {{ format_rupiah($pesanan->grand_total) }}
-                        </span>
+                        @endif
                     </div>
+                @endforeach
+
+                {{-- Total Tagihan --}}
+                <div class="p-3.5 bg-slate-50/70 flex items-center justify-between text-xs border-t border-slate-200/70">
+                    <div>
+                        <span class="font-semibold text-slate-700 block">Total Tagihan</span>
+                        @if($isPaid)
+                            <span class="text-[11px] text-emerald-700 font-medium">Lunas ({{ ucfirst($pesanan->metode_bayar ?? 'Online') }})</span>
+                        @else
+                            <span class="text-[11px] text-amber-700 font-medium">Bayar di kasir ({{ ucfirst($pesanan->metode_bayar ?? 'Tunai') }})</span>
+                        @endif
+                    </div>
+                    <span class="font-mono text-base font-bold {{ $isPaid ? 'text-slate-800' : 'text-amber-900' }}">
+                        {{ format_rupiah($pesanan->grand_total) }}
+                    </span>
                 </div>
             </div>
 
