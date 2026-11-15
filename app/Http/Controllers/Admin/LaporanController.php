@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\DetailPesanan;
 use App\Models\Pesanan;
 use App\Models\Toko;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,20 +25,75 @@ class LaporanController extends Controller
         ];
     }
 
-    private function buildReportData(string $jenisLaporan, int|string $tahun): array
+    private function getNamaBulanPendek(): array
+    {
+        return [
+            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des',
+        ];
+    }
+
+    private function buildReportData(string $jenisLaporan, int|string $tahun, ?int $bulan = null): array
     {
         $namaBulan = $this->getNamaBulan();
+        $namaBulanPendek = $this->getNamaBulanPendek();
 
-        if ($jenisLaporan === 'bulanan') {
-            $results = Pesanan::where('status', 'completed')
+        // 1. Mode Harian (Rincian per Tanggal dalam 1 Bulan)
+        if ($jenisLaporan === 'harian') {
+            $bulan = $bulan ? (int) $bulan : (int) date('n');
+            $tahun = $tahun ? (int) $tahun : (int) date('Y');
+            $daysInMonth = Carbon::createFromDate($tahun, $bulan, 1)->daysInMonth;
+
+            $orders = Pesanan::with('details.helm')
+                ->where('status', 'completed')
                 ->whereYear('created_at', $tahun)
-                ->select(
-                    DB::raw('MONTH(created_at) as bulan'),
-                    DB::raw('COUNT(*) as total_transaksi'),
-                    DB::raw('SUM(grand_total) as total_pendapatan')
-                )
-                ->groupBy(DB::raw('MONTH(created_at)'))
-                ->orderBy(DB::raw('MONTH(created_at)'))
+                ->whereMonth('created_at', $bulan)
+                ->get();
+
+            $reportData = [];
+            $chartLabels = [];
+            $chartData = [];
+
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $dayOrders = $orders->filter(function ($order) use ($d) {
+                    return (int) $order->created_at->format('j') === $d;
+                });
+
+                $pesananCount = $dayOrders->count();
+                $omzet = (float) $dayOrders->sum('grand_total');
+                $modal = (float) $dayOrders->sum(function ($order) {
+                    return $order->details->sum(function ($detail) {
+                        return ($detail->helm->harga_awal ?? 0) * $detail->qty;
+                    });
+                });
+                $laba = $omzet - $modal;
+                $tunai = (float) $dayOrders->where('metode_bayar', 'tunai')->sum('grand_total');
+                $nonTunai = (float) $dayOrders->where('metode_bayar', '!=', 'tunai')->sum('grand_total');
+
+                $reportData[] = [
+                    'label' => sprintf('%02d %s', $d, $namaBulanPendek[$bulan] ?? ''),
+                    'hari' => $d,
+                    'total_pesanan' => $pesananCount,
+                    'total_omzet' => $omzet,
+                    'total_modal' => $modal,
+                    'total_laba' => $laba,
+                    'tunai_total' => $tunai,
+                    'non_tunai_total' => $nonTunai,
+                ];
+
+                $chartLabels[] = (string) $d;
+                $chartData[] = $omzet;
+            }
+
+            return [$reportData, $chartLabels, $chartData, $orders];
+        }
+
+        // 2. Mode Bulanan (Rincian 12 Bulan dalam 1 Tahun)
+        if ($jenisLaporan === 'bulanan') {
+            $tahun = $tahun ? (int) $tahun : (int) date('Y');
+            $orders = Pesanan::with('details.helm')
+                ->where('status', 'completed')
+                ->whereYear('created_at', $tahun)
                 ->get();
 
             $reportData = [];
@@ -44,57 +101,94 @@ class LaporanController extends Controller
             $chartData = [];
 
             for ($m = 1; $m <= 12; $m++) {
-                $row = $results->firstWhere('bulan', $m);
-                $pesananCount = $row ? (int) $row->total_transaksi : 0;
-                $omzet = $row ? (float) $row->total_pendapatan : 0;
+                $monthOrders = $orders->filter(function ($order) use ($m) {
+                    return (int) $order->created_at->format('n') === $m;
+                });
+
+                $pesananCount = $monthOrders->count();
+                $omzet = (float) $monthOrders->sum('grand_total');
+                $modal = (float) $monthOrders->sum(function ($order) {
+                    return $order->details->sum(function ($detail) {
+                        return ($detail->helm->harga_awal ?? 0) * $detail->qty;
+                    });
+                });
+                $laba = $omzet - $modal;
+                $tunai = (float) $monthOrders->where('metode_bayar', 'tunai')->sum('grand_total');
+                $nonTunai = (float) $monthOrders->where('metode_bayar', '!=', 'tunai')->sum('grand_total');
 
                 $reportData[] = [
                     'label' => $namaBulan[$m],
+                    'bulan' => $m,
                     'total_pesanan' => $pesananCount,
                     'total_omzet' => $omzet,
+                    'total_modal' => $modal,
+                    'total_laba' => $laba,
+                    'tunai_total' => $tunai,
+                    'non_tunai_total' => $nonTunai,
                 ];
 
-                $chartLabels[] = $namaBulan[$m];
+                $chartLabels[] = $namaBulanPendek[$m];
                 $chartData[] = $omzet;
             }
 
-            return [$reportData, $chartLabels, $chartData];
+            return [$reportData, $chartLabels, $chartData, $orders];
         }
 
-        // Tahunan
-        $results = Pesanan::where('status', 'completed')
-            ->select(
-                DB::raw('YEAR(created_at) as tahun'),
-                DB::raw('COUNT(*) as total_transaksi'),
-                DB::raw('SUM(grand_total) as total_pendapatan')
-            )
-            ->groupBy(DB::raw('YEAR(created_at)'))
-            ->orderBy(DB::raw('YEAR(created_at)'))
+        // 3. Mode Tahunan (Rekap Historis Tahun ke Tahun)
+        $orders = Pesanan::with('details.helm')
+            ->where('status', 'completed')
+            ->orderBy('created_at')
             ->get();
+
+        $groupedYears = $orders->groupBy(function ($order) {
+            return $order->created_at->format('Y');
+        });
+
+        if ($groupedYears->isEmpty()) {
+            $groupedYears = collect([date('Y') => collect()]);
+        }
 
         $reportData = [];
         $chartLabels = [];
         $chartData = [];
 
-        foreach ($results as $r) {
+        foreach ($groupedYears as $yearKey => $yearOrders) {
+            $pesananCount = $yearOrders->count();
+            $omzet = (float) $yearOrders->sum('grand_total');
+            $modal = (float) $yearOrders->sum(function ($order) {
+                return $order->details->sum(function ($detail) {
+                    return ($detail->helm->harga_awal ?? 0) * $detail->qty;
+                });
+            });
+            $laba = $omzet - $modal;
+            $tunai = (float) $yearOrders->where('metode_bayar', 'tunai')->sum('grand_total');
+            $nonTunai = (float) $yearOrders->where('metode_bayar', '!=', 'tunai')->sum('grand_total');
+
             $reportData[] = [
-                'label' => 'Tahun ' . $r->tahun,
-                'total_pesanan' => (int) $r->total_transaksi,
-                'total_omzet' => (float) $r->total_pendapatan,
+                'label' => 'Tahun ' . $yearKey,
+                'tahun' => $yearKey,
+                'total_pesanan' => $pesananCount,
+                'total_omzet' => $omzet,
+                'total_modal' => $modal,
+                'total_laba' => $laba,
+                'tunai_total' => $tunai,
+                'non_tunai_total' => $nonTunai,
             ];
-            $chartLabels[] = (string) $r->tahun;
-            $chartData[] = (float) $r->total_pendapatan;
+
+            $chartLabels[] = (string) $yearKey;
+            $chartData[] = $omzet;
         }
 
-        return [$reportData, $chartLabels, $chartData];
+        return [$reportData, $chartLabels, $chartData, $orders];
     }
 
     public function penjualan(Request $request)
     {
         $jenisLaporan = $request->input('jenis_laporan', 'bulanan');
-        $tahun = $request->input('tahun', date('Y'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $bulan = (int) $request->input('bulan', date('n'));
 
-        [$reportData, $chartLabels, $chartData] = $this->buildReportData($jenisLaporan, $tahun);
+        [$reportData, $chartLabels, $chartData, $periodOrders] = $this->buildReportData($jenisLaporan, $tahun, $bulan);
 
         $availableYears = Pesanan::where('status', 'completed')
             ->selectRaw('DISTINCT YEAR(created_at) as tahun')
@@ -105,24 +199,45 @@ class LaporanController extends Controller
             $availableYears = collect([date('Y')]);
         }
 
+        // Top 5 Produk Helm Terlaris pada periode yang dipilih
+        $completedOrderIds = $periodOrders->pluck('id_pesanan');
+        $topProducts = DetailPesanan::whereIn('id_pesanan', $completedOrderIds)
+            ->select('nama_helm', DB::raw('SUM(qty) as total_qty'), DB::raw('SUM(subtotal) as total_subtotal'))
+            ->groupBy('nama_helm')
+            ->orderByDesc('total_qty')
+            ->limit(5)
+            ->get();
+
         return view('admin.laporan.penjualan', [
-            'jenis_laporan' => $jenisLaporan,
-            'tahun' => $tahun,
-            'chart_labels' => $chartLabels,
-            'chart_data' => $chartData,
-            'report_data' => $reportData,
+            'jenis_laporan'   => $jenisLaporan,
+            'tahun'           => $tahun,
+            'bulan'           => $bulan,
+            'nama_bulan'      => $this->getNamaBulan(),
+            'chart_labels'    => $chartLabels,
+            'chart_data'      => $chartData,
+            'report_data'     => $reportData,
             'available_years' => $availableYears,
+            'top_products'    => $topProducts,
         ]);
     }
 
     public function exportPdf(Request $request)
     {
         $jenisLaporan = $request->input('jenis_laporan', 'bulanan');
-        $tahun = $request->input('tahun', date('Y'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $bulan = (int) $request->input('bulan', date('n'));
 
-        [$reportData] = $this->buildReportData($jenisLaporan, $tahun);
+        [$reportData] = $this->buildReportData($jenisLaporan, $tahun, $bulan);
         $toko = Toko::first();
-        $periode = $jenisLaporan === 'bulanan' ? "Tahun {$tahun}" : "Rekap Tahunan";
+
+        $namaBulan = $this->getNamaBulan();
+        if ($jenisLaporan === 'harian') {
+            $periode = "Bulan {$namaBulan[$bulan]} {$tahun}";
+        } elseif ($jenisLaporan === 'bulanan') {
+            $periode = "Tahun {$tahun}";
+        } else {
+            $periode = "Rekap Tahunan";
+        }
 
         // Ringkasan metrik eksekutif
         $totalPesanan = (int) array_sum(array_column($reportData, 'total_pesanan'));
@@ -151,6 +266,7 @@ class LaporanController extends Controller
         $pdf = Pdf::loadView('admin.laporan.pdf', [
             'jenis_laporan' => $jenisLaporan,
             'tahun' => $tahun,
+            'bulan' => $bulan,
             'report_data' => $reportData,
             'pengaturan' => $toko,
             'periode' => $periode,
@@ -176,9 +292,10 @@ class LaporanController extends Controller
     public function exportCsv(Request $request)
     {
         $jenisLaporan = $request->input('jenis_laporan', 'bulanan');
-        $tahun = $request->input('tahun', date('Y'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $bulan = (int) $request->input('bulan', date('n'));
 
-        [$reportData] = $this->buildReportData($jenisLaporan, $tahun);
+        [$reportData] = $this->buildReportData($jenisLaporan, $tahun, $bulan);
         $toko = Toko::first();
         $user = Auth::guard('web')->user();
 
@@ -193,11 +310,22 @@ class LaporanController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
+        $namaBulan = $this->getNamaBulan();
+        if ($jenisLaporan === 'harian') {
+            $periodeLabel = "Bulan {$namaBulan[$bulan]} {$tahun}";
+            $kolomPeriode = 'Tanggal';
+        } elseif ($jenisLaporan === 'bulanan') {
+            $periodeLabel = "Tahun {$tahun}";
+            $kolomPeriode = 'Bulan';
+        } else {
+            $periodeLabel = "Rekap Tahunan";
+            $kolomPeriode = 'Tahun';
+        }
+
         $totalPesanan = (int) array_sum(array_column($reportData, 'total_pesanan'));
         $totalOmzet = (float) array_sum(array_column($reportData, 'total_omzet'));
-        $periodeLabel = $jenisLaporan === 'bulanan' ? "Tahun {$tahun}" : "Rekap Tahunan";
 
-        $callback = function () use ($reportData, $jenisLaporan, $tahun, $toko, $user, $periodeLabel, $totalPesanan, $totalOmzet) {
+        $callback = function () use ($reportData, $kolomPeriode, $toko, $user, $periodeLabel, $totalPesanan, $totalOmzet) {
             $file = fopen('php://output', 'w');
 
             // UTF-8 BOM untuk kompatibilitas penuh Microsoft Excel
@@ -216,9 +344,13 @@ class LaporanController extends Controller
             // Baris Header Kolom
             fputcsv($file, [
                 'No',
-                $jenisLaporan === 'tahunan' ? 'Tahun' : 'Bulan',
+                $kolomPeriode,
                 'Total Pesanan',
                 'Total Omzet (Rp)',
+                'Modal HPP (Rp)',
+                'Laba Bersih (Rp)',
+                'Tunai (Rp)',
+                'Non-Tunai (Rp)',
                 'Kontribusi Omzet (%)'
             ], ',', '"', '\\');
 
@@ -226,34 +358,37 @@ class LaporanController extends Controller
             $no = 1;
             foreach ($reportData as $row) {
                 $omzet = (float) $row['total_omzet'];
+                $modal = (float) ($row['total_modal'] ?? 0);
+                $laba = (float) ($row['total_laba'] ?? 0);
+                $tunai = (float) ($row['tunai_total'] ?? 0);
+                $nonTunai = (float) ($row['non_tunai_total'] ?? 0);
                 $kontribusi = $totalOmzet > 0 ? number_format(($omzet / $totalOmzet) * 100, 1, ',', '') . '%' : '0,0%';
 
                 fputcsv($file, [
                     $no++,
-                    $row['label'] ?? '-',
-                    (int) $row['total_pesanan'],
-                    $omzet,
+                    $row['label'],
+                    $row['total_pesanan'],
+                    number_format($omzet, 0, ',', '.'),
+                    number_format($modal, 0, ',', '.'),
+                    number_format($laba, 0, ',', '.'),
+                    number_format($tunai, 0, ',', '.'),
+                    number_format($nonTunai, 0, ',', '.'),
                     $kontribusi,
                 ], ',', '"', '\\');
             }
 
-            // Separator & Summary Rows
+            // Total Keseluruhan
             fwrite($file, "\r\n");
             fputcsv($file, [
-                '',
-                'TOTAL KESELURUHAN',
+                'TOTAL',
+                'KESELURUHAN',
                 $totalPesanan,
-                $totalOmzet,
-                '100,0%',
-            ], ',', '"', '\\');
-
-            $avgOmzet = $totalPesanan > 0 ? round($totalOmzet / $totalPesanan) : 0;
-            fputcsv($file, [
-                '',
-                'Rata-rata Omzet per Pesanan',
-                '-',
-                $avgOmzet,
-                '-',
+                number_format($totalOmzet, 0, ',', '.'),
+                number_format(array_sum(array_column($reportData, 'total_modal')), 0, ',', '.'),
+                number_format(array_sum(array_column($reportData, 'total_laba')), 0, ',', '.'),
+                number_format(array_sum(array_column($reportData, 'tunai_total')), 0, ',', '.'),
+                number_format(array_sum(array_column($reportData, 'non_tunai_total')), 0, ',', '.'),
+                '100,0%'
             ], ',', '"', '\\');
 
             fclose($file);

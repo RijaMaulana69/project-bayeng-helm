@@ -389,7 +389,7 @@
         <thead>
             <tr>
                 <th style="width: 6%;" class="text-center">No</th>
-                <th style="width: 32%;" class="text-left">{{ $jenis_laporan == 'tahunan' ? 'Tahun' : 'Bulan' }}</th>
+                <th style="width: 32%;" class="text-left">{{ $jenis_laporan == 'tahunan' ? 'Tahun' : ($jenis_laporan == 'harian' ? 'Tanggal' : 'Bulan') }}</th>
                 <th style="width: 20%;" class="text-center">Total Pesanan</th>
                 <th style="width: 24%;" class="text-right">Total Omzet (Rp)</th>
                 <th style="width: 18%;" class="text-right">Kontribusi</th>
