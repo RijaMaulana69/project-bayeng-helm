@@ -12,8 +12,9 @@ class PickupController extends Controller
 {
     public function index()
     {
+        // Hanya pesanan yang sudah siap diambil di gerai yang masuk antrean kasir
         $pesanan_ready = Pesanan::with(['pelanggan', 'details.helm'])
-            ->whereIn('status', ['ready', 'unpaid_pickup', 'paid', 'processing'])
+            ->whereIn('status', ['ready', 'unpaid_pickup'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -28,13 +29,35 @@ class PickupController extends Controller
             return redirect()->route('admin.pickup.index');
         }
 
+        $kodeClean = strtoupper(trim($kodePickup));
+
         $pesanan = Pesanan::with(['pelanggan', 'details.helm'])
-            ->where('kode_pickup', strtoupper(trim($kodePickup)))
-            ->whereIn('status', ['ready', 'unpaid_pickup', 'paid', 'processing'])
+            ->where('kode_pickup', $kodeClean)
             ->first();
 
         if (!$pesanan) {
-            return redirect()->route('admin.pickup.index')->with('error', 'Kode pickup tidak ditemukan atau pesanan tidak dalam status siap ambil.');
+            return redirect()->route('admin.pickup.index')->with('error', 'Kode pickup tidak ditemukan.');
+        }
+
+        // Penjelasan status jika belum siap atau sudah selesai
+        if ($pesanan->status === 'completed') {
+            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} sudah diserahkan sebelumnya.");
+        }
+
+        if ($pesanan->status === 'cancelled') {
+            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} telah dibatalkan.");
+        }
+
+        if ($pesanan->status === 'pending') {
+            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih menunggu verifikasi pembayaran di menu Pesanan.");
+        }
+
+        if (in_array($pesanan->status, ['paid', 'processing'])) {
+            return redirect()->route('admin.pickup.index')->with('error', "Pesanan {$pesanan->no_pesanan} masih disiapkan di gudang. Silakan tandai siap ambil terlebih dahulu di menu Pesanan.");
+        }
+
+        if (!in_array($pesanan->status, ['ready', 'unpaid_pickup'])) {
+            return redirect()->route('admin.pickup.index')->with('error', 'Pesanan tidak dalam status siap ambil.');
         }
 
         return view('admin.pickup.validasi', compact('pesanan'));
@@ -42,8 +65,8 @@ class PickupController extends Controller
 
     public function serahkan(Request $request, Pesanan $pesanan)
     {
-        if (!in_array($pesanan->status, ['ready', 'unpaid_pickup', 'paid', 'processing'])) {
-            return redirect()->route('admin.pickup.index')->with('error', 'Pesanan tidak valid untuk diserahkan.');
+        if (!in_array($pesanan->status, ['ready', 'unpaid_pickup'])) {
+            return redirect()->route('admin.pickup.index')->with('error', 'Pesanan belum dalam status siap diserahkan.');
         }
 
         $statusLama = $pesanan->status;

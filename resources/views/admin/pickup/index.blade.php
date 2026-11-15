@@ -34,7 +34,7 @@
     @php
         $totalOrders = $pesanan_ready->count();
         $unpaidOrders = $pesanan_ready->where('status', 'unpaid_pickup')->count();
-        $paidOrders = $pesanan_ready->whereIn('status', ['ready', 'paid'])->count();
+        $paidOrders = $pesanan_ready->where('status', 'ready')->count();
     @endphp
 
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
@@ -76,10 +76,10 @@
                     $firstSize = $firstDetail && $firstDetail->ukuran ? " ({$firstDetail->ukuran})" : '';
                     $extraCount = $pesanan->details->count() - 1;
                     $itemSummary = $firstHelm . $firstSize . ($extraCount > 0 ? " +{$extraCount} item" : '');
-                    $isPaid = in_array($pesanan->status, ['ready', 'paid']);
+                    $isPaid = $pesanan->status === 'ready';
                 @endphp
                 <form method="POST" action="{{ route('admin.pickup.validasi') }}"
-                      x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && ('{{ $pesanan->status }}' === 'ready' || '{{ $pesanan->status }}' === 'paid'))">
+                      x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
                     @csrf
                     <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
                     <button type="submit" class="w-full text-left p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group cursor-pointer">

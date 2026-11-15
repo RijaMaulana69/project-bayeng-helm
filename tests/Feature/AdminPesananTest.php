@@ -134,4 +134,40 @@ class AdminPesananTest extends TestCase
             'status' => 'paid',
         ]);
     }
+
+    public function test_ready_order_cannot_be_marked_completed_directly_in_pesanan_controller(): void
+    {
+        $admin = User::where('id_role', 1)->first() ?? User::first();
+
+        $customer = Pelanggan::create([
+            'nama' => 'Ready Customer ' . uniqid(),
+            'email' => 'ready_' . uniqid() . '@test.com',
+            'telepon' => '0816' . rand(10000000, 99999999),
+            'password' => Hash::make('Password123!'),
+        ]);
+
+        $pesanan = Pesanan::create([
+            'no_pesanan' => 'ORD-READY-' . uniqid(),
+            'id_pelanggan' => $customer->id_pelanggan,
+            'kode_pickup' => 'PKP-RDY',
+            'total_belanja' => 400000,
+            'grand_total' => 400000,
+            'metode_bayar' => 'transfer',
+            'status' => 'ready',
+        ]);
+
+        // Attempting to complete a ready order directly in PesananController should fail
+        $response = $this->actingAs($admin, 'web')
+            ->put(route('admin.pesanan.update-status', $pesanan->id_pesanan), [
+                'status' => 'completed',
+            ]);
+
+        $response->assertSessionHasErrors('status');
+
+        // Status should remain ready
+        $this->assertDatabaseHas('pesanan', [
+            'id_pesanan' => $pesanan->id_pesanan,
+            'status' => 'ready',
+        ]);
+    }
 }

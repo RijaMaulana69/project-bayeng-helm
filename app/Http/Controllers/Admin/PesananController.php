@@ -67,8 +67,7 @@ class PesananController extends Controller
         $statusLabels = [
             'paid' => 'Konfirmasi Pembayaran (Sudah Bayar)',
             'processing' => 'Proses & Siapkan Barang',
-            'ready' => 'Siap Diambil di Gerai (Ready)',
-            'completed' => 'Pesanan Selesai (Sudah Diserahkan)',
+            'ready' => 'Tandai Siap Diambil di Gerai (Ready)',
             'cancelled' => 'Batalkan Pesanan',
         ];
 
@@ -77,7 +76,7 @@ class PesananController extends Controller
             'unpaid_pickup' => ['processing', 'ready', 'cancelled'],
             'paid' => ['processing', 'cancelled'],
             'processing' => ['ready', 'cancelled'],
-            'ready' => ['completed', 'cancelled'],
+            'ready' => ['cancelled'], // Penyelesaian dilakukan di Kasir Pickup!
         ];
 
         $allowed_statuses = [];
@@ -91,20 +90,24 @@ class PesananController extends Controller
     public function updateStatus(Request $request, Pesanan $pesanan)
     {
         $request->validate([
-            'status' => 'required|in:paid,processing,ready,completed,cancelled',
+            'status' => 'required|in:paid,processing,ready,cancelled',
         ]);
 
         $statusLama = $pesanan->status;
         $statusBaru = $request->status;
 
-        // Validasi alur status
+        // Validasi alur status meja persiapan
         $allowed = [
             'pending' => ['paid', 'cancelled'],
             'unpaid_pickup' => ['processing', 'ready', 'cancelled'],
             'paid' => ['processing', 'cancelled'],
             'processing' => ['ready', 'cancelled'],
-            'ready' => ['completed', 'cancelled'],
+            'ready' => ['cancelled'], // Selesai wajib divalidasi lewat Kasir Pickup!
         ];
+
+        if ($statusLama === 'ready' && $statusBaru === 'completed') {
+            return back()->with('error', 'Penyerahan barang dan penyelesaian pesanan wajib dilakukan melalui menu Kasir Pickup.');
+        }
 
         if (!isset($allowed[$statusLama]) || !in_array($statusBaru, $allowed[$statusLama])) {
             return back()->with('error', "Tidak bisa mengubah status dari '{$statusLama}' ke '{$statusBaru}'.");
@@ -134,6 +137,14 @@ class PesananController extends Controller
 
         ActivityLog::log('update_status_pesanan', "Status pesanan {$pesanan->no_pesanan} diubah: {$statusLama} → {$statusBaru}", 'user', $user->id_user, $user->username);
 
-        return back()->with('success', "Status pesanan berhasil diubah ke '{$statusBaru}'.");
+        $statusLabelBaru = match($statusBaru) {
+            'paid' => 'Sudah Dibayar',
+            'processing' => 'Sedang Disiapkan',
+            'ready' => 'Siap Diambil di Gerai',
+            'cancelled' => 'Dibatalkan',
+            default => ucfirst($statusBaru),
+        };
+
+        return back()->with('success', "Status pesanan berhasil diperbarui ke '{$statusLabelBaru}'.");
     }
 }

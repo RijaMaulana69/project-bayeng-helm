@@ -16,7 +16,7 @@
     <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
         
         @php
-            $isPaid = in_array($pesanan->status, ['ready', 'paid']);
+            $isPaid = $pesanan->status === 'ready';
             $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
             $customerPhone = $pesanan->pelanggan->no_hp ?? ($pesanan->telepon_penerima ?? null);
         @endphp

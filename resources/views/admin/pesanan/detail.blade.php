@@ -38,7 +38,7 @@
             <span>Kembali ke Daftar Pesanan</span>
         </a>
 
-        @if(in_array($pesanan->status, ['ready', 'unpaid_pickup', 'paid', 'processing']) && $pesanan->kode_pickup)
+        @if(in_array($pesanan->status, ['ready', 'unpaid_pickup']) && $pesanan->kode_pickup)
             <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
                class="h-8 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold inline-flex items-center gap-1.5 border border-emerald-200/80 transition-colors">
                 <i class="fa-solid fa-qrcode text-xs"></i>
@@ -254,6 +254,25 @@
                         Ubah tahapan pesanan sesuai alur operasional gerai.
                     </p>
                 </div>
+
+                @if($pesanan->status === 'ready' || $pesanan->status === 'unpaid_pickup')
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200/80 space-y-2">
+                        <p class="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bell text-emerald-600"></i>
+                            <span>Siap Diambil di Gerai</span>
+                        </p>
+                        <p class="text-[11px] text-emerald-700 leading-relaxed">
+                            Barang sudah siap di toko. Penyerahan dan penyelesaian pesanan dilakukan kasir melalui <b>Kasir Pickup</b> menggunakan kode pickup.
+                        </p>
+                        @if($pesanan->kode_pickup)
+                            <a href="{{ route('admin.pickup.validasi', ['kode' => $pesanan->kode_pickup]) }}" 
+                               class="w-full h-8 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg inline-flex items-center justify-center gap-1.5 transition-colors">
+                                <i class="fa-solid fa-qrcode text-xs"></i>
+                                <span>Buka Kasir Pickup</span>
+                            </a>
+                        @endif
+                    </div>
+                @endif
 
                 @if(!empty($allowed_statuses))
                     <form method="POST" action="{{ route('admin.pesanan.update-status', $pesanan->id_pesanan) }}" class="space-y-3">
