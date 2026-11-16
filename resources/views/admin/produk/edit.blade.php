@@ -1,17 +1,17 @@
 @extends('layouts.admin')
 
 @section('title', 'Edit Produk: ' . $produk->nama_helm)
-@section('page-title', 'Edit Produk')
+@section('page-title', 'Edit Produk Helm')
 
 @section('content')
-<div class="max-w-2xl mx-auto space-y-4"
+<div class="max-w-3xl mx-auto space-y-4 sm:space-y-5 pb-8"
      x-data="{
-        warnas: {{ Js::from(old('warna', $existing_warnas ?? [])) }},
-        ukurans: {{ Js::from(old('ukuran', $existing_ukurans ?? [])) }},
+        warnas: {{ Js::from(old('warna', $existing_warnas)) }},
+        ukurans: {{ Js::from(old('ukuran', $existing_ukurans)) }},
         warnaColors: {{ Js::from($warnas->pluck('kode_hex', 'nama_warna')) }},
-        variantData: {{ Js::from(old('variant_stok', $variant_data ?? [])) }},
-        hargaAwal: '{{ old('harga_awal', $produk->harga_awal) }}',
-        hargaJual: '{{ old('harga_jual', $produk->harga_jual) }}',
+        variantData: {{ Js::from(old('variant_stok', $variant_data)) }},
+        hargaAwal: '{{ old('harga_awal', (int) $produk->harga_awal) }}',
+        hargaJual: '{{ old('harga_jual', (int) $produk->harga_jual) }}',
         imagePreview: '{{ $produk->gambar_url }}',
         previewImage(e) {
             const file = e.target.files[0];
@@ -19,6 +19,8 @@
                 const reader = new FileReader();
                 reader.onload = (ev) => { this.imagePreview = ev.target.result; };
                 reader.readAsDataURL(file);
+            } else {
+                this.imagePreview = '{{ $produk->gambar_url }}';
             }
         },
         clearImage() {
@@ -110,31 +112,45 @@
         </a>
     </div>
 
-    {{-- 2. Single Unified Form Card (Rekomendasi 1: Clean & Mobile-First) --}}
-    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
-        <form method="POST" action="{{ route('admin.produk.update', $produk->id_helm) }}" enctype="multipart/form-data" class="p-4 sm:p-6 space-y-5 text-xs">
-            @csrf
-            @method('PUT')
+    {{-- 2. Form Container --}}
+    <form method="POST" action="{{ route('admin.produk.update', $produk->id_helm) }}" enctype="multipart/form-data" class="space-y-4 sm:space-y-5 text-xs">
+        @csrf
+        @method('PUT')
 
-            {{-- Section A: Foto Produk & Nama Model (Compact Flex) --}}
+        {{-- Card 1: Informasi Produk & Foto --}}
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-helmet-safety"></i>
+                </div>
+                <div>
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-900">Informasi Produk</h2>
+                    <p class="text-[11px] text-slate-400">Nama helm, foto, merk, dan kategori katalog</p>
+                </div>
+            </div>
+
+            {{-- Foto & Nama Model Helm --}}
             <div class="flex flex-col sm:flex-row gap-4 items-start">
-                {{-- Foto Uploader (Compact Box) --}}
-                <div class="shrink-0 space-y-1.5 self-center sm:self-start text-center">
-                    <div class="w-20 h-20 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-2xs">
+                {{-- Foto Uploader --}}
+                <div class="w-full sm:w-auto shrink-0 flex flex-col items-center sm:items-start gap-1.5">
+                    <label class="block font-semibold text-slate-700 text-xs self-start">
+                        Foto Helm
+                    </label>
+                    <div class="w-full sm:w-28 h-36 sm:h-28 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-slate-400 flex flex-col items-center justify-center overflow-hidden relative transition-colors cursor-pointer group">
                         <template x-if="imagePreview">
                             <img :src="imagePreview" alt="Preview" class="w-full h-full object-contain p-1">
                         </template>
                         <template x-if="!imagePreview">
-                            <div class="text-slate-400 text-center space-y-0.5">
-                                <i class="fa-regular fa-image text-lg"></i>
-                                <p class="text-[9px] text-slate-400">Foto</p>
-                            </div>
+                            <label for="gambar-input" class="w-full h-full flex flex-col items-center justify-center p-2 text-center cursor-pointer">
+                                <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                                <span class="text-[10px] font-medium text-slate-600 mt-1">Unggah Foto</span>
+                                <span class="text-[9px] text-slate-400">Maks 2MB</span>
+                            </label>
                         </template>
                     </div>
-
-                    <div class="flex items-center justify-center gap-1">
+                    <div class="flex items-center gap-1.5 w-full justify-center sm:justify-start">
                         <label for="gambar-input" 
-                               class="h-7 px-2 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-medium inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer">
+                               class="h-7 px-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-medium inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer">
                             <i class="fa-solid fa-camera text-[9px] text-slate-400"></i>
                             <span>Ganti</span>
                         </label>
@@ -142,7 +158,7 @@
                                 x-show="imagePreview !== '{{ $produk->gambar_url }}'" 
                                 x-cloak 
                                 @click="clearImage" 
-                                class="h-7 px-1.5 rounded-md border border-rose-200 hover:bg-rose-50 text-rose-600 text-[11px] font-medium transition-colors cursor-pointer">
+                                class="h-7 px-2 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-[11px] font-medium transition-colors cursor-pointer">
                             Reset
                         </button>
                     </div>
@@ -152,259 +168,75 @@
                            accept="image/png,image/jpeg,image/webp,image/jpg" 
                            @change="previewImage" 
                            class="hidden">
-                    <p class="text-[10px] text-slate-400 max-w-[100px] leading-tight">Maks. 2MB</p>
                     @error('gambar')
                         <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
-                {{-- Nama Model Helm --}}
-                <div class="flex-1 w-full space-y-1">
-                    <label class="block font-semibold text-slate-700">
-                        Nama Model Helm <span class="text-rose-500">*</span>
-                    </label>
-                    <input type="text" 
-                           name="nama_helm" 
-                           value="{{ old('nama_helm', $produk->nama_helm) }}" 
-                           placeholder="Contoh: KYT TT Course Tourist Doff" 
-                           required 
-                           class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('nama_helm') border-rose-300 ring-1 ring-rose-200 @else border-slate-200 @enderror text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
-                    @error('nama_helm')
-                        <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
-                    @enderror
-                    <p class="text-[11px] text-slate-400">Sertakan seri, motif, atau varian grafis helm</p>
-                </div>
-            </div>
-
-            {{-- Section B: Merk & Kategori Helm (2 Kolom) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-3 border-t border-slate-100">
-                <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">
-                        Merk Helm <span class="text-rose-500">*</span>
-                    </label>
-                    <select name="id_merk" 
-                            required 
-                            class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('id_merk') border-rose-300 @else border-slate-200 @enderror text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer">
-                        <option value="">-- Pilih Merk --</option>
-                        @foreach ($merks as $m)
-                            <option value="{{ $m->id_merk }}" {{ old('id_merk', $produk->id_merk) == $m->id_merk ? 'selected' : '' }}>
-                                {{ $m->nama_merk }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('id_merk')
-                        <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">
-                        Kategori Helm <span class="text-rose-500">*</span>
-                    </label>
-                    <select name="id_kategori" 
-                            required 
-                            class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('id_kategori') border-rose-300 @else border-slate-200 @enderror text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer">
-                        <option value="">-- Pilih Kategori --</option>
-                        @foreach ($kategoris as $k)
-                            <option value="{{ $k->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $k->id_kategori ? 'selected' : '' }}>
-                                {{ $k->nama_kategori }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('id_kategori')
-                        <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
-            {{-- Section C: Penetapan Harga & Kalkulasi Margin --}}
-            <div class="pt-3 border-t border-slate-100 space-y-2">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {{-- Nama Model Helm & Merk / Kategori --}}
+                <div class="flex-1 w-full space-y-3.5">
                     <div class="space-y-1">
-                        <label class="block font-semibold text-slate-700">
-                            Harga Modal / HPP (Rp) <span class="text-rose-500">*</span>
+                        <label class="block font-semibold text-slate-700 text-xs">
+                            Nama Model Helm <span class="text-rose-500">*</span>
                         </label>
-                        <input type="number" 
-                               name="harga_awal" 
-                               x-model="hargaAwal" 
-                               min="0" 
-                               placeholder="Contoh: 350000" 
+                        <input type="text" 
+                               name="nama_helm" 
+                               value="{{ old('nama_helm', $produk->nama_helm) }}" 
+                               placeholder="Contoh: KYT TT Course Tourist Doff" 
                                required 
-                               class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('harga_awal') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
-                        @error('harga_awal')
+                               class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('nama_helm') border-rose-300 ring-1 ring-rose-200 @else border-slate-200 @enderror text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
+                        @error('nama_helm')
                             <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                         @enderror
+                        <p class="text-[11px] text-slate-400">Sertakan seri, motif, atau varian grafis helm</p>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="block font-semibold text-slate-700">
-                            Harga Jual Konsumen (Rp) <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="number" 
-                               name="harga_jual" 
-                               x-model="hargaJual" 
-                               min="0" 
-                               placeholder="Contoh: 450000" 
-                               required 
-                               class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('harga_jual') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
-                        @error('harga_jual')
-                            <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="block font-semibold text-slate-700 text-xs">
+                                Merk Helm <span class="text-rose-500">*</span>
+                            </label>
+                            <select name="id_merk" 
+                                    required 
+                                    class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('id_merk') border-rose-300 @else border-slate-200 @enderror text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer">
+                                <option value="">-- Pilih Merk --</option>
+                                @foreach ($merks as $m)
+                                    <option value="{{ $m->id_merk }}" {{ old('id_merk', $produk->id_merk) == $m->id_merk ? 'selected' : '' }}>
+                                        {{ $m->nama_merk }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_merk')
+                                <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                {{-- Margin Helper Teks Halus (Bukan Kotak AI-Slop) --}}
-                <div class="flex items-center justify-between text-[11px] text-slate-500 px-1" x-show="Number(hargaJual) > 0" x-cloak>
-                    <span>Estimasi laba kotor: <strong class="text-emerald-600 tabular-nums" x-text="'+Rp ' + margin.toLocaleString('id-ID')"></strong></span>
-                    <span>Margin: <strong class="text-slate-800 tabular-nums" x-text="marginPercent + '%'"></strong></span>
+                        <div class="space-y-1">
+                            <label class="block font-semibold text-slate-700 text-xs">
+                                Kategori Helm <span class="text-rose-500">*</span>
+                            </label>
+                            <select name="id_kategori" 
+                                    required 
+                                    class="w-full h-10 px-3 rounded-xl bg-slate-50 border @error('id_kategori') border-rose-300 @else border-slate-200 @enderror text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer">
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach ($kategoris as $k)
+                                    <option value="{{ $k->id_kategori }}" {{ old('id_kategori', $produk->id_kategori) == $k->id_kategori ? 'selected' : '' }}>
+                                        {{ $k->nama_kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('id_kategori')
+                                <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {{-- Section D: Varian Warna, Ukuran & Stok Fisik (Gaya Restok Mobile-First) --}}
-            <div class="pt-3 border-t border-slate-100 space-y-3.5">
-                {{-- Pilihan Warna --}}
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="block font-semibold text-slate-700">
-                            Pilihan Warna Helm
-                        </label>
-                        <span class="text-[11px] text-slate-400" x-text="warnas.length > 0 ? warnas.length + ' warna aktif' : 'Pilih warna'"></span>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5">
-                        @foreach ($warnas as $w)
-                            <label class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer select-none transition-all"
-                                   :class="warnas.includes('{{ $w->nama_warna }}') ? 'bg-slate-900 text-white border-slate-900 font-medium shadow-2xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'">
-                                <input type="checkbox" 
-                                       name="warna[]" 
-                                       value="{{ $w->nama_warna }}" 
-                                       class="sr-only"
-                                       @change="toggleWarna('{{ $w->nama_warna }}')"
-                                       :checked="warnas.includes('{{ $w->nama_warna }}')">
-                                <span class="w-2.5 h-2.5 rounded-full border border-black/10 shrink-0" style="background-color: {{ $w->kode_hex ?: '#334155' }};"></span>
-                                <span>{{ $w->nama_warna }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Pilihan Ukuran --}}
-                <div class="space-y-2 pt-2 border-t border-slate-100">
-                    <div class="flex items-center justify-between">
-                        <label class="block font-semibold text-slate-700">
-                            Pilihan Ukuran Helm
-                        </label>
-                        <div class="flex items-center gap-1.5 text-[11px]">
-                            <button type="button" 
-                                    @click="ukurans = ['M', 'L', 'XL']" 
-                                    class="text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
-                                + M, L, XL
-                            </button>
-                            <span class="text-slate-300">·</span>
-                            <button type="button" 
-                                    @click="ukurans = ['S', 'M', 'L', 'XL', 'XXL']" 
-                                    class="text-slate-500 hover:text-slate-800 font-medium cursor-pointer">
-                                Semua Size
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5">
-                        @foreach (['S', 'M', 'L', 'XL', 'XXL'] as $u)
-                            <label class="inline-flex items-center justify-center w-11 h-8 rounded-lg border text-xs font-semibold cursor-pointer select-none transition-all tabular-nums"
-                                   :class="ukurans.includes('{{ $u }}') ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'">
-                                <input type="checkbox" 
-                                       name="ukuran[]" 
-                                       value="{{ $u }}" 
-                                       class="sr-only"
-                                       @change="toggleUkuran('{{ $u }}')"
-                                       :checked="ukurans.includes('{{ $u }}')">
-                                <span>{{ $u }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Mobile-First Variant Ledger List --}}
-                <div class="pt-2 border-t border-slate-100 space-y-2.5" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
-                    {{-- Toolbar Presets --}}
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-                        <div class="text-[11px] text-slate-600 font-medium">
-                            Set Stok Semua Varian:
-                        </div>
-                        <div class="flex items-center gap-1 flex-wrap">
-                            <button type="button" @click="setAllStok(0)" class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer active:scale-95 transition-transform shadow-2xs">Nol (0)</button>
-                            <button type="button" @click="setAllStok(1)" class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">Semua 1</button>
-                            <button type="button" @click="setAllStok(3)" class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">Semua 3</button>
-                            <button type="button" @click="setAllStok(5)" class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">Semua 5</button>
-                            <button type="button" @click="setAllStok(10)" class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">Semua 10</button>
-                        </div>
-                    </div>
-
-                    {{-- Card Ledger Items --}}
-                    <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden bg-white">
-                        <template x-for="w in warnas" :key="w">
-                            <div>
-                                <template x-for="u in ukurans" :key="w + '|' + u">
-                                    <div class="p-3 hover:bg-slate-50/60 transition-colors flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0">
-                                        {{-- Info Kombinasi --}}
-                                        <div class="flex items-center gap-2.5 min-w-0">
-                                            <span class="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 shadow-2xs" 
-                                                  :style="'background-color: ' + (warnaColors[w] || '#334155')"></span>
-                                            <div class="min-w-0 truncate">
-                                                <div class="font-semibold text-xs text-slate-900 truncate flex items-center gap-1.5">
-                                                    <span x-text="w"></span>
-                                                    <span class="text-slate-300">·</span>
-                                                    <span class="font-bold text-slate-700" x-text="'Size ' + u"></span>
-                                                </div>
-                                                <div class="text-[11px] mt-0.5">
-                                                    <span x-show="getStok(w, u) > 0" class="text-emerald-600 font-medium" x-text="getStok(w, u) + ' unit di rak fisik'"></span>
-                                                    <span x-show="getStok(w, u) === 0" class="text-rose-500 font-medium">Stok habis (0)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Stepper Touch --}}
-                                        <div class="flex items-center gap-1 shrink-0">
-                                            <button type="button" 
-                                                    @click="changeStok(w, u, -1)" 
-                                                    class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
-                                                -
-                                            </button>
-                                            <input type="number" 
-                                                   :name="'variant_stok[' + w + '|' + u + ']'" 
-                                                   :value="getStok(w, u)" 
-                                                   @input="setStok(w, u, $event.target.value)" 
-                                                   min="0" 
-                                                   class="w-14 h-8 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400">
-                                            <button type="button" 
-                                                    @click="changeStok(w, u, 1)" 
-                                                    class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
-                                                +
-                                            </button>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-
-                    {{-- Total Counter --}}
-                    <div class="flex items-center justify-between px-1 text-[11px] text-slate-500">
-                        <span x-text="totalKombinasi + ' varian aktif'"></span>
-                        <span>Total stok fisik: <strong class="text-slate-900 font-bold tabular-nums" x-text="totalUnitFisik + ' unit'"></strong></span>
-                    </div>
-                </div>
-
-                {{-- Empty Hint --}}
-                <div x-show="warnas.length === 0 || ukurans.length === 0" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-[11px] flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-blue-500 text-xs shrink-0"></i>
-                    <span>Minimal 1 warna dan 1 ukuran harus aktif untuk mempertahankan etalase varian produk.</span>
-                </div>
-            </div>
-
-            {{-- Section E: Deskripsi & Spesifikasi (Opsional) --}}
-            <div class="pt-3 border-t border-slate-100 space-y-1">
-                <label class="block font-semibold text-slate-700">
-                    Deskripsi &amp; Spesifikasi <span class="text-slate-400 font-normal\">(Opsional)</span>
+            {{-- Deskripsi --}}
+            <div class="space-y-1 pt-2 border-t border-slate-100">
+                <label class="block font-semibold text-slate-700 text-xs">
+                    Deskripsi &amp; Spesifikasi <span class="text-slate-400 font-normal">(Opsional)</span>
                 </label>
                 <textarea name="deskripsi" 
                           rows="3" 
@@ -414,22 +246,243 @@
                     <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                 @enderror
             </div>
+        </div>
 
-            {{-- Action Buttons --}}
-            <div class="pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
-                <a href="{{ route('admin.produk.index') }}" 
-                   wire:navigate
-                   class="h-10 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium text-xs transition-colors inline-flex items-center justify-center">
-                    Batal
-                </a>
-                <button type="submit" 
-                        class="h-10 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-check text-[11px]"></i>
-                    <span>Simpan Perubahan</span>
-                </button>
+        {{-- Card 2: Harga & Biaya --}}
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <div>
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-900">Penetapan Harga</h2>
+                    <p class="text-[11px] text-slate-400">Harga modal (HPP) dan harga jual ke konsumen</p>
+                </div>
             </div>
-        </form>
-    </div>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700 text-xs">
+                        Harga Modal / HPP (Rp) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs font-semibold text-slate-400">Rp</span>
+                        <input type="number" 
+                               name="harga_awal" 
+                               x-model="hargaAwal" 
+                               min="0" 
+                               placeholder="350000" 
+                               required 
+                               class="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border @error('harga_awal') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
+                    </div>
+                    @error('harga_awal')
+                        <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
+                    @enderror
+                    <p class="text-[10px] text-slate-400">Biaya perolehan helm dari supplier</p>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-semibold text-slate-700 text-xs">
+                        Harga Jual Konsumen (Rp) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs font-semibold text-slate-400">Rp</span>
+                        <input type="number" 
+                               name="harga_jual" 
+                               x-model="hargaJual" 
+                               min="0" 
+                               placeholder="450000" 
+                               required 
+                               class="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border @error('harga_jual') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
+                    </div>
+                    @error('harga_jual')
+                        <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
+                    @enderror
+                    <p class="text-[10px] text-slate-400">Harga resmi di toko offline &amp; online</p>
+                </div>
+            </div>
+
+            {{-- Margin Helper Box --}}
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs" x-show="Number(hargaJual) > 0" x-cloak>
+                <div class="flex items-center gap-1.5 text-slate-600">
+                    <i class="fa-solid fa-chart-line text-xs text-emerald-600"></i>
+                    <span>Estimasi laba kotor:</span>
+                    <strong class="text-emerald-700 font-bold tabular-nums" x-text="'+Rp ' + margin.toLocaleString('id-ID')"></strong>
+                </div>
+                <div class="text-slate-500 font-medium">
+                    Margin: <strong class="text-slate-900 font-bold tabular-nums" x-text="marginPercent + '%'"></strong>
+                </div>
+            </div>
+        </div>
+
+        {{-- Card 3: Varian Warna, Ukuran & Stok Fisik --}}
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-900">Varian &amp; Stok Fisik</h2>
+                        <p class="text-[11px] text-slate-400">Pilih warna dan ukuran untuk mendata stok unit gerai</p>
+                    </div>
+                </div>
+                <div x-show="totalUnitFisik > 0" x-cloak class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold tabular-nums">
+                    <span x-text="totalUnitFisik"></span> unit total
+                </div>
+            </div>
+
+            {{-- Langkah 1: Warna --}}
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="block font-semibold text-slate-700 text-xs">
+                        1. Pilihan Warna Helm
+                    </label>
+                    <span class="text-[11px] text-slate-400" x-text="warnas.length > 0 ? warnas.length + ' warna dipilih' : 'Pilih minimal 1 warna'"></span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+                    @foreach ($warnas as $w)
+                        <label class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs cursor-pointer select-none transition-all"
+                               :class="warnas.includes('{{ $w->nama_warna }}') ? 'bg-slate-900 text-white border-slate-900 font-medium shadow-2xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'">
+                            <input type="checkbox" 
+                                   name="warna[]" 
+                                   value="{{ $w->nama_warna }}" 
+                                   class="sr-only"
+                                   @change="toggleWarna('{{ $w->nama_warna }}')"
+                                   :checked="warnas.includes('{{ $w->nama_warna }}')">
+                            <span class="w-3 h-3 rounded-full border border-black/10 shrink-0" style="background-color: {{ $w->kode_hex ?: '#334155' }};"></span>
+                            <span class="truncate">{{ $w->nama_warna }}</span>
+                            <i class="fa-solid fa-check text-[10px] ml-auto shrink-0" x-show="warnas.includes('{{ $w->nama_warna }}')" x-cloak></i>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Langkah 2: Ukuran --}}
+            <div class="space-y-2 pt-3 border-t border-slate-100">
+                <div class="flex items-center justify-between">
+                    <label class="block font-semibold text-slate-700 text-xs">
+                        2. Pilihan Ukuran Helm
+                    </label>
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <button type="button" 
+                                @click="ukurans = ['M', 'L', 'XL']" 
+                                class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition-colors cursor-pointer">
+                            + M, L, XL
+                        </button>
+                        <button type="button" 
+                                @click="ukurans = ['S', 'M', 'L', 'XL', 'XXL']" 
+                                class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition-colors cursor-pointer">
+                            Semua Size
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (['S', 'M', 'L', 'XL', 'XXL'] as $u)
+                        <label class="inline-flex items-center justify-center w-14 h-10 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all tabular-nums"
+                               :class="ukurans.includes('{{ $u }}') ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'">
+                            <input type="checkbox" 
+                                   name="ukuran[]" 
+                                   value="{{ $u }}" 
+                                   class="sr-only"
+                                   @change="toggleUkuran('{{ $u }}')"
+                                   :checked="ukurans.includes('{{ $u }}')">
+                            <span>{{ $u }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Langkah 3: Rincian Stok Fisik per Varian --}}
+            <div class="pt-3 border-t border-slate-100 space-y-3" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <span class="text-xs text-slate-600 font-semibold">
+                        Set Stok Sekaligus:
+                    </span>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" @click="setAllStok(0)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer shadow-2xs active:scale-95 transition-all">Nol (0)</button>
+                        <button type="button" @click="setAllStok(1)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">1 Unit</button>
+                        <button type="button" @click="setAllStok(3)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">3 Unit</button>
+                        <button type="button" @click="setAllStok(5)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">5 Unit</button>
+                        <button type="button" @click="setAllStok(10)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">10 Unit</button>
+                    </div>
+                </div>
+
+                {{-- Variant Items List (Clean & Touch-friendly) --}}
+                <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden bg-white">
+                    <template x-for="w in warnas" :key="w">
+                        <div>
+                            <template x-for="u in ukurans" :key="w + '|' + u">
+                                <div class="p-3 sm:px-4 hover:bg-slate-50/60 transition-colors flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0">
+                                    {{-- Varian Info --}}
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <span class="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 shadow-2xs" 
+                                              :style="'background-color: ' + (warnaColors[w] || '#334155')"></span>
+                                        <div class="min-w-0">
+                                            <div class="font-bold text-xs text-slate-900 truncate flex items-center gap-1.5">
+                                                <span x-text="w"></span>
+                                                <span class="text-slate-300">·</span>
+                                                <span class="text-slate-600 font-semibold" x-text="'Size ' + u"></span>
+                                            </div>
+                                            <div class="text-[11px] mt-0.5">
+                                                <span x-show="getStok(w, u) > 0" class="text-emerald-600 font-medium" x-text="getStok(w, u) + ' unit di rak fisik'"></span>
+                                                <span x-show="getStok(w, u) === 0" class="text-rose-500 font-medium">Stok habis (0)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Touch-friendly Stepper --}}
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" 
+                                                @click="changeStok(w, u, -1)" 
+                                                class="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-base flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                            -
+                                        </button>
+                                        <input type="number" 
+                                               :name="'variant_stok[' + w + '|' + u + ']'" 
+                                               :value="getStok(w, u)" 
+                                               @input="setStok(w, u, $event.target.value)" 
+                                               min="0" 
+                                               class="w-14 h-9 text-center bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400">
+                                        <button type="button" 
+                                                @click="changeStok(w, u, 1)" 
+                                                class="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-base flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                {{-- Summary Footer --}}
+                <div class="flex items-center justify-between px-1 text-xs text-slate-500">
+                    <span x-text="totalKombinasi + ' kombinasi varian'"></span>
+                    <span>Total stok fisik: <strong class="text-slate-900 font-bold tabular-nums" x-text="totalUnitFisik + ' unit'"></strong></span>
+                </div>
+            </div>
+
+            {{-- Hint saat belum pilih warna/ukuran --}}
+            <div x-show="warnas.length === 0 || ukurans.length === 0" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-xs flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-blue-500 text-xs shrink-0"></i>
+                <span>Pilih minimal 1 warna dan 1 ukuran di atas untuk mengatur stok fisik helm.</span>
+            </div>
+        </div>
+
+        {{-- Action Buttons --}}
+        <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5 pt-2">
+            <a href="{{ route('admin.produk.index') }}" 
+               wire:navigate
+               class="h-10 px-5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-medium text-xs transition-colors inline-flex items-center justify-center shadow-2xs">
+                Batal
+            </a>
+            <button type="submit" 
+                    class="h-10 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check text-xs"></i>
+                <span>Simpan Perubahan</span>
+            </button>
+        </div>
+    </form>
 </div>
 @endsection
