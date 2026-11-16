@@ -28,7 +28,7 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Katalog & Stok', false);
+        $response->assertSee('Data Produk Helm', false);
         $response->assertSee('Tambah Produk Baru');
     }
 

@@ -34,6 +34,17 @@ class ProdukController extends Controller
         $produkHabis      = Helm::where('stok', '<=', 0)->count();
         $totalMerk        = Merk::count();
 
+        // Jumlah helm sesuai filter untuk card indikator
+        $countPerluRestok = Helm::where(function ($q) {
+            $q->where('stok', '<=', 3)
+              ->orWhereHas('varians', fn($qv) => $qv->where('stok', '<=', 3));
+        })->count();
+
+        $countHabis = Helm::where(function ($q) {
+            $q->where('stok', '<=', 0)
+              ->orWhereHas('varians', fn($qv) => $qv->where('stok', '<=', 0));
+        })->count();
+
         // Data Merk & Kategori untuk filter
         $merks     = Merk::orderBy('nama_merk')->get();
         $kategoris = Kategori::orderBy('nama_kategori')->get();
@@ -116,6 +127,8 @@ class ProdukController extends Controller
             'idMerk',
             'idKategori',
             'stokFilter',
+            'countPerluRestok',
+            'countHabis',
             'stok_masuks'
         ));
     }

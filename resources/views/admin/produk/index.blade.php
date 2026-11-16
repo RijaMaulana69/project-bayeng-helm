@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Katalog & Stok')
-@section('page-title', 'Katalog & Stok')
+@section('title', 'Data Produk Helm')
+@section('page-title', 'Data Produk Helm')
 
 @section('content')
 @php
@@ -24,13 +24,12 @@
     {{-- 1. Header Minimalist --}}
     <div class="flex items-center justify-between gap-3">
         <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Katalog & Stok
+            Data Produk Helm
         </h1>
 
         <div class="flex items-center gap-1.5 shrink-0">
             @if ($tab === 'produk')
                 <a href="{{ route('admin.produk.create') }}" 
-                   wire:navigate
                    class="h-8 sm:h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
                     <i class="fa-solid fa-plus text-[10px]"></i>
                     <span class="hidden sm:inline">Tambah Produk Baru</span>
@@ -40,44 +39,50 @@
         </div>
     </div>
 
-    {{-- 2. Ringkasan Stok Kompak (3 Kolom Ringkas di Layar HP & Desktop) --}}
+    {{-- 2. Ringkasan Stok & Filter Cepat (3 Kolom Responsif) --}}
     <div class="grid grid-cols-3 gap-2 sm:gap-3">
-        {{-- Total Model Helm --}}
-        <a href="{{ route('admin.produk.index') }}" 
-           wire:navigate
-           class="p-2.5 sm:p-3 rounded-xl border transition-all {{ $tab === 'produk' && $stokFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
+        {{-- Semua Produk --}}
+        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
+           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $tab === 'produk' && $stokFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-500' }}">Model Helm</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-500' }}">Semua Produk</span>
                 <i class="fa-solid fa-helmet-safety text-[11px] {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}"></i>
             </div>
             <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-white' : 'text-slate-900' }}">
                 {{ $totalProduk }} <span class="text-[11px] font-normal {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">model</span>
             </div>
-        </a>
-
-        {{-- Total Unit Fisik --}}
-        <a href="{{ route('admin.produk.index', ['stok_filter' => 'tersedia']) }}" 
-           wire:navigate
-           class="p-2.5 sm:p-3 rounded-xl border transition-all {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
-            <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-500' }}">Stok Fisik</span>
-                <i class="fa-solid fa-boxes-stacked text-[11px] {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-400' }}"></i>
-            </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-white' : 'text-slate-900' }}">
-                {{ number_format($totalStokFisik, 0, ',', '.') }} <span class="text-[11px] font-normal {{ $tab === 'produk' && $stokFilter === 'tersedia' ? 'text-slate-300' : 'text-slate-400' }}">unit</span>
+            <div class="text-[10px] truncate mt-0.5 {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">
+                {{ number_format($totalStokFisik, 0, ',', '.') }} unit fisik
             </div>
         </a>
 
-        {{-- Perlu Restok --}}
-        <a href="{{ route('admin.produk.index', ['stok_filter' => 'kritis_habis']) }}" 
-           wire:navigate
-           class="p-2.5 sm:p-3 rounded-xl border transition-all {{ $stokFilter === 'kritis_habis' ? 'bg-amber-500 text-white border-amber-500 shadow-2xs' : ($totalKritisHabis > 0 ? 'bg-amber-50/80 border-amber-200 text-amber-900 hover:border-amber-300' : 'bg-white border-slate-200/90 text-slate-800') }}">
+        {{-- Perlu Restok (Stok <= 3 unit) --}}
+        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'stok_filter' => 'kritis_habis', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
+           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $stokFilter === 'kritis_habis' ? 'bg-amber-600 text-white border-amber-600 shadow-2xs' : ($countPerluRestok > 0 ? 'bg-amber-50/70 border-amber-200/80 text-amber-900 hover:border-amber-300' : 'bg-white border-slate-200/90 text-slate-800') }}">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-800' }}">Perlu Restok</span>
                 <i class="fa-solid fa-triangle-exclamation text-[11px] {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-600' }}"></i>
             </div>
             <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $stokFilter === 'kritis_habis' ? 'text-white' : 'text-amber-900' }}">
-                {{ $totalKritisHabis }} <span class="text-[11px] font-normal {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-700' }}">varian</span>
+                {{ $countPerluRestok }} <span class="text-[11px] font-normal {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-700' }}">model</span>
+            </div>
+            <div class="text-[10px] truncate mt-0.5 {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-600' }}">
+                Stok menipis (≤ 3)
+            </div>
+        </a>
+
+        {{-- Stok Habis (Stok 0 unit) --}}
+        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'stok_filter' => 'habis', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
+           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $stokFilter === 'habis' ? 'bg-rose-600 text-white border-rose-600 shadow-2xs' : ($countHabis > 0 ? 'bg-rose-50/70 border-rose-200/80 text-rose-900 hover:border-rose-300' : 'bg-white border-slate-200/90 text-slate-800') }}">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-800' }}">Stok Habis</span>
+                <i class="fa-solid fa-circle-xmark text-[11px] {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-600' }}"></i>
+            </div>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $stokFilter === 'habis' ? 'text-white' : 'text-rose-900' }}">
+                {{ $countHabis }} <span class="text-[11px] font-normal {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-700' }}">model</span>
+            </div>
+            <div class="text-[10px] truncate mt-0.5 {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-600' }}">
+                0 unit di rak
             </div>
         </a>
     </div>
@@ -85,108 +90,52 @@
     {{-- 3. Tab Navigasi Minimalist --}}
     <div class="grid grid-cols-2 gap-1 p-1 bg-slate-200/70 rounded-xl text-xs font-medium">
         <a href="{{ route('admin.produk.index') }}" 
-           wire:navigate
            class="py-2 text-center rounded-lg transition-all flex items-center justify-center gap-1.5 {{ $tab === 'produk' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
-            <span>Katalog Helm</span>
+            <span>Daftar Produk</span>
             <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'produk' ? 'bg-slate-900 text-white' : 'bg-slate-300 text-slate-700' }}">
                 {{ $totalProduk }}
             </span>
         </a>
 
         <a href="{{ route('admin.produk.index', ['tab' => 'riwayat']) }}" 
-           wire:navigate
            class="py-2 text-center rounded-lg transition-all flex items-center justify-center gap-1.5 {{ $tab === 'riwayat' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
-            <span>Barang Masuk</span>
+            <span>Riwayat Stok Masuk</span>
         </a>
     </div>
 
     {{-- ========================================================================= --}}
-    {{-- TAB 1: KATALOG HELM & STOK FISIK                                          --}}
+    {{-- TAB 1: DAFTAR PRODUK HELM                                                 --}}
     {{-- ========================================================================= --}}
     @if ($tab === 'produk')
 
-        {{-- Toolbar Pencarian & Filter Cepat --}}
-        <div class="space-y-2">
-            <form method="GET" action="{{ route('admin.produk.index') }}" class="flex items-center gap-1.5">
+        {{-- Toolbar Pencarian & Filter Dropdown --}}
+        <div>
+            <form method="GET" action="{{ route('admin.produk.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs">
                 @if($stokFilter !== 'all')
                     <input type="hidden" name="stok_filter" value="{{ $stokFilter }}">
                 @endif
-                @if($idMerk)
-                    <input type="hidden" name="merk" value="{{ $idMerk }}">
-                @endif
-                @if($idKategori)
-                    <input type="hidden" name="kategori" value="{{ $idKategori }}">
-                @endif
 
+                {{-- Kolom Input Pencarian --}}
                 <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
                     <input type="text" 
                            name="search" 
                            value="{{ $search }}" 
                            placeholder="Cari helm, merk, warna..." 
-                           class="w-full h-9 pl-8 pr-8 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors">
+                           class="w-full h-9 pl-9 pr-8 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors">
                     @if($search)
-                        <a href="{{ route('admin.produk.index', array_filter(['merk' => $idMerk, 'kategori' => $idKategori, 'stok_filter' => $stokFilter !== 'all' ? $stokFilter : null])) }}" 
-                           wire:navigate
+                        <a href="{{ route('admin.produk.index', array_filter(['stok_filter' => $stokFilter !== 'all' ? $stokFilter : null, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
                             <i class="fa-solid fa-xmark"></i>
                         </a>
                     @endif
                 </div>
 
-                <button type="submit" class="h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-colors shrink-0 cursor-pointer">
-                    Cari
-                </button>
-
-                @if($search || $idMerk || $idKategori || $stokFilter !== 'all')
-                    <a href="{{ route('admin.produk.index') }}" 
-                       wire:navigate 
-                       class="h-9 px-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs shrink-0" 
-                       title="Reset Filter">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </a>
-                @endif
-            </form>
-
-            {{-- Filter Chips & Dropdowns --}}
-            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-0.5 text-xs">
-                {{-- Status Stok Chips --}}
-                <div class="flex items-center gap-1 shrink-0">
-                    <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'all'])) }}"
-                       wire:navigate
-                       class="px-2.5 py-1 rounded-lg text-xs whitespace-nowrap transition-colors {{ $stokFilter === 'all' ? 'bg-slate-900 text-white font-semibold' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
-                        Semua
-                    </a>
-
-                    <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'kritis_habis'])) }}"
-                       wire:navigate
-                       class="px-2.5 py-1 rounded-lg text-xs whitespace-nowrap transition-colors {{ $stokFilter === 'kritis_habis' ? 'bg-amber-600 text-white font-semibold' : 'bg-white border border-slate-200 text-amber-800 hover:bg-amber-50' }}">
-                        Perlu Restok ({{ $totalKritisHabis }})
-                    </a>
-
-                    <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'tersedia'])) }}"
-                       wire:navigate
-                       class="px-2.5 py-1 rounded-lg text-xs whitespace-nowrap transition-colors {{ $stokFilter === 'tersedia' ? 'bg-slate-900 text-white font-semibold' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
-                        Tersedia
-                    </a>
-
-                    <a href="{{ route('admin.produk.index', array_merge(request()->except('stok_filter', 'page'), ['stok_filter' => 'habis'])) }}"
-                       wire:navigate
-                       class="px-2.5 py-1 rounded-lg text-xs whitespace-nowrap transition-colors {{ $stokFilter === 'habis' ? 'bg-slate-900 text-white font-semibold' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' }}">
-                        Habis ({{ $produkHabis }})
-                    </a>
-                </div>
-
-                {{-- Filter Dropdown Merk & Kategori --}}
-                <form method="GET" action="{{ route('admin.produk.index') }}" class="flex items-center gap-1.5 shrink-0">
-                    @if($search)
-                        <input type="hidden" name="search" value="{{ $search }}">
-                    @endif
-                    @if($stokFilter !== 'all')
-                        <input type="hidden" name="stok_filter" value="{{ $stokFilter }}">
-                    @endif
-
-                    <select name="merk" onchange="this.form.submit()" class="h-7 px-2 text-[11px] rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
+                {{-- Filter Dropdown Merk, Kategori, Tombol Cari & Reset --}}
+                <div class="flex items-center gap-1.5 shrink-0 flex-wrap sm:flex-nowrap">
+                    <select name="merk" onchange="this.form.submit()" class="h-9 px-2.5 text-xs rounded-xl bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
                         <option value="all">Semua Merk</option>
                         @foreach ($merks as $m)
                             <option value="{{ $m->id_merk }}" {{ $idMerk == $m->id_merk ? 'selected' : '' }}>
@@ -195,7 +144,7 @@
                         @endforeach
                     </select>
 
-                    <select name="kategori" onchange="this.form.submit()" class="h-7 px-2 text-[11px] rounded-lg bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
+                    <select name="kategori" onchange="this.form.submit()" class="h-9 px-2.5 text-xs rounded-xl bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
                         <option value="all">Semua Kategori</option>
                         @foreach ($kategoris as $k)
                             <option value="{{ $k->id_kategori }}" {{ $idKategori == $k->id_kategori ? 'selected' : '' }}>
@@ -203,8 +152,20 @@
                             </option>
                         @endforeach
                     </select>
-                </form>
-            </div>
+
+                    <button type="submit" class="h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-colors cursor-pointer shrink-0">
+                        Cari
+                    </button>
+
+                    @if($search || $idMerk || $idKategori || $stokFilter !== 'all')
+                        <a href="{{ route('admin.produk.index') }}" 
+                           class="h-9 px-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs shrink-0" 
+                           title="Reset Semua Filter">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
 
         {{-- Daftar Kartu Produk (Mobile & Desktop) --}}
@@ -316,13 +277,12 @@
 
                                 {{-- Tombol Aksi Cepat --}}
                                 <div class="flex items-center gap-1 shrink-0">
-                                    {{-- Edit Helm & Stok --}}
+                                    {{-- Edit Produk --}}
                                     <a href="{{ route('admin.produk.edit', $produk->id_helm) }}" 
-                                       wire:navigate
-                                       title="Edit Data & Kelola Stok Helm"
+                                       title="Edit Produk"
                                        class="h-7 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
                                         <i class="fa-solid fa-pen-to-square text-[10px]"></i>
-                                        <span>Edit &amp; Stok</span>
+                                        <span>Edit</span>
                                     </a>
 
                                     {{-- Aksi Hapus (Owner Only) --}}
