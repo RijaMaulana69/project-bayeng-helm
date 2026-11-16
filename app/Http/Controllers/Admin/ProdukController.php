@@ -34,26 +34,9 @@ class ProdukController extends Controller
         $produkHabis      = Helm::where('stok', '<=', 0)->count();
         $totalMerk        = Merk::count();
 
-        // Data Merk & Kategori untuk filter & form
+        // Data Merk & Kategori untuk filter
         $merks     = Merk::orderBy('nama_merk')->get();
         $kategoris = Kategori::orderBy('nama_kategori')->get();
-        $helms     = Helm::with('varians')->orderBy('nama_helm', 'asc')->get();
-        $warnaMap  = Warna::pluck('kode_hex', 'nama_warna')->toArray();
-
-        // Format data varian untuk modal restok instan
-        $helm_variants = [];
-        foreach ($helms as $h) {
-            $helm_variants[$h->id_helm] = $h->varians->map(function ($v) use ($warnaMap) {
-                return [
-                    'id_varian' => $v->id_varian,
-                    'label'     => $v->warna . ' - ' . $v->ukuran . ' (Stok: ' . $v->stok . ')',
-                    'stok'      => $v->stok,
-                    'warna'     => $v->warna,
-                    'ukuran'    => $v->ukuran,
-                    'kode_hex'  => $warnaMap[$v->warna] ?? '#334155',
-                ];
-            })->values()->toArray();
-        }
 
         // ==========================================
         // TAB 1: PRODUK & INVENTORI (KATALOG + RAK FISIK)
@@ -129,8 +112,6 @@ class ProdukController extends Controller
             'totalMerk',
             'merks',
             'kategoris',
-            'helms',
-            'helm_variants',
             'produks',
             'idMerk',
             'idKategori',
@@ -190,6 +171,8 @@ class ProdukController extends Controller
 
             // Simpan Varian & Hitung Total Stok
             $total_stok = 0;
+            $user = Auth::guard('web')->user();
+
             if ($request->has('variant_stok') && is_array($request->variant_stok)) {
                 foreach ($request->variant_stok as $key => $stok) {
                     $parts = explode('|', $key);
@@ -205,14 +188,27 @@ class ProdukController extends Controller
                             'stok'    => $v_stok,
                         ]);
                         $total_stok += $v_stok;
+
+                        if ($v_stok > 0) {
+                            StokMasuk::create([
+                                'id_helm'    => $helm->id_helm,
+                                'warna'      => $warnaName,
+                                'ukuran'     => $ukuranName,
+                                'id_user'    => $user ? $user->id_user : null,
+                                'jumlah'     => $v_stok,
+                                'harga_awal' => $helm->harga_awal,
+                                'harga_jual' => $helm->harga_jual,
+                                'tgl_masuk'  => now(),
+                                'keterangan' => 'Stok awal pendaftaran produk baru',
+                            ]);
+                        }
                     }
                 }
             }
 
             $helm->update(['stok' => $total_stok]);
 
-            $user = Auth::guard('web')->user();
-            ActivityLog::log('create_produk', "Produk baru ditambahkan: {$helm->nama_helm}", 'user', $user->id_user, $user->username);
+            ActivityLog::log('create_produk', "Produk baru ditambahkan: {$helm->nama_helm}", 'user', $user ? $user->id_user : null, $user ? $user->username : 'system');
 
             DB::commit();
 
@@ -301,6 +297,7 @@ class ProdukController extends Controller
 
             $keptVariantIds = [];
             $total_stok = 0;
+            $user = Auth::guard('web')->user();
 
             if ($request->has('variant_stok') && is_array($request->variant_stok)) {
                 foreach ($request->variant_stok as $key => $stok) {
@@ -309,6 +306,14 @@ class ProdukController extends Controller
                         $warnaName = trim($parts[0]);
                         $ukuranName = trim($parts[1]);
                         $v_stok = max(0, (int) $stok);
+
+                        // Cek stok sebelumnya untuk log audit stok masuk
+                        $existingVarian = VarianHelm::where('id_helm', $produk->id_helm)
+                            ->where('warna', $warnaName)
+                            ->where('ukuran', $ukuranName)
+                            ->first();
+
+                        $prevStok = $existingVarian ? (int) $existingVarian->stok : 0;
 
                         $varian = VarianHelm::updateOrCreate(
                             [
@@ -320,6 +325,22 @@ class ProdukController extends Controller
                                 'stok'    => $v_stok,
                             ]
                         );
+
+                        // Catat log otomatis ke riwayat stok masuk bila stok fisik bertambah
+                        if ($v_stok > $prevStok) {
+                            $diff = $v_stok - $prevStok;
+                            StokMasuk::create([
+                                'id_helm'    => $produk->id_helm,
+                                'warna'      => $warnaName,
+                                'ukuran'     => $ukuranName,
+                                'id_user'    => $user ? $user->id_user : null,
+                                'jumlah'     => $diff,
+                                'harga_awal' => $produk->harga_awal,
+                                'harga_jual' => $produk->harga_jual,
+                                'tgl_masuk'  => now(),
+                                'keterangan' => 'Penambahan stok fisik via edit produk',
+                            ]);
+                        }
 
                         $keptVariantIds[] = $varian->id_varian;
                         $total_stok += $v_stok;

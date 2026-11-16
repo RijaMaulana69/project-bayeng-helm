@@ -18,55 +18,6 @@
             this.deleteUrl = url;
             this.deleteName = name;
             this.deleteModal = true;
-        },
-
-        // Modal Restok
-        restockOpen: false, 
-        selectedHelm: '', 
-        selectedVarian: '', 
-        helmVariants: {{ Js::from($helm_variants ?? []) }}, 
-        jumlah: 1, 
-        keterangan: '',
-        openRestock(helmId = '', varianId = '') {
-            this.selectedHelm = helmId ? String(helmId) : '';
-            this.selectedVarian = varianId ? String(varianId) : '';
-            
-            // Auto-select lowest stock variant if helm is selected but no variant specified
-            if (this.selectedHelm && !this.selectedVarian && this.helmVariants[this.selectedHelm] && this.helmVariants[this.selectedHelm].length > 0) {
-                let sorted = [...this.helmVariants[this.selectedHelm]].sort((a, b) => a.stok - b.stok);
-                this.selectedVarian = String(sorted[0].id_varian);
-            }
-            
-            this.jumlah = 1;
-            this.keterangan = '';
-            this.restockOpen = true;
-        },
-        onHelmChange() {
-            this.selectedVarian = '';
-            if (this.selectedHelm && this.helmVariants[this.selectedHelm] && this.helmVariants[this.selectedHelm].length > 0) {
-                let sorted = [...this.helmVariants[this.selectedHelm]].sort((a, b) => a.stok - b.stok);
-                this.selectedVarian = String(sorted[0].id_varian);
-            }
-        },
-        get currentVariants() {
-            return (this.selectedHelm && this.helmVariants[this.selectedHelm]) ? this.helmVariants[this.selectedHelm] : [];
-        },
-        get selectedVariantObj() {
-            if (!this.selectedHelm || !this.selectedVarian || !this.helmVariants[this.selectedHelm]) return null;
-            return this.helmVariants[this.selectedHelm].find(v => String(v.id_varian) === String(this.selectedVarian)) || null;
-        },
-        get currentStock() {
-            return this.selectedVariantObj ? parseInt(this.selectedVariantObj.stok) : 0;
-        },
-        get newStock() {
-            return this.currentStock + (parseInt(this.jumlah) || 0);
-        },
-        addQty(n) {
-            let val = (parseInt(this.jumlah) || 0) + n;
-            this.jumlah = Math.max(1, val);
-        },
-        setQty(n) {
-            this.jumlah = Math.max(1, n);
         }
      }">
 
@@ -85,13 +36,6 @@
                     <span class="hidden sm:inline">Tambah Produk Baru</span>
                     <span class="sm:hidden">Tambah Produk</span>
                 </a>
-            @elseif ($tab === 'riwayat')
-                <button type="button" 
-                        @click="openRestock()"
-                        class="h-8 sm:h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
-                    <i class="fa-solid fa-plus text-[10px]"></i>
-                    <span>Catat Masuk</span>
-                </button>
             @endif
         </div>
     </div>
@@ -345,24 +289,20 @@
                             </div>
                         </div>
 
-                        {{-- Rincian Varian Ringkas (Pills Interaktif 1-Tap Restock) --}}
+                        {{-- Rincian Varian Ringkas (Pills Informasi Stok) --}}
                         <div class="pt-2 border-t border-slate-100 text-xs">
                             <div class="flex items-center justify-between gap-2">
-                                {{-- Preview Varian (Tap Chip Langsung Buka Modal Restok untuk Varian Tersebut) --}}
+                                {{-- Preview Varian --}}
                                 <div class="flex items-center gap-1 overflow-hidden flex-wrap flex-1">
                                     @foreach ($produk->varians->take(3) as $v)
                                         @php
                                             $vHabis = ($v->stok <= 0);
                                             $vKritis = ($v->stok > 0 && $v->stok <= 3);
                                         @endphp
-                                        <button type="button"
-                                                @click="openRestock({{ $produk->id_helm }}, {{ $v->id_varian }})"
-                                                title="Klik untuk langsung restok varian {{ $v->warna }} ({{ $v->ukuran }})"
-                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-all cursor-pointer hover:shadow-2xs active:scale-95 {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold hover:bg-rose-100' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium hover:bg-amber-100' : 'bg-slate-50 border-slate-200/80 text-slate-600 hover:bg-slate-100') }}">
+                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium' : 'bg-slate-50 border-slate-200/80 text-slate-600') }}">
                                             <span>{{ $v->warna }} ({{ $v->ukuran }})</span>
                                             <span class="font-bold {{ $vHabis ? 'text-rose-600' : ($vKritis ? 'text-amber-700' : 'text-slate-800') }}">: {{ $v->stok }}</span>
-                                            <i class="fa-solid fa-plus text-[8px] opacity-40 ml-0.5"></i>
-                                        </button>
+                                        </span>
                                     @endforeach
 
                                     @if($produk->varians->count() > 3)
@@ -376,21 +316,13 @@
 
                                 {{-- Tombol Aksi Cepat --}}
                                 <div class="flex items-center gap-1 shrink-0">
-                                    {{-- Restok Cepat Helm Ini --}}
-                                    <button type="button"
-                                            @click="openRestock({{ $produk->id_helm }})"
-                                            title="Restok Helm Ini"
-                                            class="h-7 px-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer active:scale-95">
-                                        <i class="fa-solid fa-plus text-[10px]"></i>
-                                        <span>Restok</span>
-                                    </button>
-
-                                    {{-- Edit Produk (Karyawan & Owner) --}}
+                                    {{-- Edit Helm & Stok --}}
                                     <a href="{{ route('admin.produk.edit', $produk->id_helm) }}" 
                                        wire:navigate
-                                       title="Edit Produk"
-                                       class="w-7 h-7 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center text-xs transition-colors">
-                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                       title="Edit Data & Kelola Stok Helm"
+                                       class="h-7 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
+                                        <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                                        <span>Edit &amp; Stok</span>
                                     </a>
 
                                     {{-- Aksi Hapus (Owner Only) --}}
@@ -413,14 +345,10 @@
                                             $vHabis = ($v->stok <= 0);
                                             $vKritis = ($v->stok > 0 && $v->stok <= 3);
                                         @endphp
-                                        <button type="button"
-                                                @click="openRestock({{ $produk->id_helm }}, {{ $v->id_varian }})"
-                                                title="Klik untuk langsung restok varian {{ $v->warna }} ({{ $v->ukuran }})"
-                                                class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border transition-all cursor-pointer hover:shadow-2xs active:scale-95 {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold hover:bg-rose-100' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium hover:bg-amber-100' : 'bg-slate-50 border-slate-200/80 text-slate-600 hover:bg-slate-100') }}">
+                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border {{ $vHabis ? 'bg-rose-50 border-rose-200 text-rose-700 font-semibold' : ($vKritis ? 'bg-amber-50 border-amber-200 text-amber-800 font-medium' : 'bg-slate-50 border-slate-200/80 text-slate-600') }}">
                                             <span>{{ $v->warna }} ({{ $v->ukuran }})</span>
                                             <span class="font-bold {{ $vHabis ? 'text-rose-600' : ($vKritis ? 'text-amber-700' : 'text-slate-800') }}">: {{ $v->stok }}</span>
-                                            <i class="fa-solid fa-plus text-[8px] opacity-40 ml-0.5"></i>
-                                        </button>
+                                        </span>
                                     @endforeach
                                 </div>
                             @endif
@@ -503,181 +431,7 @@
         @endif
     @endif
 
-    {{-- ========================================================================= --}}
-    {{-- MODAL RESTOK MASUK (ALPINE.JS - MOBILE TOUCH FRIENDLY)                    --}}
-    {{-- ========================================================================= --}}
-    <div x-show="restockOpen" 
-         x-cloak 
-         class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs"
-         @keydown.escape.window="restockOpen = false">
-        
-        <div class="bg-white w-full max-w-md rounded-2xl border border-slate-200 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" 
-             @click.outside="restockOpen = false"
-             x-transition:enter="transition ease-out duration-150"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
-             x-transition:leave="transition ease-in duration-100"
-             x-transition:leave-start="opacity-100 scale-100"
-             x-transition:leave-end="opacity-0 scale-95">
-            
-            {{-- Modal Header --}}
-            <div class="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between text-xs bg-slate-50/50 shrink-0">
-                <span class="font-semibold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked text-slate-400 text-[11px]"></i>
-                    <span class="text-sm font-bold text-slate-900 tracking-tight">Catat Stok Masuk</span>
-                </span>
-                <button type="button" 
-                        @click="restockOpen = false" 
-                        class="w-7 h-7 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 flex items-center justify-center transition-colors cursor-pointer">
-                    <i class="fa-solid fa-xmark text-xs"></i>
-                </button>
-            </div>
 
-            {{-- Form Restok --}}
-            <form method="POST" action="{{ route('admin.stok.store') }}" class="p-4 sm:p-5 space-y-4 text-xs overflow-y-auto">
-                @csrf
-
-                {{-- 1. Pilih Produk Helm --}}
-                <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">
-                        Pilih Produk Helm <span class="text-rose-500">*</span>
-                    </label>
-                    <select name="id_helm" 
-                            x-model="selectedHelm" 
-                            @change="onHelmChange()"
-                            required 
-                            class="w-full h-9 px-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer transition-colors">
-                        <option value="">-- Pilih Helm --</option>
-                        @foreach ($helms as $h)
-                            <option value="{{ $h->id_helm }}">{{ $h->nama_helm }} ({{ $h->varians->count() }} Varian)</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- 2. Pilih Varian via Touch Pills (Mobile-First) --}}
-                <div class="space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <label class="block font-semibold text-slate-700">
-                            Pilih Varian (Warna &amp; Ukuran) <span class="text-rose-500">*</span>
-                        </label>
-                        <span class="text-[11px] text-slate-400" x-show="currentVariants.length > 0" x-text="currentVariants.length + ' varian'"></span>
-                    </div>
-
-                    {{-- Hidden input for Form submission --}}
-                    <input type="hidden" name="id_varian" :value="selectedVarian" required>
-
-                    {{-- Empty placeholder when no helm selected --}}
-                    <div x-show="!selectedHelm" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-slate-400 text-xs">
-                        Pilih produk helm terlebih dahulu di atas
-                    </div>
-
-                    {{-- Touch-Friendly Variant Cards --}}
-                    <div x-show="selectedHelm && currentVariants.length > 0" class="space-y-1">
-                        <div class="space-y-1 max-h-44 overflow-y-auto pr-0.5">
-                            <template x-for="v in currentVariants" :key="v.id_varian">
-                                <button type="button" 
-                                        @click="selectedVarian = String(v.id_varian)"
-                                        class="w-full p-2.5 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-2.5"
-                                        :class="String(v.id_varian) === String(selectedVarian) ? 'bg-slate-900 border-slate-900 text-white shadow-2xs' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'">
-                                    <div class="flex items-center gap-2.5 min-w-0">
-                                        <span class="w-3 h-3 rounded-full border border-black/10 shrink-0 shadow-2xs" 
-                                              :style="'background-color: ' + (v.kode_hex || '#334155')"></span>
-                                        <div class="min-w-0 truncate text-xs font-semibold" :class="String(v.id_varian) === String(selectedVarian) ? 'text-white' : 'text-slate-900'">
-                                            <span x-text="v.warna"></span>
-                                            <span class="opacity-40">·</span>
-                                            <span :class="String(v.id_varian) === String(selectedVarian) ? 'text-slate-300' : 'text-slate-700'" x-text="'Size ' + v.ukuran"></span>
-                                        </div>
-                                    </div>
-                                    <div class="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded"
-                                         :class="String(v.id_varian) === String(selectedVarian) ? (v.stok <= 0 ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-200') : (v.stok <= 0 ? 'bg-rose-50 text-rose-600 border border-rose-200' : (v.stok <= 3 ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-white text-slate-600 border border-slate-200'))"
-                                         x-text="v.stok <= 0 ? 'Habis (0)' : v.stok + ' di rak'">
-                                    </div>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- 3. Live Stock Calculation Preview --}}
-                <div x-show="selectedVariantObj" 
-                     x-transition
-                     class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/90 flex items-center justify-between text-xs">
-                    <div class="text-left">
-                        <span class="text-[10px] text-slate-400 block font-medium">Stok Saat Ini</span>
-                        <span class="font-bold text-slate-800 tabular-nums" x-text="currentStock + ' unit'"></span>
-                    </div>
-                    <div class="flex items-center gap-1.5 text-slate-400">
-                        <span class="text-[11px] font-bold text-emerald-600 tabular-nums" x-text="'+' + (parseInt(jumlah) || 0) + ' unit'"></span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-[10px] text-slate-400 block font-medium">Total Menjadi</span>
-                        <span class="font-bold text-emerald-600 tabular-nums" x-text="newStock + ' unit'"></span>
-                    </div>
-                </div>
-
-                {{-- 4. Stepper & Presets Kuantitas (Mobile Friendly) --}}
-                <div class="space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <label class="block font-semibold text-slate-700">
-                            Jumlah Unit Masuk <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="flex items-center gap-1">
-                            <button type="button" @click="setQty(1)" class="px-2 py-0.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">+1</button>
-                            <button type="button" @click="setQty(3)" class="px-2 py-0.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">+3</button>
-                            <button type="button" @click="setQty(5)" class="px-2 py-0.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">+5</button>
-                            <button type="button" @click="setQty(10)" class="px-2 py-0.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">+10</button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5">
-                        <button type="button" 
-                                @click="addQty(-1)" 
-                                class="w-9 h-9 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
-                            -
-                        </button>
-                        <input type="number" 
-                               name="jumlah" 
-                               x-model.number="jumlah" 
-                               min="1" 
-                               required 
-                               class="flex-1 h-9 text-center font-bold text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400">
-                        <button type="button" 
-                                @click="addQty(1)" 
-                                class="w-9 h-9 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
-                            +
-                        </button>
-                    </div>
-                </div>
-
-                {{-- 5. Keterangan / Nomor Faktur Opsional --}}
-                <div class="space-y-1">
-                    <label class="block font-semibold text-slate-700">
-                        Keterangan / Faktur <span class="text-slate-400 font-normal">(Opsional)</span>
-                    </label>
-                    <input type="text" 
-                           name="keterangan" 
-                           x-model="keterangan" 
-                           placeholder="Contoh: Faktur No. 2026/XI/089 atau Nama Supplier" 
-                           class="w-full h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
-                </div>
-
-                <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100 shrink-0">
-                    <button type="button" 
-                            @click="restockOpen = false" 
-                            class="h-9 px-4 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium text-xs transition-colors cursor-pointer">
-                        Batal
-                    </button>
-                    <button type="submit" 
-                            :disabled="!selectedVarian || !selectedHelm" 
-                            class="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1.5">
-                        <i class="fa-solid fa-plus text-[11px]"></i>
-                        <span>Simpan Stok Masuk</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     {{-- ========================================================================= --}}
     {{-- MODAL KONFIRMASI HAPUS PRODUK (OWNER ONLY)                                --}}
