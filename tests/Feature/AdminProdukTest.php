@@ -159,4 +159,28 @@ class AdminProdukTest extends TestCase
             ->delete(route('admin.produk.destroy', 1))
             ->assertStatus(403);
     }
+
+    public function test_admin_can_view_riwayat_tab(): void
+    {
+        $admin = $this->getAdmin();
+
+        $response = $this->actingAs($admin, 'web')
+            ->get(route('admin.produk.index', ['tab' => 'riwayat']));
+
+        $response->assertStatus(200);
+        $response->assertSee('Riwayat Stok Masuk');
+    }
+
+    public function test_admin_can_filter_by_stok_status(): void
+    {
+        $admin = $this->getAdmin();
+
+        foreach (['kritis_habis', 'habis', 'tersedia', 'all'] as $filter) {
+            $response = $this->actingAs($admin, 'web')
+                ->get(route('admin.produk.index', ['stok_filter' => $filter]));
+
+            $response->assertStatus(200);
+            $response->assertSee('Data Produk Helm');
+        }
+    }
 }

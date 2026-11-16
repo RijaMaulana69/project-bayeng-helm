@@ -45,6 +45,8 @@ class ProdukController extends Controller
               ->orWhereHas('varians', fn($qv) => $qv->where('stok', '<=', 0));
         })->count();
 
+        $countTersedia = Helm::where('stok', '>', 0)->count();
+
         // Data Merk & Kategori untuk filter
         $merks     = Merk::orderBy('nama_merk')->get();
         $kategoris = Kategori::orderBy('nama_kategori')->get();
@@ -129,6 +131,7 @@ class ProdukController extends Controller
             'stokFilter',
             'countPerluRestok',
             'countHabis',
+            'countTersedia',
             'stok_masuks'
         ));
     }
