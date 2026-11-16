@@ -50,7 +50,7 @@ class StokController extends Controller
                 'jumlah'     => $request->jumlah,
                 'harga_awal' => $helm->harga_awal,
                 'harga_jual' => $helm->harga_jual,
-                'keterangan' => $request->keterangan ?? 'Penambahan stok fisik gerai',
+                'keterangan' => $request->keterangan ?? 'Restok manual',
             ]);
 
             ActivityLog::log('add_stok', "Restok +{$request->jumlah} unit {$helm->nama_helm} ({$varian->warna}, {$varian->ukuran}) oleh {$user->nama_lengkap}", 'user', $user->id_user, $user->username);

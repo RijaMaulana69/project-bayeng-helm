@@ -337,19 +337,6 @@
 
             {{-- Rincian Stok Fisik per Varian --}}
             <div class="pt-3 border-t border-slate-100 space-y-3" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <span class="text-xs text-slate-600 font-semibold">
-                        Set Stok:
-                    </span>
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        <button type="button" @click="setAllStok(0)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer shadow-2xs active:scale-95 transition-all">0</button>
-                        <button type="button" @click="setAllStok(1)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">1</button>
-                        <button type="button" @click="setAllStok(3)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">3</button>
-                        <button type="button" @click="setAllStok(5)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">5</button>
-                        <button type="button" @click="setAllStok(10)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">10</button>
-                    </div>
-                </div>
-
                 {{-- Variant Items List (Clean & Touch-friendly) --}}
                 <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden bg-white">
                     <template x-for="w in warnas" :key="w">

@@ -215,7 +215,7 @@ class ProdukController extends Controller
                                 'harga_awal' => $helm->harga_awal,
                                 'harga_jual' => $helm->harga_jual,
                                 'tgl_masuk'  => now(),
-                                'keterangan' => 'Stok awal pendaftaran produk baru',
+                                'keterangan' => 'Stok awal',
                             ]);
                         }
                     }
@@ -354,7 +354,7 @@ class ProdukController extends Controller
                                 'harga_awal' => $produk->harga_awal,
                                 'harga_jual' => $produk->harga_jual,
                                 'tgl_masuk'  => now(),
-                                'keterangan' => 'Penambahan stok fisik via edit produk',
+                                'keterangan' => 'Penyesuaian stok',
                             ]);
                         }
 

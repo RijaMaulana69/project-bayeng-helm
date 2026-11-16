@@ -4,16 +4,13 @@
 @section('page-title', 'Riwayat Kasir')
 
 @section('content')
-<div class="space-y-3 max-w-5xl mx-auto">
+<div class="space-y-3 w-full">
 
     {{-- 1. Header Bersih --}}
     <div>
         <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
             Riwayat Kasir
         </h1>
-        <p class="text-xs text-slate-500">
-            {{ $periodDateLabel }}
-        </p>
     </div>
 
     {{-- 2. Tab Periode (Mobile-First Full Width) --}}

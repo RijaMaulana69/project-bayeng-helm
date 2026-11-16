@@ -379,39 +379,52 @@
     </div>
 
     {{-- ========================================================================= --}}
-    {{-- TAB 2: RIWAYAT BARANG MASUK                                               --}}
+    {{-- TAB 2: RIWAYAT STOK                                                       --}}
     {{-- ========================================================================= --}}
     @elseif ($tab === 'riwayat')
         <div class="space-y-3">
             @if ($stok_masuks->count() > 0)
-                <div class="space-y-2">
-                    @foreach ($stok_masuks as $stok)
-                        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs flex items-center justify-between gap-3 text-xs">
-                            <div class="min-w-0 space-y-0.5">
-                                <div class="flex items-center gap-2">
-                                    <h3 class="font-bold text-slate-900 truncate">
-                                        {{ $stok->helm->nama_helm ?? 'Helm' }}
-                                    </h3>
-                                    <span class="text-slate-400 text-[11px]">
-                                        {{ $stok->warna }} ({{ $stok->ukuran }})
+                <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+                    <div class="divide-y divide-slate-100">
+                        @foreach ($stok_masuks as $stok)
+                            <div class="p-3 sm:px-4 sm:py-3.5 hover:bg-slate-50/70 transition-colors flex items-center justify-between gap-3 text-xs">
+                                <div class="min-w-0 flex-1 space-y-0.5">
+                                    {{-- Baris 1: Nama Helm & Merk --}}
+                                    <div class="flex items-center gap-1.5 truncate">
+                                        <h3 class="font-semibold text-slate-900 text-xs sm:text-sm truncate">
+                                            {{ $stok->helm->nama_helm ?? 'Helm' }}
+                                        </h3>
+                                        @if($stok->helm && $stok->helm->merk)
+                                            <span class="text-slate-400 text-xs font-normal shrink-0">· {{ $stok->helm->merk->nama_merk }}</span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Baris 2: Varian & Catatan --}}
+                                    <div class="text-[11px] sm:text-xs text-slate-600 truncate">
+                                        <span class="font-medium">{{ $stok->warna }}</span>, <span>{{ $stok->ukuran }}</span>
+                                        @if($stok->keterangan)
+                                            <span class="text-slate-300 mx-1">·</span>
+                                            <span class="text-slate-500 font-normal">{{ $stok->keterangan }}</span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Baris 3: Waktu & Petugas --}}
+                                    <div class="text-[10px] sm:text-[11px] text-slate-400 truncate pt-0.5">
+                                        <span>{{ $stok->tgl_masuk ? $stok->tgl_masuk->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}</span>
+                                        <span class="text-slate-300 mx-1">·</span>
+                                        <span>{{ $stok->user->nama_lengkap ?? ($stok->user->username ?? 'Staf') }}</span>
+                                    </div>
+                                </div>
+
+                                {{-- Kolom Kanan: Kuantitas Masuk --}}
+                                <div class="shrink-0 text-right pl-2">
+                                    <span class="text-xs sm:text-sm font-bold text-emerald-600 tabular-nums">
+                                        +{{ number_format($stok->jumlah) }} unit
                                     </span>
                                 </div>
-                                <div class="flex items-center gap-2 text-[11px] text-slate-400">
-                                    <span>{{ $stok->tgl_masuk ? $stok->tgl_masuk->format('d M Y, H:i') : '-' }} WIB</span>
-                                    <span>&bull;</span>
-                                    <span>Oleh: {{ $stok->user->nama_lengkap ?? ($stok->user->username ?? 'Staf') }}</span>
-                                    @if($stok->keterangan)
-                                        <span>&bull;</span>
-                                        <span class="text-slate-500 italic">{{ $stok->keterangan }}</span>
-                                    @endif
-                                </div>
                             </div>
-
-                            <span class="px-2.5 py-1 rounded-lg font-bold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                                +{{ $stok->jumlah }} unit
-                            </span>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
 
                 @if ($stok_masuks->hasPages())
