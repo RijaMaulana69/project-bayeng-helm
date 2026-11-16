@@ -29,7 +29,7 @@ class AdminProdukTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Data Produk Helm', false);
-        $response->assertSee('Tambah Produk Baru');
+        $response->assertSee('Tambah');
     }
 
     public function test_admin_can_search_and_filter_produk(): void
@@ -147,7 +147,7 @@ class AdminProdukTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Harga Jual');
         $response->assertDontSee('Modal: Rp');
-        $response->assertSee('Tambah Produk Baru');
+        $response->assertSee('Tambah');
 
         // Can access create page
         $this->actingAs($karyawan, 'web')

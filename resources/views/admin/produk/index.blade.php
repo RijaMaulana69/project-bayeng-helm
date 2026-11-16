@@ -32,8 +32,7 @@
                    wire:navigate
                    class="h-8 sm:h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors">
                     <i class="fa-solid fa-plus text-[10px]"></i>
-                    <span class="hidden sm:inline">Tambah Produk Baru</span>
-                    <span class="sm:hidden">Tambah Produk</span>
+                    <span>Tambah</span>
                 </a>
             @endif
         </div>
@@ -42,43 +41,43 @@
     {{-- 2. Ringkasan Stok (Grid Statis) --}}
     <div class="grid grid-cols-3 gap-2 sm:gap-3">
         {{-- Total Produk --}}
-        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
                 <span class="text-[11px] font-semibold text-slate-500">Total Produk</span>
                 <i class="fa-solid fa-boxes-stacked text-xs text-slate-400"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-1">
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
                 {{ $totalProduk }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[11px] text-slate-500 truncate mt-0.5">
+            <div class="text-[11px] text-slate-500 truncate">
                 Total stok: <span class="font-medium text-slate-700">{{ number_format($totalStokFisik, 0, ',', '.') }}</span> unit
             </div>
         </div>
 
         {{-- Perlu Restok --}}
-        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
                 <span class="text-[11px] font-semibold text-slate-500">Perlu Restok</span>
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <i class="fa-solid fa-triangle-exclamation text-xs text-amber-500"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-1">
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
                 {{ $countPerluRestok }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[11px] text-amber-600 font-medium truncate mt-0.5">
+            <div class="text-[11px] text-amber-600 font-medium truncate">
                 {{ $kritisCount }} varian menipis
             </div>
         </div>
 
         {{-- Stok Habis --}}
-        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
+            <div class="flex items-center justify-between text-slate-400">
                 <span class="text-[11px] font-semibold text-slate-500">Stok Habis</span>
-                <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                <i class="fa-solid fa-circle-exclamation text-xs text-rose-500"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-1">
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
                 {{ $countHabis }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[11px] text-rose-600 font-medium truncate mt-0.5">
+            <div class="text-[11px] text-rose-600 font-medium truncate">
                 {{ $habisCount }} varian kosong
             </div>
         </div>
@@ -115,10 +114,9 @@
             {{-- Status Filter Tabs (Clean Minimalist Chips) --}}
             @php
                 $stockTabs = [
-                    ['id' => 'all',          'label' => 'Semua',         'count' => $totalProduk],
-                    ['id' => 'kritis_habis', 'label' => 'Perlu Restok',  'count' => $countPerluRestok],
-                    ['id' => 'habis',        'label' => 'Stok Habis',    'count' => $countHabis],
-                    ['id' => 'tersedia',     'label' => 'Stok Tersedia', 'count' => $countTersedia],
+                    ['id' => 'all',          'label' => 'Semua',        'count' => $totalProduk],
+                    ['id' => 'kritis_habis', 'label' => 'Perlu Restok', 'count' => $countPerluRestok],
+                    ['id' => 'habis',        'label' => 'Stok Habis',   'count' => $countHabis],
                 ];
             @endphp
             <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
