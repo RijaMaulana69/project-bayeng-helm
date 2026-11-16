@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id" class="h-full bg-[#f8fafc]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -75,7 +75,7 @@
     @livewireStyles
     @stack('styles')
 </head>
-<body class="h-full text-slate-700 antialiased" x-data="{ mobileDrawer: false }">
+<body class="min-h-full text-slate-700 antialiased bg-[#f8fafc]" x-data="{ mobileDrawer: false }">
 
     @php
         $authUser = Auth::guard('web')->user();
@@ -85,12 +85,12 @@
         $roleBadgeBg = $isOwner ? 'bg-indigo-50 text-indigo-700 border-indigo-200/80' : 'bg-emerald-50 text-emerald-700 border-emerald-200/80';
     @endphp
 
-    <div class="flex h-[100dvh] overflow-hidden bg-[#f8fafc]">
+    <div class="min-h-screen bg-[#f8fafc]">
         
         {{-- ======================================================== --}}
         {{-- 1. DESKTOP SIDEBAR (Visible on lg: >= 1024px)             --}}
         {{-- ======================================================== --}}
-        <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-slate-200/90 shrink-0">
+        <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:flex-col lg:w-64 bg-white border-r border-slate-200/90">
             
             {{-- Brand Section --}}
             <div class="h-[60px] px-5 flex items-center justify-between border-b border-slate-100">
@@ -255,10 +255,10 @@
         {{-- ======================================================== --}}
         {{-- 2. MAIN COLUMN (Topbar + Content + Mobile Bottom Nav)    --}}
         {{-- ======================================================== --}}
-        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <div class="lg:pl-64 flex flex-col min-h-screen">
             
             {{-- Topbar Header --}}
-            <header class="z-20 h-14 bg-white border-b border-slate-200/80 px-4 lg:px-8 flex items-center justify-between shrink-0">
+            <header class="sticky top-0 z-20 h-14 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 flex items-center justify-between shrink-0">
                 
                 {{-- Left: Page Title + Real-time Clock --}}
                 <div class="flex items-center gap-3">
@@ -479,7 +479,7 @@
             </header>
 
             {{-- Main Scrollable Content --}}
-            <main class="flex-1 overflow-y-auto bg-[#f8fafc] p-4 sm:p-6 lg:p-6 pb-24 lg:pb-8">
+            <main class="flex-1 p-4 sm:p-6 lg:p-6 pb-24 lg:pb-8">
                 <div class="w-full max-w-7xl mx-auto">
                     @yield('content')
                 </div>
