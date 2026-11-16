@@ -99,8 +99,7 @@ class DashboardController extends Controller
             $selected_period = $request->query('period');
 
             if (!$selected_period || !in_array($selected_period, $validPeriods)) {
-                $hasToday = Pesanan::whereDate('created_at', today())->exists();
-                $selected_period = $hasToday ? 'today' : 'this_month';
+                $selected_period = 'today';
             }
 
             $periodLabels = [

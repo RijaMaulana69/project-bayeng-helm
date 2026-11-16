@@ -82,7 +82,7 @@
                         class="w-full h-10 px-3 rounded-xl bg-white border border-slate-200 font-medium text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 cursor-pointer @error('id_role') border-rose-300 ring-1 ring-rose-400 @enderror">
                     @foreach ($roles as $role)
                         <option value="{{ $role->id_role }}" {{ old('id_role', $user->id_role) == $role->id_role ? 'selected' : '' }}>
-                            {{ $role->nama_role }}
+                            {{ strtolower($role->nama_role) === 'karyawan' ? 'Kasir Gerai (Karyawan)' : ucfirst($role->nama_role) }}
                         </option>
                     @endforeach
                 </select>

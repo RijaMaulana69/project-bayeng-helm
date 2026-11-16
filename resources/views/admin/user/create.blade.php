@@ -79,7 +79,7 @@
                     <option value="">-- Pilih Peran --</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->id_role }}" {{ old('id_role') == $role->id_role ? 'selected' : '' }}>
-                            {{ $role->nama_role }}
+                            {{ strtolower($role->nama_role) === 'karyawan' ? 'Kasir Gerai (Karyawan)' : ucfirst($role->nama_role) }}
                         </option>
                     @endforeach
                 </select>

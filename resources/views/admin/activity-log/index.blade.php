@@ -4,62 +4,69 @@
 @section('page-title', 'Log Aktivitas')
 
 @section('content')
-<div class="space-y-4 max-w-6xl mx-auto">
+<div class="space-y-4 max-w-5xl mx-auto">
 
     {{-- 1. Header Minimalist --}}
-    <div class="flex items-center justify-between gap-3">
-        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Log Aktivitas
-        </h1>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Log Aktivitas
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Audit jejak peristiwa sistem, login kasir, dan riwayat aktivitas gerai
+            </p>
+        </div>
 
-        <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs shrink-0">
-            Total: <span class="font-mono text-slate-900">{{ number_format($logs->total(), 0, ',', '.') }}</span>
-        </span>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <span class="px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-medium shadow-2xs">
+                <span class="font-bold text-slate-900 tabular-nums">{{ number_format($logs->total(), 0, ',', '.') }}</span> peristiwa tercatat
+            </span>
+        </div>
     </div>
 
-    {{-- 2. Filter Bar --}}
+    {{-- 2. Filter Bar Ramping --}}
     @php
         $startDateVal = request('start_date', request('date_from', ''));
         $endDateVal   = request('end_date', request('date_to', ''));
         $hasFilter    = request()->filled('action') || !empty($startDateVal) || !empty($endDateVal);
     @endphp
-    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
-        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs items-end">
+    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs">
+        <form method="GET" action="{{ route('admin.activity-log.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 text-xs items-end">
             {{-- Filter Aksi --}}
-            <div class="space-y-1">
-                <label class="block font-semibold text-slate-700">Jenis Aksi</label>
-                <select name="action" class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900 cursor-pointer">
-                    <option value="">Semua Aksi</option>
+            <div class="sm:col-span-4 space-y-1">
+                <label class="block text-[11px] font-semibold text-slate-600">Jenis Peristiwa</label>
+                <select name="action" class="w-full h-8.5 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer">
+                    <option value="">Semua Peristiwa</option>
                     @foreach ($actions as $act)
                         <option value="{{ $act }}" {{ request('action') === $act ? 'selected' : '' }}>
-                            {{ ucwords(str_replace('_', ' ', $act)) }}
+                            {{ \App\Models\ActivityLog::labelForAction($act) }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
             {{-- Dari Tanggal --}}
-            <div class="space-y-1">
-                <label class="block font-semibold text-slate-700">Dari Tanggal</label>
+            <div class="sm:col-span-3 space-y-1">
+                <label class="block text-[11px] font-semibold text-slate-600">Dari Tanggal</label>
                 <input type="date" 
                        name="start_date" 
                        value="{{ $startDateVal }}" 
-                       class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900">
+                       class="w-full h-8.5 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400">
             </div>
 
             {{-- Sampai Tanggal --}}
-            <div class="space-y-1">
-                <label class="block font-semibold text-slate-700">Sampai Tanggal</label>
+            <div class="sm:col-span-3 space-y-1">
+                <label class="block text-[11px] font-semibold text-slate-600">Sampai Tanggal</label>
                 <input type="date" 
                        name="end_date" 
                        value="{{ $endDateVal }}" 
-                       class="w-full h-9 px-3 bg-white border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-900">
+                       class="w-full h-8.5 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-slate-400">
             </div>
 
             {{-- Tombol Aksi --}}
-            <div class="flex items-center gap-2">
+            <div class="sm:col-span-2 flex items-center gap-1.5">
                 <button type="submit" 
-                        class="flex-1 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+                        class="flex-1 h-8.5 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
                     <i class="fa-solid fa-filter text-[10px]"></i>
                     <span>Filter</span>
                 </button>
@@ -68,134 +75,86 @@
                     <a href="{{ route('admin.activity-log.index') }}" 
                        wire:navigate
                        title="Reset Filter"
-                       class="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 flex items-center justify-center transition-colors">
-                        <i class="fa-solid fa-xmark text-xs"></i>
+                       class="h-8.5 w-8.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors shrink-0">
+                        <i class="fa-solid fa-rotate-left text-xs"></i>
                     </a>
                 @endif
             </div>
         </form>
     </div>
 
-    {{-- 3. Log Records Container --}}
-    <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
-        {{-- Desktop Table (sm and up) --}}
-        <div class="hidden sm:block overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-700">
-                <thead class="bg-slate-50/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200">
-                    <tr>
-                        <th class="py-3 px-4">Waktu</th>
-                        <th class="py-3 px-4">Aksi</th>
-                        <th class="py-3 px-4">Aktor / User</th>
-                        <th class="py-3 px-4">Deskripsi Aktivitas</th>
-                        <th class="py-3 px-4 text-right">Alamat IP</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse ($logs as $log)
-                        @php
-                            $actionName = $log->action;
-                            $badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
-                            if (str_contains($actionName, 'success') || str_contains($actionName, 'completed')) {
-                                $badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                            } elseif (str_contains($actionName, 'failed') || str_contains($actionName, 'blocked') || str_contains($actionName, 'delete')) {
-                                $badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
-                            } elseif (str_contains($actionName, 'create') || str_contains($actionName, 'add')) {
-                                $badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
-                            } elseif (str_contains($actionName, 'update')) {
-                                $badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
-                            }
-                        @endphp
-                        <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <span class="font-mono text-slate-900 block font-medium">
-                                    {{ $log->created_at->format('d/m/Y H:i:s') }}
-                                </span>
-                                <span class="text-[10px] text-slate-400">
-                                    {{ $log->created_at->diffForHumans() }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $badgeColor }}">
-                                    {{ ucwords(str_replace('_', ' ', $log->action)) }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 whitespace-nowrap">
-                                <div class="font-medium text-slate-900">
-                                    {{ $log->user->nama_lengkap ?? ($log->username ?? 'Sistem / Tamu') }}
-                                </div>
-                                @if($log->username)
-                                    <div class="text-[10px] text-slate-400 font-mono">
-                                        {{ '@' . $log->username }}
-                                    </div>
-                                @endif
-                            </td>
-                            <td class="py-3 px-4 text-slate-700 max-w-md">
-                                <p class="line-clamp-2 leading-relaxed">
-                                    {{ $log->description ?? '-' }}
-                                </p>
-                            </td>
-                            <td class="py-3 px-4 text-right whitespace-nowrap">
-                                <span class="font-mono text-[11px] bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded text-slate-600">
-                                    {{ $log->ip_address ?? '-' }}
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="py-8 text-center text-slate-400">
-                                <i class="fa-solid fa-list-check text-2xl text-slate-300 block mb-1"></i>
-                                Tidak ada log aktivitas yang cocok dengan filter
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    {{-- 3. Activity Ledger (Minimalist Text Ledger - 100% Tailwind CSS Bersih) --}}
+    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+        {{-- Ledger Header --}}
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between text-xs bg-slate-50/50">
+            <span class="font-semibold text-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-[11px]"></i>
+                <span>Linimasa Peristiwa</span>
+            </span>
+            <span class="text-slate-400 text-[11px]">
+                Halaman {{ $logs->currentPage() }} dari {{ $logs->lastPage() }}
+            </span>
         </div>
 
-        {{-- Mobile Cards (sm hidden) --}}
-        <div class="sm:hidden divide-y divide-slate-100">
+        {{-- Ledger Items --}}
+        <div class="divide-y divide-slate-100">
             @forelse ($logs as $log)
                 @php
-                    $actionName = $log->action;
-                    $badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
-                    if (str_contains($actionName, 'success') || str_contains($actionName, 'completed')) {
-                        $badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                    } elseif (str_contains($actionName, 'failed') || str_contains($actionName, 'blocked') || str_contains($actionName, 'delete')) {
-                        $badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
-                    } elseif (str_contains($actionName, 'create') || str_contains($actionName, 'add')) {
-                        $badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
-                    } elseif (str_contains($actionName, 'update')) {
-                        $badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
-                    }
+                    $roleColor = match(strtolower($log->aktor_peran)) {
+                        'pemilik toko' => 'text-blue-600',
+                        'kasir gerai'  => 'text-indigo-600',
+                        'pelanggan'    => 'text-slate-600',
+                        default        => 'text-slate-400',
+                    };
                 @endphp
-                <div class="p-3.5 space-y-2 text-xs">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border {{ $badgeColor }}">
-                            {{ ucwords(str_replace('_', ' ', $log->action)) }}
+                <div class="p-3.5 sm:p-4 hover:bg-slate-50/60 transition-colors flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 sm:gap-4">
+                    {{-- Kolom 1: Timestamp & Waktu Relatif --}}
+                    <div class="sm:w-36 shrink-0 space-y-0.5">
+                        <span class="font-semibold text-xs text-slate-900 block">
+                            {{ $log->created_at->translatedFormat('d M Y, H:i') }}
                         </span>
-                        <span class="text-[10px] text-slate-400 font-mono">
-                            {{ $log->created_at->format('d/m/Y H:i') }}
+                        <span class="text-[11px] text-slate-400 block">
+                            {{ $log->created_at->diffForHumans() }}
                         </span>
                     </div>
 
-                    <p class="text-slate-800 leading-relaxed font-medium">
-                        {{ $log->description ?? '-' }}
-                    </p>
-
-                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-50">
-                        <div class="flex items-center gap-1.5 truncate">
-                            <i class="fa-regular fa-user text-slate-400 text-[10px]"></i>
-                            <span class="truncate">{{ $log->user->nama_lengkap ?? ($log->username ?? 'Tamu') }}</span>
+                    {{-- Kolom 2: Narasi Peristiwa, Aktor & Deskripsi --}}
+                    <div class="flex-1 min-w-0 space-y-1">
+                        {{-- Baris Info Aksi & Aktor --}}
+                        <div class="flex items-center gap-2 text-xs truncate">
+                            <span class="font-bold text-slate-900">
+                                {{ $log->aksi_label }}
+                            </span>
+                            <span class="text-slate-300">·</span>
+                            <span class="font-medium text-slate-800 truncate">
+                                {{ $log->aktor_nama }}
+                            </span>
+                            <span class="text-slate-300">·</span>
+                            <span class="text-[11px] font-medium {{ $roleColor }} shrink-0">
+                                {{ $log->aktor_peran }}
+                            </span>
                         </div>
-                        <span class="font-mono text-[10px] bg-slate-50 px-1.5 py-0.2 rounded border border-slate-200 text-slate-500 shrink-0">
-                            {{ $log->ip_address ?? '-' }}
+
+                        {{-- Baris Deskripsi Detail --}}
+                        <p class="text-xs text-slate-600 leading-relaxed break-words font-normal">
+                            {{ $log->description ?: '-' }}
+                        </p>
+                    </div>
+
+                    {{-- Kolom 3: Alamat IP & Metadata Teknis --}}
+                    <div class="sm:w-28 shrink-0 sm:text-right pt-0.5 sm:pt-0">
+                        <span class="text-[11px] text-slate-400 font-mono">
+                            {{ $log->ip_address ?: '-' }}
                         </span>
                     </div>
                 </div>
             @empty
-                <div class="py-8 text-center text-slate-400 text-xs">
-                    <i class="fa-solid fa-list-check text-2xl text-slate-300 block mb-1"></i>
-                    Tidak ada log aktivitas ditemukan
+                <div class="py-14 text-center text-slate-400 space-y-2">
+                    <div class="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+                        <i class="fa-solid fa-list-check text-lg"></i>
+                    </div>
+                    <p class="text-xs font-medium text-slate-600">Tidak ada peristiwa yang cocok dengan filter</p>
+                    <p class="text-[11px] text-slate-400">Coba ubah tanggal atau pilih semua jenis peristiwa</p>
                 </div>
             @endforelse
         </div>
