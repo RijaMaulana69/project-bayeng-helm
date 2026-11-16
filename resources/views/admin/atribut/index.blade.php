@@ -214,12 +214,14 @@
         {{-- Search Input --}}
         <form method="GET" action="{{ route('admin.atribut.index') }}" class="relative min-w-[220px]">
             <input type="hidden" name="tab" value="{{ $tab }}">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </span>
             <input type="text" 
                    name="search" 
                    value="{{ $search }}" 
                    placeholder="Cari {{ $tab }}..." 
-                   class="w-full h-8 pl-8 pr-7 rounded-lg bg-white border border-slate-200/90 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all">
+                   class="w-full h-8 pl-9 pr-7 rounded-lg bg-white border border-slate-200/90 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 transition-all">
             @if($search)
                 <a href="{{ route('admin.atribut.index', ['tab' => $tab]) }}" 
                    wire:navigate

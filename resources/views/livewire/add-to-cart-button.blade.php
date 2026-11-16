@@ -46,7 +46,7 @@
     <div class="hidden sm:flex items-center gap-3">
         {{-- Chat Button Desktop --}}
         <button type="button"
-                @click="$dispatch('open-store-chat')"
+                @click="$dispatch('open-store-chat', { helm_id: {{ $helm->id_helm }} })"
                 title="Tanya Staf Toko via Chat"
                 class="h-11 px-5 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-2xs cursor-pointer">
             <i class="fa-regular fa-comment-dots text-blue-600 text-base"></i>
@@ -66,7 +66,7 @@
     <div class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-4 py-2.5 flex items-center gap-3 shadow-lg">
         {{-- Chat Mobile --}}
         <button type="button"
-                @click="$dispatch('open-store-chat')"
+                @click="$dispatch('open-store-chat', { helm_id: {{ $helm->id_helm }} })"
                 class="w-14 h-11 flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-blue-600 active:scale-95 transition-all cursor-pointer shrink-0">
             <i class="fa-regular fa-comment-dots text-base leading-none"></i>
             <span class="text-[10px] font-bold mt-1 leading-none">Chat</span>

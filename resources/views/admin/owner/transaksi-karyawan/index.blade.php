@@ -169,12 +169,14 @@
 
             {{-- Search Box --}}
             <div class="col-span-2 sm:col-span-4 relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
                 <input type="text" 
                        name="search" 
                        value="{{ request('search') }}"
                        placeholder="Cari order, pelanggan..." 
-                       class="w-full h-8.5 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-slate-400 focus:outline-none transition-colors">
+                       class="w-full h-8.5 pl-9 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-slate-400 focus:outline-none transition-colors">
             </div>
 
             {{-- Tombol Terapkan & Reset --}}

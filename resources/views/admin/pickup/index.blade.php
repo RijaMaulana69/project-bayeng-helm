@@ -10,7 +10,9 @@
         <form method="POST" action="{{ route('admin.pickup.validasi') }}" class="flex items-center gap-2">
             @csrf
             <div class="relative flex-1">
-                <i class="fa-solid fa-barcode absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-barcode text-sm"></i>
+                </span>
                 <input type="text"
                        name="kode_pickup"
                        class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400"

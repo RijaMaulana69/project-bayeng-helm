@@ -9,167 +9,138 @@
 {{-- A. TAMPILAN KHUSUS KARYAWAN (Kasir & Staf Gerai - Frontline Operations)   --}}
 {{-- ========================================================================= --}}
 @if(!$isOwner)
-<div class="space-y-6">
+<div class="space-y-3.5 sm:space-y-4">
 
-    {{-- 1. Header Kasir & Validasi Cepat --}}
-    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
-        <div>
-            <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
-                Halo, {{ $user->nama_lengkap }}
-            </h1>
-        </div>
-
-        {{-- Clean Voucher Pickup Input Bar --}}
-        <div>
-            <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="flex items-center gap-2">
-                @csrf
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-barcode absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" 
-                           id="pickup_input_karyawan"
-                           name="kode_pickup" 
-                           placeholder="Masukkan kode pickup..." 
-                           required 
-                           autocomplete="off"
-                           class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
-                </div>
-                <button type="submit" 
-                        class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center shadow-2xs transition-colors cursor-pointer shrink-0">
-                    <span>Validasi</span>
-                </button>
-            </form>
-        </div>
+    {{-- 1. Bilah Cepat Validasi Kode Pickup & Sapaan Kasir --}}
+    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200/90 shadow-2xs space-y-3">
+        <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+            Halo, {{ $user->nama_lengkap }}
+        </h1>
+        <form action="{{ route('admin.pickup.validasi') }}" method="POST" class="flex items-center gap-2">
+            @csrf
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-barcode text-sm"></i>
+                </span>
+                <input type="text" 
+                       id="pickup_input_karyawan"
+                       name="kode_pickup" 
+                       placeholder="Masukkan kode pickup..." 
+                       required 
+                       autocomplete="off"
+                       class="w-full h-10 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-slate-400 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
+            </div>
+            <button type="submit" 
+                    class="h-10 px-4 sm:px-5 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center shadow-2xs transition-colors cursor-pointer shrink-0">
+                <span>Validasi</span>
+            </button>
+        </form>
     </div>
 
-    {{-- 2. Antrean Tindakan Kasir --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            {{-- 1. Siap Diambil di Gerai --}}
-            <a href="{{ route('admin.pickup.index') }}" 
-               wire:navigate
-               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xs transition-all group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Ambil di Toko</span>
-                        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-box-open"></i>
-                        </span>
-                    </div>
-                    <div class="mt-2.5 flex items-baseline gap-2">
-                        <span class="text-2xl font-bold text-slate-900">{{ $pesanan_siap_ambil }}</span>
-                        <span class="text-xs text-slate-500 font-normal">pelanggan</span>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-                    <span>Layani Pelanggan</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
+    {{-- 3. Antrean Tindakan Kasir (2 Kolom di Mobile, 4 Kolom di Desktop) --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        {{-- 1. Siap Diambil di Gerai --}}
+        <a href="{{ route('admin.pickup.index') }}" 
+           wire:navigate
+           class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1 hover:border-slate-300 transition-colors group block">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-semibold text-slate-500">Ambil di Toko</span>
+                <i class="fa-solid fa-box-open text-xs text-emerald-600"></i>
+            </div>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ $pesanan_siap_ambil }} <span class="text-[11px] font-normal text-slate-400">order</span>
+            </div>
+            <div class="text-[11px] text-emerald-600 font-medium truncate">
+                {{ $pickup_unpaid_count }} bayar di kasir
+            </div>
+        </a>
 
-            {{-- 2. Perlu Disiapkan di Rak --}}
-            <a href="{{ route('admin.pesanan.index', ['status' => 'processing']) }}" 
-               wire:navigate
-               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-sky-400 hover:shadow-xs transition-all group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Perlu Disiapkan</span>
-                        <span class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-dolly"></i>
-                        </span>
-                    </div>
-                    <div class="mt-2.5 flex items-baseline gap-2">
-                        <span class="text-2xl font-bold text-slate-900">{{ $pesanan_perlu_disiapkan }}</span>
-                        <span class="text-xs text-slate-500 font-normal">paket</span>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-sky-600">
-                    <span>Siapkan Barang</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
+        {{-- 2. Perlu Disiapkan di Rak --}}
+        <a href="{{ route('admin.pesanan.index', ['status' => 'processing']) }}" 
+           wire:navigate
+           class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1 hover:border-slate-300 transition-colors group block">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-semibold text-slate-500">Perlu Disiapkan</span>
+                <i class="fa-solid fa-dolly text-xs text-sky-600"></i>
+            </div>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ $pesanan_perlu_disiapkan }} <span class="text-[11px] font-normal text-slate-400">order</span>
+            </div>
+            <div class="text-[11px] text-slate-400 font-medium truncate">
+                Siapkan di rak
+            </div>
+        </a>
 
-            {{-- 3. Verifikasi Bukti Transfer --}}
-            <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" 
-               wire:navigate
-               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-400 hover:shadow-xs transition-all group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Pembayaran</span>
-                        <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-file-invoice"></i>
-                        </span>
-                    </div>
-                    <div class="mt-2.5 flex items-baseline gap-2">
-                        <span class="text-2xl font-bold {{ $pesanan_pending_count > 0 ? 'text-amber-600' : 'text-slate-900' }}">
-                            {{ $pesanan_pending_count }}
-                        </span>
-                        <span class="text-xs text-slate-500 font-normal">menunggu cek</span>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
-                    <span>Cek Pembayaran</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
+        {{-- 3. Verifikasi Bukti Transfer --}}
+        <a href="{{ route('admin.pesanan.index', ['status' => 'pending']) }}" 
+           wire:navigate
+           class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1 hover:border-slate-300 transition-colors group block">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-semibold text-slate-500">Pembayaran</span>
+                <i class="fa-solid fa-file-invoice text-xs text-amber-500"></i>
+            </div>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight {{ $pesanan_pending_count > 0 ? 'text-amber-600' : 'text-slate-900' }}">
+                {{ $pesanan_pending_count }} <span class="text-[11px] font-normal text-slate-400">order</span>
+            </div>
+            <div class="text-[11px] {{ $pesanan_pending_count > 0 ? 'text-amber-600 font-medium' : 'text-slate-400' }} truncate">
+                {{ $pesanan_pending_count > 0 ? 'Perlu cek bukti' : 'Terverifikasi' }}
+            </div>
+        </a>
 
-            {{-- 4. Stok Fisik Habis di Rak --}}
-            <a href="{{ route('admin.produk.index', ['stok_filter' => 'habis']) }}" 
-               wire:navigate
-               class="p-4 rounded-2xl bg-white border border-slate-200/90 hover:border-rose-400 hover:shadow-xs transition-all group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Stok Habis</span>
-                        <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
-                            <i class="fa-solid fa-boxes-packing"></i>
-                        </span>
-                    </div>
-                    <div class="mt-2.5 flex items-baseline gap-2">
-                        <span class="text-2xl font-bold {{ $varian_habis_count > 0 ? 'text-rose-600' : 'text-slate-900' }}">
-                            {{ $varian_habis_count }}
-                        </span>
-                        <span class="text-xs text-slate-500 font-normal">varian habis</span>
-                    </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-rose-600">
-                    <span>Input Stok Masuk</span>
-                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </a>
-        </div>
+        {{-- 4. Stok Fisik Habis di Rak --}}
+        <a href="{{ route('admin.produk.index', ['stok_filter' => 'habis']) }}" 
+           wire:navigate
+           class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1 hover:border-slate-300 transition-colors group block">
+            <div class="flex items-center justify-between text-slate-400">
+                <span class="text-[11px] font-semibold text-slate-500">Stok Habis</span>
+                <i class="fa-solid fa-boxes-packing text-xs text-rose-500"></i>
+            </div>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight {{ $varian_habis_count > 0 ? 'text-rose-600' : 'text-slate-900' }}">
+                {{ $varian_habis_count }} <span class="text-[11px] font-normal text-slate-400">varian</span>
+            </div>
+            <div class="text-[11px] {{ $varian_habis_count > 0 ? 'text-rose-600 font-medium' : 'text-slate-400' }} truncate">
+                {{ $varian_habis_count > 0 ? 'Perlu restok' : 'Stok rak aman' }}
+            </div>
+        </a>
+    </div>
 
-    {{-- 3. Meja Kasir: Antrean Pelanggan & Cek Fisik Helm --}}
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    {{-- 4. Meja Kasir: Antrean Pelanggan & Cek Fisik Helm --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-4 items-start">
         
         {{-- Antrean Siap Ambil (7 Cols) --}}
-        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ pickupFilter: 'all' }">
-            <div class="p-3.5 sm:p-4 border-b border-slate-100 flex items-center justify-between">
-                <div>
+        <div class="lg:col-span-7 bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden" x-data="{ pickupFilter: 'all' }">
+            <div class="p-3 sm:px-4 sm:py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Antrean Ambil Pesanan</h3>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                        {{ $pesanan_siap_ambil }}
+                    </span>
                 </div>
-                <a href="{{ route('admin.pickup.index') }}" wire:navigate class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.pickup.index') }}" wire:navigate class="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1 transition-colors">
                     <span>Lihat Semua</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
             </div>
 
-            {{-- Segmented Control Tabs (Clean on Mobile) --}}
-            <div class="px-3 sm:px-4 py-2 bg-slate-50/60 border-b border-slate-100">
-                <div class="flex p-0.5 bg-slate-200/60 rounded-xl text-xs">
+            {{-- Segmented Control Tabs --}}
+            <div class="p-2 sm:px-3 sm:py-2 bg-slate-50/70 border-b border-slate-100">
+                <div class="grid grid-cols-3 gap-1 p-0.5 bg-slate-200/60 rounded-lg text-xs">
                     <button type="button" 
                             @click="pickupFilter = 'all'"
-                            :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-semibold shadow-2xs' : 'text-slate-500 hover:text-slate-800 font-medium'"
-                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
+                            :class="pickupFilter === 'all' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                            class="py-1 text-center rounded-md text-[11px] sm:text-xs transition-all cursor-pointer truncate">
                         Semua ({{ $pesanan_siap_ambil }})
                     </button>
                     <button type="button" 
                             @click="pickupFilter = 'unpaid'"
-                            :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-amber-700 font-medium'"
-                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
-                        <span class="sm:hidden">Bayar</span><span class="hidden sm:inline">Bayar di Toko</span> ({{ $pickup_unpaid_count }})
+                            :class="pickupFilter === 'unpaid' ? 'bg-white text-amber-700 font-bold shadow-2xs' : 'text-slate-600 hover:text-amber-700 font-medium'"
+                            class="py-1 text-center rounded-md text-[11px] sm:text-xs transition-all cursor-pointer truncate">
+                        <span class="sm:hidden">Bayar</span><span class="hidden sm:inline">Bayar di Kasir</span> ({{ $pickup_unpaid_count }})
                     </button>
                     <button type="button" 
                             @click="pickupFilter = 'ready'"
-                            :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-semibold shadow-2xs' : 'text-slate-500 hover:text-emerald-700 font-medium'"
-                            class="flex-1 py-1.5 text-center rounded-lg text-[11px] sm:text-xs transition-all cursor-pointer">
+                            :class="pickupFilter === 'ready' ? 'bg-white text-emerald-700 font-bold shadow-2xs' : 'text-slate-600 hover:text-emerald-700 font-medium'"
+                            class="py-1 text-center rounded-md text-[11px] sm:text-xs transition-all cursor-pointer truncate">
                         <span class="sm:hidden">Lunas</span><span class="hidden sm:inline">Sudah Lunas</span> ({{ $pickup_ready_count }})
                     </button>
                 </div>
@@ -187,50 +158,67 @@
                           x-show="pickupFilter === 'all' || (pickupFilter === 'unpaid' && '{{ $pesanan->status }}' === 'unpaid_pickup') || (pickupFilter === 'ready' && '{{ $pesanan->status }}' === 'ready')">
                         @csrf
                         <input type="hidden" name="kode_pickup" value="{{ $pesanan->kode_pickup }}">
-                        <button type="submit" class="w-full text-left p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group cursor-pointer">
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-baseline gap-2">
-                                    <span class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-600 transition-colors shrink-0">
+                        <button type="submit" class="w-full text-left p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 transition-colors group cursor-pointer">
+                            <div class="min-w-0 flex-1 space-y-0.5">
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="font-mono font-bold text-xs text-slate-900 group-hover:text-blue-600 transition-colors shrink-0">
                                         {{ $pesanan->kode_pickup }}
                                     </span>
-                                    <span class="text-xs text-slate-500 truncate">
+                                    <span class="text-slate-300">·</span>
+                                    <span class="text-xs font-medium text-slate-700 truncate">
                                         {{ $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan') }}
                                     </span>
                                 </div>
-                                <p class="text-xs text-slate-700 truncate mt-1">
+                                <p class="text-[11px] text-slate-500 truncate">
                                     {{ $itemsSummary }}{{ $extraCount > 0 ? ' +' . $extraCount . ' item' : '' }}
                                 </p>
                             </div>
 
-                            <div class="text-right shrink-0 flex items-center gap-2">
+                            <div class="shrink-0 flex items-center gap-1.5 self-center">
                                 @if($isPaid)
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                                         Lunas
                                     </span>
                                 @else
-                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-                                        Bayar di Toko
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                        Bayar di Kasir
                                     </span>
                                 @endif
-                                <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-blue-600 transition-colors"></i>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-slate-500 transition-colors"></i>
                             </div>
                         </button>
                     </form>
                 @empty
-                    <div class="p-8 text-center text-xs text-slate-400">
-                        Tidak ada antrean pickup yang siap saat ini.
+                    <div class="p-8 text-center text-xs text-slate-400 space-y-1">
+                        <i class="fa-solid fa-circle-check text-2xl text-slate-300 block mb-1"></i>
+                        <p class="font-medium text-slate-600">Tidak ada antrean pickup</p>
+                        <p class="text-[11px] text-slate-400">Semua pesanan siap ambil sudah selesai dilayani.</p>
                     </div>
                 @endforelse
             </div>
+
+            @if($pesanan_siap_ambil > 0)
+                <div class="p-2.5 bg-slate-50/60 border-t border-slate-100 text-center">
+                    <a href="{{ route('admin.pickup.index') }}" wire:navigate class="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 transition-colors">
+                        <span>Buka Halaman Kasir Pickup ({{ $pesanan_siap_ambil }})</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            @endif
         </div>
 
         {{-- Stok Kritis di Rak Toko (5 Cols) --}}
-        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div>
+        <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="p-3 sm:px-4 sm:py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">Peringatan Stok</h3>
+                    @if($stok_kritis_helm->count() > 0)
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200/60">
+                            {{ $stok_kritis_helm->count() }} model
+                        </span>
+                    @endif
                 </div>
-                <a href="{{ route('admin.produk.index', ['stok_filter' => 'kritis_habis']) }}" wire:navigate class="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors">
+                <a href="{{ route('admin.produk.index', ['stok_filter' => 'kritis_habis']) }}" wire:navigate class="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1 transition-colors">
                     <span>Kelola Stok</span>
                     <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </a>
@@ -244,33 +232,42 @@
                         $sampleVarians = $helm->varians->take(2)->map(fn($v) => $v->warna . ' (' . $v->ukuran . ')')->join(', ');
                         $extraVariansCount = $helm->varians->count() - 2;
                     @endphp
-                    <a href="{{ route('admin.produk.index', ['search' => $helm->nama_helm]) }}" wire:navigate class="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-slate-50/70 transition-colors group">
-                        <div class="min-w-0 flex-1">
+                    <a href="{{ route('admin.produk.index', ['search' => $helm->nama_helm]) }}" wire:navigate class="p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 transition-colors group">
+                        <div class="min-w-0 flex-1 space-y-0.5">
                             <h4 class="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate">
                                 {{ $helm->nama_helm }}
                             </h4>
-                            <p class="text-[11px] text-slate-500 truncate mt-0.5">
+                            <p class="text-[11px] text-slate-500 truncate">
                                 {{ $sampleVarians }}{{ $extraVariansCount > 0 ? ' +' . $extraVariansCount . ' varian' : '' }}
                             </p>
                         </div>
 
                         <div class="text-right shrink-0">
                             @if($habisCount > 0)
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200/80">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
                                     {{ $habisCount }} Habis
                                 </span>
                             @else
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
                                     {{ $menipisCount }} Menipis
                                 </span>
                             @endif
                         </div>
                     </a>
                 @empty
-                    <div class="p-8 text-center text-xs text-slate-400">
-                        Seluruh stok varian di rak aman.
+                    <div class="p-8 text-center text-xs text-slate-400 space-y-1">
+                        <i class="fa-solid fa-circle-check text-2xl text-slate-300 block mb-1"></i>
+                        <p class="font-medium text-slate-600">Stok Rak Aman</p>
+                        <p class="text-[11px] text-slate-400">Seluruh stok varian helm di gerai tercukupi.</p>
                     </div>
                 @endforelse
+            </div>
+
+            <div class="p-2.5 bg-slate-50/60 border-t border-slate-100 text-center">
+                <a href="{{ route('admin.produk.index') }}" wire:navigate class="text-xs font-semibold text-slate-600 hover:text-slate-900 inline-flex items-center gap-1.5 transition-colors">
+                    <span>Lihat Semua Katalog Helm</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
             </div>
         </div>
 

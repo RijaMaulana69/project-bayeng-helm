@@ -250,6 +250,9 @@
         </script>
     @endif
 
+    {{-- Global Customer Chat Widget --}}
+    @livewire('customer-chat-widget')
+
     @livewireScripts
     @stack('scripts')
 </body>

@@ -63,12 +63,12 @@
 
         /* Navigation active state */
         .sidebar-active {
-            background-color: #eff6ff;
-            color: #2563eb;
+            background-color: #f1f5f9;
+            color: #0f172a;
             font-weight: 600;
         }
         .sidebar-active i {
-            color: #2563eb;
+            color: #0f172a;
         }
     </style>
 
@@ -93,41 +93,38 @@
         <aside class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:flex-col lg:w-64 bg-white border-r border-slate-200/90">
             
             {{-- Brand Section --}}
-            <div class="h-[60px] px-5 flex items-center justify-between border-b border-slate-100">
+            <div class="h-14 px-4 flex items-center justify-between border-b border-slate-100">
                 <a href="{{ route('admin.dashboard') }}" wire:navigate class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-2xs">
-                        <i class="fa-solid fa-helmet-safety text-sm"></i>
+                    <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-2xs">
+                        <i class="fa-solid fa-helmet-safety text-xs"></i>
                     </div>
-                    <div>
-                        <div class="text-sm font-extrabold tracking-tight text-slate-900 leading-none">
-                            BAYENG<span class="text-blue-600">PRO</span>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-medium tracking-tight">Sistem Kasir & Toko</span>
-                    </div>
+                    <span class="text-sm font-extrabold tracking-tight text-slate-900 leading-none">
+                        Bayeng Helm
+                    </span>
                 </a>
             </div>
 
             {{-- Navigation Links --}}
             <nav class="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
                 
-                {{-- Group 1: Operasional Kasir (HANYA MUNCUL UNTUK KARYAWAN) --}}
+                {{-- Group 1: Kasir / Karyawan Gerai --}}
                 @if(!$isOwner)
                 <div class="space-y-1">
                     <p class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                        Operasional Kasir
+                        Menu Utama
                     </p>
 
-                    {{-- Ringkasan Kasir --}}
+                    {{-- Dashboard Kasir --}}
                     <a href="{{ route('admin.dashboard') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.dashboard') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <div class="flex items-center gap-2.5">
                             <i class="w-4 text-center fa-solid fa-chart-pie text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Ringkasan Kasir</span>
+                            <span>Dashboard Kasir</span>
                         </div>
                     </a>
 
-                    {{-- Transaksi (Pusat Kasir & Pesanan) --}}
+                    {{-- Transaksi Kasir --}}
                     <a href="{{ route('admin.pesanan.index') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.pesanan*') || request()->routeIs('admin.pickup*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -142,7 +139,7 @@
                         @endif
                     </a>
 
-                    {{-- Riwayat Transaksi Kasir (Buku Kas & Rekapitulasi) --}}
+                    {{-- Riwayat Kasir --}}
                     <a href="{{ route('admin.karyawan.riwayat') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.karyawan.riwayat*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -152,7 +149,7 @@
                         </div>
                     </a>
 
-                    {{-- Katalog & Stok (Katalog, Stok Fisik & Riwayat Masuk) --}}
+                    {{-- Katalog & Cek Stok --}}
                     <a href="{{ route('admin.produk.index') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.produk*') || request()->routeIs('admin.stok*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
@@ -166,23 +163,39 @@
                             </span>
                         @endif
                     </a>
+
+                    {{-- Chat Pelanggan --}}
+                    <a href="{{ route('admin.chat.index') }}" 
+                       wire:navigate
+                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.chat*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <div class="flex items-center gap-2.5">
+                            <i class="w-4 text-center fa-solid fa-comments text-slate-400 group-hover:text-slate-600"></i>
+                            <span>Chat Pelanggan</span>
+                        </div>
+                        @if(($nav_chat_unread_count ?? 0) > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                                {{ $nav_chat_unread_count }}
+                            </span>
+                        @endif
+                    </a>
                 </div>
                 @endif
 
-                {{-- Group 2: Manajemen Bisnis (HANYA MUNCUL JIKA OWNER) --}}
+                {{-- Group 2: Pemilik Toko (Owner) --}}
                 @if($isOwner)
+                {{-- Section A: Menu Utama --}}
                 <div class="space-y-1">
                     <p class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-                        Manajemen Bisnis
+                        Menu Utama
                     </p>
 
-                    {{-- Ringkasan Bisnis --}}
+                    {{-- Dashboard Bisnis --}}
                     <a href="{{ route('admin.dashboard') }}" 
                        wire:navigate
                        class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.dashboard') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <div class="flex items-center gap-2.5">
                             <i class="w-4 text-center fa-solid fa-chart-pie text-slate-400 group-hover:text-slate-600"></i>
-                            <span>Ringkasan Bisnis</span>
+                            <span>Dashboard Bisnis</span>
                         </div>
                     </a>
 
@@ -214,13 +227,27 @@
                         <span>Laporan Penjualan</span>
                     </a>
 
-                    {{-- Atribut Helm --}}
-                    <a href="{{ route('admin.atribut.index') }}" 
+                    {{-- Chat Pelanggan --}}
+                    <a href="{{ route('admin.chat.index') }}" 
                        wire:navigate
-                       class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.atribut*') || request()->routeIs('admin.merk*') || request()->routeIs('admin.kategori*') || request()->routeIs('admin.warna*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
-                        <i class="w-4 text-center fa-solid fa-tags text-slate-400 group-hover:text-slate-600"></i>
-                        <span>Atribut Helm</span>
+                       class="flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.chat*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <div class="flex items-center gap-2.5">
+                            <i class="w-4 text-center fa-solid fa-comments text-slate-400 group-hover:text-slate-600"></i>
+                            <span>Chat Pelanggan</span>
+                        </div>
+                        @if(($nav_chat_unread_count ?? 0) > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                                {{ $nav_chat_unread_count }}
+                            </span>
+                        @endif
                     </a>
+                </div>
+
+                {{-- Section B: Manajemen & Toko --}}
+                <div class="space-y-1">
+                    <p class="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                        Manajemen &amp; Toko
+                    </p>
 
                     {{-- Kelola Karyawan --}}
                     <a href="{{ route('admin.owner.user.index') }}" 
@@ -228,6 +255,14 @@
                        class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.owner.user*') || request()->routeIs('admin.user*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
                         <i class="w-4 text-center fa-solid fa-users-gear text-slate-400 group-hover:text-slate-600"></i>
                         <span>Kelola Karyawan</span>
+                    </a>
+
+                    {{-- Atribut Helm --}}
+                    <a href="{{ route('admin.atribut.index') }}" 
+                       wire:navigate
+                       class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-xl transition-colors group {{ request()->routeIs('admin.atribut*') || request()->routeIs('admin.merk*') || request()->routeIs('admin.kategori*') || request()->routeIs('admin.warna*') ? 'sidebar-active' : 'text-slate-600 hover:bg-slate-50' }}">
+                        <i class="w-4 text-center fa-solid fa-tags text-slate-400 group-hover:text-slate-600"></i>
+                        <span>Atribut Helm</span>
                     </a>
 
                     {{-- Log Aktivitas --}}
@@ -294,7 +329,8 @@
                         $notifPickup = $nav_pickup_count ?? 0;
                         $notifPending = $nav_pending_count ?? 0;
                         $notifStock = $nav_critical_stock_count ?? 0;
-                        $notifTotal = $notifPickup + $notifPending + ($notifStock > 0 ? 1 : 0);
+                        $notifChat = $nav_chat_unread_count ?? 0;
+                        $notifTotal = $notifPickup + $notifPending + ($notifStock > 0 ? 1 : 0) + ($notifChat > 0 ? 1 : 0);
                     @endphp
                     <div class="relative" x-data="{ notifOpen: false }" @click.outside="notifOpen = false">
                         <button type="button" 
@@ -375,6 +411,22 @@
                                             </p>
                                             <p class="text-[11px] text-slate-400 mt-0.5">
                                                 Stok habis atau menipis
+                                            </p>
+                                        </div>
+                                    </a>
+                                @endif
+
+                                @if($notifChat > 0)
+                                    <a href="{{ route('admin.chat.index') }}" @click="notifOpen = false" wire:navigate class="p-3 flex items-start gap-3 hover:bg-slate-50 transition-colors group">
+                                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 text-xs mt-0.5">
+                                            <i class="fa-solid fa-comments"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
+                                                {{ $notifChat }} Pesan Chat Baru
+                                            </p>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">
+                                                Pelanggan membutuhkan respon
                                             </p>
                                         </div>
                                     </a>
@@ -611,11 +663,11 @@
                 <div>
                     <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                            <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                                 <i class="fa-solid fa-helmet-safety"></i>
                             </div>
                             <div>
-                                <p class="text-xs font-extrabold text-slate-900 leading-tight">BAYENG HELM</p>
+                                <p class="text-xs font-extrabold text-slate-900 leading-tight">Bayeng Helm</p>
                                 <span class="text-[10px] text-slate-400 font-medium">{{ $roleLabel }}</span>
                             </div>
                         </div>
@@ -626,33 +678,33 @@
 
                     {{-- User Profile Card --}}
                     @if($authUser)
-                    <div class="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-slate-800 text-white font-bold text-sm flex items-center justify-center">
+                    <div class="p-3.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0">
                                 {{ strtoupper(substr($authUser->nama_lengkap, 0, 1)) }}
                             </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-900">{{ $authUser->nama_lengkap }}</p>
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded border {{ $roleBadgeBg }}">
+                            <div class="min-w-0 leading-tight">
+                                <p class="text-xs font-semibold text-slate-900 truncate">{{ $authUser->nama_lengkap }}</p>
+                                <span class="text-[10px] font-medium text-slate-500">
                                     {{ $roleLabel }}
                                 </span>
                             </div>
                         </div>
-                        <a href="{{ route('admin.profil') }}" @click="mobileDrawer = false" wire:navigate class="text-xs text-blue-600 font-medium hover:underline">
+                        <a href="{{ route('admin.profil') }}" @click="mobileDrawer = false" wire:navigate class="text-xs text-blue-600 font-semibold hover:underline shrink-0">
                             Profil
                         </a>
                     </div>
                     @endif
 
                     {{-- Drawer Navigation --}}
-                    <div class="p-4 space-y-4 text-xs">
+                    <div class="p-3 space-y-4 text-xs">
                         {{-- Operasional Kasir (Karyawan Only) --}}
                         @if(!$isOwner)
                         <div class="space-y-1">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Operasional Kasir</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Menu Utama</p>
                             <a href="{{ route('admin.dashboard') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-chart-pie text-slate-400 w-4"></i>
-                                <span>Ringkasan Kasir</span>
+                                <span>Dashboard Kasir</span>
                             </a>
                             <a href="{{ route('admin.pesanan.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.pesanan*') || request()->routeIs('admin.pickup*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <div class="flex items-center gap-2.5">
@@ -680,16 +732,27 @@
                                     </span>
                                 @endif
                             </a>
+                            <a href="{{ route('admin.chat.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.chat*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-comments text-slate-400 w-4"></i>
+                                    <span>Chat Pelanggan</span>
+                                </div>
+                                @if(($nav_chat_unread_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white">
+                                        {{ $nav_chat_unread_count }}
+                                    </span>
+                                @endif
+                            </a>
                         </div>
                         @endif
 
                         {{-- Menu Khusus Owner --}}
                         @if($isOwner)
                         <div class="space-y-1">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Manajemen Bisnis</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Menu Utama</p>
                             <a href="{{ route('admin.dashboard') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-chart-pie text-slate-400 w-4"></i>
-                                <span>Ringkasan Bisnis</span>
+                                <span>Dashboard Bisnis</span>
                             </a>
                             <a href="{{ route('admin.owner.transaksi-karyawan.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.transaksi-karyawan*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-cash-register text-slate-400 w-4"></i>
@@ -703,13 +766,28 @@
                                 <i class="fa-solid fa-file-invoice-dollar text-slate-400 w-4"></i>
                                 <span>Laporan Penjualan</span>
                             </a>
-                            <a href="{{ route('admin.atribut.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.atribut*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
-                                <i class="fa-solid fa-tags text-slate-400 w-4"></i>
-                                <span>Atribut Helm</span>
+                            <a href="{{ route('admin.chat.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.chat*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
+                                <div class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-comments text-slate-400 w-4"></i>
+                                    <span>Chat Pelanggan</span>
+                                </div>
+                                @if(($nav_chat_unread_count ?? 0) > 0)
+                                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white">
+                                        {{ $nav_chat_unread_count }}
+                                    </span>
+                                @endif
                             </a>
+                        </div>
+
+                        <div class="space-y-1">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Manajemen &amp; Toko</p>
                             <a href="{{ route('admin.owner.user.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.user*') || request()->routeIs('admin.user*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-users-gear text-slate-400 w-4"></i>
                                 <span>Kelola Karyawan</span>
+                            </a>
+                            <a href="{{ route('admin.atribut.index') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.atribut*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
+                                <i class="fa-solid fa-tags text-slate-400 w-4"></i>
+                                <span>Atribut Helm</span>
                             </a>
                             <a href="{{ route('admin.owner.activity-log') }}" @click="mobileDrawer = false" wire:navigate class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 {{ request()->routeIs('admin.owner.activity-log*') || request()->routeIs('admin.activity-log*') ? 'bg-slate-100 font-semibold text-slate-900' : '' }}">
                                 <i class="fa-solid fa-clock-rotate-left text-slate-400 w-4"></i>

@@ -87,6 +87,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Riwayat & Buku Kasir Karyawan (Hari ini & Bulan ini)
         Route::get('riwayat-kasir', [\App\Http\Controllers\Admin\KaryawanRiwayatController::class, 'index'])->name('karyawan.riwayat');
 
+        // Chat Pelanggan (Karyawan & Owner)
+        Route::get('chat', fn () => view('admin.chat.index'))->name('chat.index');
+        Route::get('chat-redirect', fn () => redirect()->route('admin.chat.index'))->name('chat');
+
         // Validasi Pickup (kasir scan/input kode)
         Route::get('pickup', [\App\Http\Controllers\Admin\PickupController::class, 'index'])->name('pickup.index');
         Route::match(['get', 'post'], 'pickup/validasi', [\App\Http\Controllers\Admin\PickupController::class, 'validasi'])->name('pickup.validasi');

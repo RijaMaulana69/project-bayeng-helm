@@ -18,7 +18,9 @@
         <form method="POST" action="{{ route('admin.pickup.validasi') }}" class="flex items-center gap-2">
             @csrf
             <div class="relative flex-1">
-                <i class="fa-solid fa-barcode absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-barcode text-sm"></i>
+                </span>
                 <input type="text"
                        name="kode_pickup"
                        class="w-full h-10 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400"
@@ -155,18 +157,28 @@
             @endif
 
             <div class="relative flex-1">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
                 <input type="text" 
                        name="search" 
                        value="{{ $searchQuery }}" 
                        placeholder="Cari no. pesanan, nama pembeli, kode pickup..." 
-                       class="w-full h-9 pl-8 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                       class="w-full h-9 pl-9 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
+                @if($searchQuery)
+                    <a href="{{ route('admin.pesanan.index', array_filter(['status' => $currentStatus !== 'all' ? $currentStatus : null, 'metode_bayar' => $currentMetode !== 'all' ? $currentMetode : null])) }}" 
+                       wire:navigate
+                       class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                       title="Hapus pencarian">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                @endif
             </div>
 
             <div class="shrink-0 w-full sm:w-44">
                 <select name="metode_bayar" 
                         onchange="this.form.submit()" 
-                        class="w-full h-9 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer transition-all">
+                        class="w-full h-9 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 focus:bg-white focus:outline-none focus:border-slate-400 cursor-pointer transition-colors">
                     <option value="all" {{ ($currentMetode === 'all' || !$currentMetode) ? 'selected' : '' }}>Semua Pembayaran</option>
                     <option value="tunai" {{ $currentMetode === 'tunai' ? 'selected' : '' }}>Bayar di Toko (Tunai)</option>
                     <option value="transfer" {{ $currentMetode === 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
@@ -419,7 +431,11 @@
         </div>
 
         {{-- Pagination --}}
-        {{ $pesanans->onEachSide(1)->links('partials.pagination-admin') }}
+        @if ($pesanans->hasPages())
+            <div class="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs">
+                {{ $pesanans->onEachSide(1)->links('partials.pagination-admin') }}
+            </div>
+        @endif
 
     @else
         {{-- Empty State --}}
