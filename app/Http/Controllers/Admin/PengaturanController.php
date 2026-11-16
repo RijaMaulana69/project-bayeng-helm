@@ -58,7 +58,7 @@ class PengaturanController extends Controller
         $user = Auth::guard('web')->user();
         ActivityLog::log('update_pengaturan', 'Mengubah pengaturan toko: ' . $toko->nama_toko, 'user', $user->id_user, $user->username);
 
-        return redirect()->route('admin.pengaturan.index')
+        return redirect()->route('admin.pengaturan')
             ->with('success', 'Pengaturan berhasil diperbarui.');
     }
 }
