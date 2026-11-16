@@ -28,8 +28,7 @@
                        required>
             </div>
             <button type="submit" 
-                    class="h-10 px-4 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer shrink-0">
-                <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
+                    class="h-10 px-4 sm:px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center transition-colors cursor-pointer shrink-0">
                 <span>Validasi</span>
             </button>
         </form>
@@ -177,8 +176,7 @@
 
             <div class="flex items-center gap-1.5 shrink-0">
                 <button type="submit" 
-                        class="flex-1 sm:flex-initial h-9 px-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        class="flex-1 sm:flex-initial h-9 px-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center">
                     <span>Cari</span>
                 </button>
 

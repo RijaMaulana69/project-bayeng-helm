@@ -87,17 +87,14 @@
         }
      }">
 
-    {{-- 1. Top Navigation & Header --}}
+    {{-- 1. Top Navigation --}}
     <div>
         <a href="{{ route('admin.produk.index') }}" 
            wire:navigate
-           class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors mb-2">
+           class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors">
             <i class="fa-solid fa-arrow-left text-[10px]"></i>
             <span>Kembali</span>
         </a>
-        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Tambah Helm
-        </h1>
     </div>
 
     {{-- 2. Form Container --}}

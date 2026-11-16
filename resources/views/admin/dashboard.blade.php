@@ -13,18 +13,10 @@
 
     {{-- 1. Header Kasir & Validasi Cepat --}}
     <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-3.5">
-        <div class="flex items-center justify-between gap-3">
+        <div>
             <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
                 Halo, {{ $user->nama_lengkap }}
             </h1>
-            <div>
-                <a href="{{ route('admin.karyawan.riwayat') }}" 
-                   wire:navigate
-                   class="h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
-                    <i class="fa-solid fa-clock-rotate-left text-xs text-blue-600"></i>
-                    <span>Riwayat Kasir</span>
-                </a>
-            </div>
         </div>
 
         {{-- Clean Voucher Pickup Input Bar --}}
@@ -36,13 +28,13 @@
                     <input type="text" 
                            id="pickup_input_karyawan"
                            name="kode_pickup" 
-                           placeholder="Masukkan kode pickup" 
+                           placeholder="Masukkan kode pickup..." 
                            required 
                            autocomplete="off"
                            class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400">
                 </div>
                 <button type="submit" 
-                        class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0">
+                        class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center shadow-2xs transition-colors cursor-pointer shrink-0">
                     <span>Validasi</span>
                 </button>
             </form>

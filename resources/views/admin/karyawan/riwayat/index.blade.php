@@ -34,67 +34,67 @@
         </a>
     </div>
 
-    {{-- 3. Ringkasan Kas (2x2 di Mobile, 4 Kolom di Desktop - Tipografi Natural Tanpa Monospace Kaku) --}}
+    {{-- 3. Ringkasan Kas --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         {{-- Total Penjualan --}}
-        <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-0.5">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Penjualan</span>
+                <span class="text-[11px] font-semibold text-slate-500">Total Penjualan</span>
                 <i class="fa-solid fa-circle-check text-xs text-emerald-600"></i>
             </div>
-            <div class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight truncate">
-                <span class="text-xs font-semibold text-slate-400 mr-0.5">Rp</span>{{ number_format($kpi['total_penjualan'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ format_rupiah($kpi['total_penjualan']) }}
             </div>
-            <p class="text-[10px] text-slate-400">
+            <div class="text-[11px] text-slate-400">
                 {{ $kpi['total_transaksi'] }} transaksi
-            </p>
+            </div>
         </div>
 
         {{-- Kas Tunai --}}
-        <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-0.5">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Kas Tunai</span>
+                <span class="text-[11px] font-semibold text-slate-500">Kas Tunai</span>
                 <i class="fa-solid fa-money-bill-wave text-xs text-amber-600"></i>
             </div>
-            <div class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight truncate">
-                <span class="text-xs font-semibold text-slate-400 mr-0.5">Rp</span>{{ number_format($kpi['uang_tunai'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ format_rupiah($kpi['uang_tunai']) }}
             </div>
-            <p class="text-[10px] text-slate-400">
+            <div class="text-[11px] text-slate-400">
                 {{ $kpi['uang_tunai_count'] }} transaksi
-            </p>
+            </div>
         </div>
 
         {{-- Non-Tunai --}}
-        <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-0.5">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Non-Tunai</span>
+                <span class="text-[11px] font-semibold text-slate-500">Non-Tunai</span>
                 <i class="fa-solid fa-qrcode text-xs text-blue-600"></i>
             </div>
-            <div class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight truncate">
-                <span class="text-xs font-semibold text-slate-400 mr-0.5">Rp</span>{{ number_format($kpi['non_tunai'], 0, ',', '.') }}
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ format_rupiah($kpi['non_tunai']) }}
             </div>
-            <p class="text-[10px] text-slate-400">
+            <div class="text-[11px] text-slate-400">
                 {{ $kpi['non_tunai_count'] }} transaksi
-            </p>
+            </div>
         </div>
 
         {{-- Helm Terjual --}}
-        <div class="p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs space-y-0.5">
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs space-y-1">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Helm Terjual</span>
+                <span class="text-[11px] font-semibold text-slate-500">Helm Terjual</span>
                 <i class="fa-solid fa-helmet-safety text-xs text-slate-500"></i>
             </div>
-            <div class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight truncate">
-                {{ $kpi['helm_terjual'] }} <span class="text-xs font-normal text-slate-500">unit</span>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900">
+                {{ number_format($kpi['helm_terjual']) }} <span class="text-[11px] font-normal text-slate-400">unit</span>
             </div>
-            <p class="text-[10px] text-slate-400">
-                Helm diserahkan
-            </p>
+            <div class="text-[11px] text-slate-400">
+                {{ $kpi['total_transaksi'] }} transaksi
+            </div>
         </div>
     </div>
 
     {{-- 4. Pencarian & Filter Metode --}}
-    <div class="space-y-2">
+    <div class="bg-white p-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-2">
         <form method="GET" action="{{ route('admin.karyawan.riwayat') }}" class="flex items-center gap-1.5">
             <input type="hidden" name="period" value="{{ $period }}">
             @if($metodeBayar !== 'all')
@@ -102,20 +102,22 @@
             @endif
 
             <div class="relative flex-1">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
                 <input type="text" 
                        name="search" 
                        value="{{ request('search') }}" 
                        placeholder="Cari no. order, pembeli, pickup..." 
-                       class="w-full h-9 pl-8 pr-3 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-slate-400 transition-colors">
+                       class="w-full h-9 pl-9 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
             </div>
 
-            <button type="submit" class="h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-colors shrink-0 cursor-pointer">
+            <button type="submit" class="h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors shrink-0 cursor-pointer">
                 Cari
             </button>
 
             @if(request('search') || $metodeBayar !== 'all')
-                <a href="{{ route('admin.karyawan.riwayat', ['period' => $period]) }}" wire:navigate class="h-9 px-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs shrink-0" title="Reset">
+                <a href="{{ route('admin.karyawan.riwayat', ['period' => $period]) }}" wire:navigate class="h-9 px-2.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs shrink-0" title="Reset">
                     <i class="fa-solid fa-rotate-left"></i>
                 </a>
             @endif
@@ -141,95 +143,87 @@
         </div>
     </div>
 
-    {{-- 5. DAFTAR RIWAYAT TRANSAKSI SELESAI (Desain Modern, Bersih & Mobile-First) --}}
-    <div class="space-y-2">
-        @forelse ($pesanans as $pesanan)
-            @php
-                $isCash = ($pesanan->metode_bayar === 'tunai');
-                $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
-                $firstItem = $pesanan->details->first();
-                $extraCount = $pesanan->details->count() - 1;
-            @endphp
-            <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
-               wire:navigate
-               class="block bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 hover:border-slate-300 hover:shadow-xs transition-all active:bg-slate-50">
-                <div class="flex items-start justify-between gap-3">
-                    
-                    {{-- Sisi Kiri: Informasi Transaksi --}}
-                    <div class="min-w-0 flex-1 space-y-1">
-                        {{-- Baris 1: Nama Pelanggan & No. Pesanan --}}
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="text-xs sm:text-sm font-bold text-slate-900">
-                                {{ $customerName }}
-                            </span>
-                            <span class="text-[11px] text-slate-400">
-                                #{{ $pesanan->no_pesanan }}
-                            </span>
-                        </div>
+    {{-- 5. DAFTAR RIWAYAT TRANSAKSI SELESAI --}}
+    @if ($pesanans->count() > 0)
+        <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
+            <div class="divide-y divide-slate-100">
+                @foreach ($pesanans as $pesanan)
+                    @php
+                        $isCash = ($pesanan->metode_bayar === 'tunai');
+                        $customerName = $pesanan->pelanggan->nama ?? ($pesanan->penerima ?? 'Pelanggan');
+                        $firstItem = $pesanan->details->first();
+                        $extraCount = $pesanan->details->count() - 1;
+                    @endphp
+                    <a href="{{ route('admin.pesanan.show', $pesanan->id_pesanan) }}" 
+                       wire:navigate
+                       class="block p-3 sm:px-4 sm:py-3.5 hover:bg-slate-50/70 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            
+                            {{-- Sisi Kiri: Informasi Transaksi --}}
+                            <div class="min-w-0 flex-1 space-y-0.5">
+                                {{-- Baris 1: Nama Pelanggan & No. Pesanan --}}
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="font-semibold text-slate-900 text-xs sm:text-sm truncate">
+                                        {{ $customerName }}
+                                    </span>
+                                    <span class="text-slate-400 text-xs font-normal shrink-0">· #{{ $pesanan->no_pesanan }}</span>
+                                </div>
 
-                        {{-- Baris 2: Item Helm & Varian --}}
-                        <div class="text-xs text-slate-600 truncate">
-                            @if($firstItem)
-                                <span>{{ $firstItem->qty }}x {{ $firstItem->helm->nama_helm ?? ($firstItem->nama_helm ?? 'Helm') }}</span>
-                                @if($firstItem->warna || $firstItem->ukuran)
-                                    <span class="text-slate-400 text-[11px]">({{ implode(', ', array_filter([$firstItem->warna, $firstItem->ukuran])) }})</span>
-                                @endif
-                                @if($extraCount > 0)
-                                    <span class="text-slate-400 text-[11px] font-medium">+{{ $extraCount }} item</span>
-                                @endif
-                            @else
-                                <span class="text-slate-400">Tidak ada detail item</span>
-                            @endif
-                        </div>
+                                {{-- Baris 2: Item Helm & Varian --}}
+                                <div class="text-[11px] sm:text-xs text-slate-600 truncate">
+                                    @if($firstItem)
+                                        <span>{{ $firstItem->qty }}x {{ $firstItem->helm->nama_helm ?? ($firstItem->nama_helm ?? 'Helm') }}</span>
+                                        @if($firstItem->warna || $firstItem->ukuran)
+                                            <span class="text-slate-400">({{ implode(', ', array_filter([$firstItem->warna, $firstItem->ukuran])) }})</span>
+                                        @endif
+                                        @if($extraCount > 0)
+                                            <span class="text-slate-500 font-medium">· +{{ $extraCount }} item</span>
+                                        @endif
+                                    @else
+                                        <span class="text-slate-400">Tidak ada detail item</span>
+                                    @endif
+                                </div>
 
-                        {{-- Baris 3: Jam, Metode Bayar & Kode Pickup (Tanpa Titik / Bullets) --}}
-                        <div class="flex items-center gap-1.5 text-xs pt-0.5 flex-wrap">
-                            <span class="text-[11px] text-slate-500 font-medium">
-                                {{ $pesanan->created_at->format('H:i') }} WIB
-                            </span>
-                            @if($isCash)
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
-                                    Tunai
+                                {{-- Baris 3: Jam, Metode Bayar & Kode Pickup --}}
+                                <div class="text-[10px] sm:text-[11px] text-slate-400 truncate pt-0.5 flex items-center gap-1.5">
+                                    <span>{{ $pesanan->created_at->format('d M Y, H:i') }} WIB</span>
+                                    <span class="text-slate-300">·</span>
+                                    @if($isCash)
+                                        <span class="font-medium text-amber-600">Tunai</span>
+                                    @else
+                                        <span class="font-medium text-blue-600">{{ strtoupper($pesanan->metode_bayar ?? 'Non-Tunai') }}</span>
+                                    @endif
+                                    @if($pesanan->kode_pickup)
+                                        <span class="text-slate-300">·</span>
+                                        <span class="font-mono text-slate-500">{{ $pesanan->kode_pickup }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Sisi Kanan: Nominal Bersih & Chevron --}}
+                            <div class="text-right shrink-0 flex items-center gap-2 pt-0.5">
+                                <span class="text-xs sm:text-sm font-bold text-slate-900 tabular-nums">
+                                    {{ format_rupiah($pesanan->grand_total) }}
                                 </span>
-                            @else
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80">
-                                    {{ strtoupper($pesanan->metode_bayar ?? 'Non-Tunai') }}
-                                </span>
-                            @endif
-                            @if($pesanan->kode_pickup)
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-600">
-                                    {{ $pesanan->kode_pickup }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
+                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
+                            </div>
 
-                    {{-- Sisi Kanan: Nominal Bersih & Tombol Aksi --}}
-                    <div class="text-right shrink-0 space-y-0.5">
-                        <div class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
-                            <span class="text-xs font-semibold text-slate-400 mr-0.5">Rp</span>{{ number_format($pesanan->grand_total, 0, ',', '.') }}
                         </div>
-                        <div class="text-[11px] text-blue-600 flex items-center justify-end gap-1">
-                            <span>Lihat nota</span>
-                            <i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>
-                        </div>
-                    </div>
-
-                </div>
-            </a>
-        @empty
-            <div class="py-12 text-center text-slate-400 text-xs bg-white rounded-xl border border-slate-200/90">
-                <i class="fa-solid fa-inbox text-2xl text-slate-300 block mb-1.5"></i>
-                <p class="font-semibold text-slate-700 text-sm">Tidak ada transaksi selesai</p>
-                <p class="text-xs text-slate-400 mt-0.5">Belum ada transaksi selesai pada periode ini.</p>
+                    </a>
+                @endforeach
             </div>
-        @endforelse
-    </div>
+        </div>
 
-    {{-- 6. Pagination --}}
-    @if ($pesanans->hasPages())
-        <div class="p-2 sm:p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs">
-            {{ $pesanans->links('partials.pagination-admin') }}
+        {{-- 6. Pagination --}}
+        @if ($pesanans->hasPages())
+            <div class="p-2 sm:p-3 bg-white rounded-xl border border-slate-200/90 shadow-2xs">
+                {{ $pesanans->links('partials.pagination-admin') }}
+            </div>
+        @endif
+    @else
+        <div class="py-12 text-center text-slate-400 text-xs bg-white rounded-xl border border-slate-200/90 space-y-1">
+            <i class="fa-solid fa-inbox text-2xl text-slate-300 block mb-1"></i>
+            <p class="font-medium text-slate-600 text-xs">Belum ada transaksi selesai</p>
         </div>
     @endif
 

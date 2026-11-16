@@ -14,14 +14,14 @@
                 <input type="text"
                        name="kode_pickup"
                        class="w-full h-11 pl-10 pr-4 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none uppercase font-mono tracking-wider transition-all placeholder:normal-case placeholder:font-sans placeholder:tracking-normal placeholder:text-slate-400"
-                       placeholder="Masukkan kode pickup"
+                       placeholder="Masukkan kode pickup..."
                        value="{{ old('kode_pickup') }}"
                        autocomplete="off"
                        autofocus
                        required>
             </div>
             <button type="submit" 
-                    class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center shadow-2xs transition-colors cursor-pointer shrink-0">
+                    class="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-semibold inline-flex items-center justify-center shadow-2xs transition-colors cursor-pointer shrink-0">
                 <span>Validasi</span>
             </button>
         </form>
