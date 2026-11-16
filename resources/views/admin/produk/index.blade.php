@@ -39,52 +39,49 @@
         </div>
     </div>
 
-    {{-- 2. Ringkasan Stok & Filter Cepat (3 Kolom Responsif) --}}
+    {{-- 2. Ringkasan Stok (Grid Statis) --}}
     <div class="grid grid-cols-3 gap-2 sm:gap-3">
-        {{-- Semua Produk --}}
-        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
-           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $tab === 'produk' && $stokFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-2xs' : 'bg-white text-slate-800 border-slate-200/90 hover:border-slate-300' }}">
+        {{-- Total Produk --}}
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
             <div class="flex items-center justify-between text-slate-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-500' }}">Semua Produk</span>
-                <i class="fa-solid fa-helmet-safety text-[11px] {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Produk</span>
+                <i class="fa-solid fa-boxes-stacked text-[11px] text-slate-400"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-white' : 'text-slate-900' }}">
-                {{ $totalProduk }} <span class="text-[11px] font-normal {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">model</span>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-0.5">
+                {{ $totalProduk }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[10px] truncate mt-0.5 {{ $tab === 'produk' && $stokFilter === 'all' ? 'text-slate-300' : 'text-slate-400' }}">
-                {{ number_format($totalStokFisik, 0, ',', '.') }} unit fisik
+            <div class="text-[10px] text-slate-400 truncate mt-0.5">
+                {{ number_format($totalStokFisik, 0, ',', '.') }} unit total stok
             </div>
-        </a>
+        </div>
 
-        {{-- Perlu Restok (Stok <= 3 unit) --}}
-        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'stok_filter' => 'kritis_habis', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
-           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $stokFilter === 'kritis_habis' ? 'bg-amber-600 text-white border-amber-600 shadow-2xs' : ($countPerluRestok > 0 ? 'bg-amber-50/70 border-amber-200/80 text-amber-900 hover:border-amber-300' : 'bg-white border-slate-200/90 text-slate-800') }}">
+        {{-- Perlu Restok --}}
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
             <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-800' }}">Perlu Restok</span>
-                <i class="fa-solid fa-triangle-exclamation text-[11px] {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-600' }}"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Perlu Restok</span>
+                <i class="fa-solid fa-triangle-exclamation text-[11px] text-amber-500"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $stokFilter === 'kritis_habis' ? 'text-white' : 'text-amber-900' }}">
-                {{ $countPerluRestok }} <span class="text-[11px] font-normal {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-700' }}">model</span>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-0.5">
+                {{ $countPerluRestok }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[10px] truncate mt-0.5 {{ $stokFilter === 'kritis_habis' ? 'text-amber-100' : 'text-amber-600' }}">
-                Stok menipis (≤ 3)
+            <div class="text-[10px] text-amber-600 font-medium truncate mt-0.5">
+                Varian stok ≤ 3 unit
             </div>
-        </a>
+        </div>
 
-        {{-- Stok Habis (Stok 0 unit) --}}
-        <a href="{{ route('admin.produk.index', array_filter(['tab' => 'produk', 'stok_filter' => 'habis', 'search' => $search, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
-           class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer {{ $stokFilter === 'habis' ? 'bg-rose-600 text-white border-rose-600 shadow-2xs' : ($countHabis > 0 ? 'bg-rose-50/70 border-rose-200/80 text-rose-900 hover:border-rose-300' : 'bg-white border-slate-200/90 text-slate-800') }}">
+        {{-- Stok Habis --}}
+        <div class="bg-white rounded-xl border border-slate-200/90 p-3 sm:p-3.5 shadow-2xs">
             <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold uppercase tracking-wider {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-800' }}">Stok Habis</span>
-                <i class="fa-solid fa-circle-xmark text-[11px] {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-600' }}"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Stok Habis</span>
+                <i class="fa-solid fa-circle-exclamation text-[11px] text-rose-500"></i>
             </div>
-            <div class="text-base sm:text-xl font-extrabold tracking-tight mt-0.5 {{ $stokFilter === 'habis' ? 'text-white' : 'text-rose-900' }}">
-                {{ $countHabis }} <span class="text-[11px] font-normal {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-700' }}">model</span>
+            <div class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 mt-0.5">
+                {{ $countHabis }} <span class="text-[11px] font-normal text-slate-400">model</span>
             </div>
-            <div class="text-[10px] truncate mt-0.5 {{ $stokFilter === 'habis' ? 'text-rose-100' : 'text-rose-600' }}">
-                0 unit di rak
+            <div class="text-[10px] text-rose-600 font-medium truncate mt-0.5">
+                Stok kosong (0 unit)
             </div>
-        </a>
+        </div>
     </div>
 
     {{-- 3. Tab Navigasi Minimalist --}}
@@ -111,10 +108,6 @@
         {{-- Toolbar Pencarian & Filter Dropdown --}}
         <div>
             <form method="GET" action="{{ route('admin.produk.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs">
-                @if($stokFilter !== 'all')
-                    <input type="hidden" name="stok_filter" value="{{ $stokFilter }}">
-                @endif
-
                 {{-- Kolom Input Pencarian --}}
                 <div class="relative flex-1">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
@@ -127,14 +120,22 @@
                            class="w-full h-9 pl-9 pr-8 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-slate-400 transition-colors">
                     @if($search)
                         <a href="{{ route('admin.produk.index', array_filter(['stok_filter' => $stokFilter !== 'all' ? $stokFilter : null, 'merk' => $idMerk, 'kategori' => $idKategori])) }}" 
-                           class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                           class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                           title="Hapus pencarian">
                             <i class="fa-solid fa-xmark"></i>
                         </a>
                     @endif
                 </div>
 
-                {{-- Filter Dropdown Merk, Kategori, Tombol Cari & Reset --}}
+                {{-- Filter Dropdown: Status Stok, Merk, Kategori, Tombol Cari & Reset --}}
                 <div class="flex items-center gap-1.5 shrink-0 flex-wrap sm:flex-nowrap">
+                    <select name="stok_filter" onchange="this.form.submit()" class="h-9 px-2.5 text-xs rounded-xl bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
+                        <option value="all" {{ $stokFilter === 'all' ? 'selected' : '' }}>Semua Stok</option>
+                        <option value="kritis_habis" {{ $stokFilter === 'kritis_habis' ? 'selected' : '' }}>Perlu Restok (≤ 3)</option>
+                        <option value="habis" {{ $stokFilter === 'habis' ? 'selected' : '' }}>Stok Habis (0)</option>
+                        <option value="tersedia" {{ $stokFilter === 'tersedia' ? 'selected' : '' }}>Stok Tersedia (> 0)</option>
+                    </select>
+
                     <select name="merk" onchange="this.form.submit()" class="h-9 px-2.5 text-xs rounded-xl bg-white border border-slate-200 text-slate-700 focus:outline-none cursor-pointer">
                         <option value="all">Semua Merk</option>
                         @foreach ($merks as $m)
@@ -332,7 +333,6 @@
                 @if($search || $idMerk || $idKategori || $stokFilter !== 'all')
                     <div class="pt-2">
                         <a href="{{ route('admin.produk.index') }}" 
-                           wire:navigate
                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors">
                             <i class="fa-solid fa-rotate-left text-[10px]"></i>
                             <span>Reset Filter</span>
