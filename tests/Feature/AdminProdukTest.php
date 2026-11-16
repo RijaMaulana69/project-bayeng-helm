@@ -52,8 +52,8 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.create'));
 
         $response->assertStatus(200);
-        $response->assertSee('Tambah Produk Helm Baru');
-        $response->assertSee('Simpan Produk');
+        $response->assertSee('Tambah Helm');
+        $response->assertSee('Simpan');
     }
 
     public function test_admin_can_view_edit_page(): void
@@ -65,9 +65,9 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.edit', $helm->id_helm));
 
         $response->assertStatus(200);
-        $response->assertSee('Edit Produk Helm');
+        $response->assertSee('Edit Helm');
         $response->assertSee($helm->nama_helm);
-        $response->assertSee('Simpan Perubahan');
+        $response->assertSee('Simpan');
     }
 
     public function test_admin_can_create_and_update_produk_with_variants(): void

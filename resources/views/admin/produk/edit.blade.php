@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Produk: ' . $produk->nama_helm)
-@section('page-title', 'Edit Produk Helm')
+@section('title', 'Edit Helm: ' . $produk->nama_helm)
+@section('page-title', 'Edit Helm')
 
 @section('content')
 <div class="max-w-3xl mx-auto space-y-4 sm:space-y-5 pb-8"
@@ -92,16 +92,13 @@
         <div>
             <a href="{{ route('admin.produk.index') }}" 
                wire:navigate
-               class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors mb-1.5">
+               class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors mb-2">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>Kembali ke Katalog</span>
+                <span>Kembali</span>
             </a>
             <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Edit Produk Helm: {{ $produk->nama_helm }}
+                Edit Helm: {{ $produk->nama_helm }}
             </h1>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Perbarui rincian katalog, harga modal &amp; jual, foto, serta inventori stok varian
-            </p>
         </div>
 
         <a href="{{ route('katalog.detail', $produk->id_helm) }}" 
@@ -117,41 +114,33 @@
         @csrf
         @method('PUT')
 
-        {{-- Card 1: Informasi Produk & Foto --}}
+        {{-- Card 1: Informasi Helm & Foto --}}
         <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-helmet-safety"></i>
-                </div>
-                <div>
-                    <h2 class="text-xs sm:text-sm font-bold text-slate-900">Informasi Produk</h2>
-                    <p class="text-[11px] text-slate-400">Nama helm, foto, merk, dan kategori katalog</p>
-                </div>
-            </div>
+            <h2 class="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">
+                Informasi Helm
+            </h2>
 
-            {{-- Foto & Nama Model Helm --}}
+            {{-- Foto & Detail Helm --}}
             <div class="flex flex-col sm:flex-row gap-4 items-start">
                 {{-- Foto Uploader --}}
                 <div class="w-full sm:w-auto shrink-0 flex flex-col items-center sm:items-start gap-1.5">
                     <label class="block font-semibold text-slate-700 text-xs self-start">
-                        Foto Helm
+                        Foto
                     </label>
-                    <div class="w-full sm:w-28 h-36 sm:h-28 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-slate-400 flex flex-col items-center justify-center overflow-hidden relative transition-colors cursor-pointer group">
+                    <div class="w-full sm:w-28 h-32 sm:h-28 rounded-xl bg-slate-50 border-2 border-dashed border-slate-200 hover:border-slate-300 flex flex-col items-center justify-center overflow-hidden relative transition-colors cursor-pointer group">
                         <template x-if="imagePreview">
                             <img :src="imagePreview" alt="Preview" class="w-full h-full object-contain p-1">
                         </template>
                         <template x-if="!imagePreview">
                             <label for="gambar-input" class="w-full h-full flex flex-col items-center justify-center p-2 text-center cursor-pointer">
-                                <i class="fa-solid fa-cloud-arrow-up text-lg text-slate-400 group-hover:text-slate-600 transition-colors"></i>
-                                <span class="text-[10px] font-medium text-slate-600 mt-1">Unggah Foto</span>
-                                <span class="text-[9px] text-slate-400">Maks 2MB</span>
+                                <i class="fa-solid fa-camera text-base text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                                <span class="text-[11px] font-medium text-slate-600 mt-1">Pilih Foto</span>
                             </label>
                         </template>
                     </div>
                     <div class="flex items-center gap-1.5 w-full justify-center sm:justify-start">
                         <label for="gambar-input" 
                                class="h-7 px-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-medium inline-flex items-center gap-1 shadow-2xs transition-colors cursor-pointer">
-                            <i class="fa-solid fa-camera text-[9px] text-slate-400"></i>
                             <span>Ganti</span>
                         </label>
                         <button type="button" 
@@ -177,7 +166,7 @@
                 <div class="flex-1 w-full space-y-3.5">
                     <div class="space-y-1">
                         <label class="block font-semibold text-slate-700 text-xs">
-                            Nama Model Helm <span class="text-rose-500">*</span>
+                            Nama Helm <span class="text-rose-500">*</span>
                         </label>
                         <input type="text" 
                                name="nama_helm" 
@@ -188,13 +177,12 @@
                         @error('nama_helm')
                             <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                         @enderror
-                        <p class="text-[11px] text-slate-400">Sertakan seri, motif, atau varian grafis helm</p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="space-y-1">
                             <label class="block font-semibold text-slate-700 text-xs">
-                                Merk Helm <span class="text-rose-500">*</span>
+                                Merk <span class="text-rose-500">*</span>
                             </label>
                             <select name="id_merk" 
                                     required 
@@ -213,7 +201,7 @@
 
                         <div class="space-y-1">
                             <label class="block font-semibold text-slate-700 text-xs">
-                                Kategori Helm <span class="text-rose-500">*</span>
+                                Kategori <span class="text-rose-500">*</span>
                             </label>
                             <select name="id_kategori" 
                                     required 
@@ -236,11 +224,11 @@
             {{-- Deskripsi --}}
             <div class="space-y-1 pt-2 border-t border-slate-100">
                 <label class="block font-semibold text-slate-700 text-xs">
-                    Deskripsi &amp; Spesifikasi <span class="text-slate-400 font-normal">(Opsional)</span>
+                    Deskripsi
                 </label>
                 <textarea name="deskripsi" 
                           rows="3" 
-                          placeholder="Keterangan bahan shell, sertifikasi SNI/DOT, tipe pengunci tali, fitur visor..." 
+                          placeholder="Bahan shell, sertifikasi, tipe visor..." 
                           class="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:border-slate-400 transition-colors leading-relaxed">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
                 @error('deskripsi')
                     <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
@@ -248,22 +236,16 @@
             </div>
         </div>
 
-        {{-- Card 2: Harga & Biaya --}}
+        {{-- Card 2: Harga --}}
         <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-tags"></i>
-                </div>
-                <div>
-                    <h2 class="text-xs sm:text-sm font-bold text-slate-900">Penetapan Harga</h2>
-                    <p class="text-[11px] text-slate-400">Harga modal (HPP) dan harga jual ke konsumen</p>
-                </div>
-            </div>
+            <h2 class="text-sm font-bold text-slate-900 pb-3 border-b border-slate-100">
+                Harga
+            </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div class="space-y-1">
                     <label class="block font-semibold text-slate-700 text-xs">
-                        Harga Modal / HPP (Rp) <span class="text-rose-500">*</span>
+                        Harga Modal (HPP) <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs font-semibold text-slate-400">Rp</span>
@@ -271,19 +253,18 @@
                                name="harga_awal" 
                                x-model="hargaAwal" 
                                min="0" 
-                               placeholder="350000" 
+                               placeholder="0" 
                                required 
                                class="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border @error('harga_awal') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
                     </div>
                     @error('harga_awal')
                         <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                     @enderror
-                    <p class="text-[10px] text-slate-400">Biaya perolehan helm dari supplier</p>
                 </div>
 
                 <div class="space-y-1">
                     <label class="block font-semibold text-slate-700 text-xs">
-                        Harga Jual Konsumen (Rp) <span class="text-rose-500">*</span>
+                        Harga Jual <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs font-semibold text-slate-400">Rp</span>
@@ -291,55 +272,40 @@
                                name="harga_jual" 
                                x-model="hargaJual" 
                                min="0" 
-                               placeholder="450000" 
+                               placeholder="0" 
                                required 
                                class="w-full h-10 pl-9 pr-3 rounded-xl bg-slate-50 border @error('harga_jual') border-rose-300 @else border-slate-200 @enderror text-xs text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400 transition-colors">
                     </div>
                     @error('harga_jual')
                         <p class="text-[11px] text-rose-600 font-medium">{{ $message }}</p>
                     @enderror
-                    <p class="text-[10px] text-slate-400">Harga resmi di toko offline &amp; online</p>
                 </div>
             </div>
 
-            {{-- Margin Helper Box --}}
-            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs" x-show="Number(hargaJual) > 0" x-cloak>
-                <div class="flex items-center gap-1.5 text-slate-600">
-                    <i class="fa-solid fa-chart-line text-xs text-emerald-600"></i>
-                    <span>Estimasi laba kotor:</span>
-                    <strong class="text-emerald-700 font-bold tabular-nums" x-text="'+Rp ' + margin.toLocaleString('id-ID')"></strong>
-                </div>
-                <div class="text-slate-500 font-medium">
-                    Margin: <strong class="text-slate-900 font-bold tabular-nums" x-text="marginPercent + '%'"></strong>
-                </div>
+            {{-- Estimasi Margin Ringkas --}}
+            <div class="text-xs text-slate-600 font-medium pt-0.5" x-show="Number(hargaJual) > 0" x-cloak>
+                Estimasi laba: <strong class="text-slate-900 font-bold tabular-nums" x-text="'+Rp ' + margin.toLocaleString('id-ID')"></strong>
+                <span class="text-slate-300 mx-1.5">·</span>
+                Margin: <strong class="text-slate-900 font-bold tabular-nums" x-text="marginPercent + '%'"></strong>
             </div>
         </div>
 
-        {{-- Card 3: Varian Warna, Ukuran & Stok Fisik --}}
+        {{-- Card 3: Varian & Stok --}}
         <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-5 space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900">Varian &amp; Stok Fisik</h2>
-                        <p class="text-[11px] text-slate-400">Pilih warna dan ukuran untuk mendata stok unit gerai</p>
-                    </div>
-                </div>
+                <h2 class="text-sm font-bold text-slate-900">
+                    Varian &amp; Stok
+                </h2>
                 <div x-show="totalUnitFisik > 0" x-cloak class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold tabular-nums">
                     <span x-text="totalUnitFisik"></span> unit total
                 </div>
             </div>
 
-            {{-- Langkah 1: Warna --}}
+            {{-- Pilihan Warna --}}
             <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <label class="block font-semibold text-slate-700 text-xs">
-                        1. Pilihan Warna Helm
-                    </label>
-                    <span class="text-[11px] text-slate-400" x-text="warnas.length > 0 ? warnas.length + ' warna dipilih' : 'Pilih minimal 1 warna'"></span>
-                </div>
+                <label class="block font-semibold text-slate-700 text-xs">
+                    Warna
+                </label>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
                     @foreach ($warnas as $w)
                         <label class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs cursor-pointer select-none transition-all"
@@ -358,25 +324,11 @@
                 </div>
             </div>
 
-            {{-- Langkah 2: Ukuran --}}
+            {{-- Pilihan Ukuran --}}
             <div class="space-y-2 pt-3 border-t border-slate-100">
-                <div class="flex items-center justify-between">
-                    <label class="block font-semibold text-slate-700 text-xs">
-                        2. Pilihan Ukuran Helm
-                    </label>
-                    <div class="flex items-center gap-1.5 text-xs">
-                        <button type="button" 
-                                @click="ukurans = ['M', 'L', 'XL']" 
-                                class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition-colors cursor-pointer">
-                            + M, L, XL
-                        </button>
-                        <button type="button" 
-                                @click="ukurans = ['S', 'M', 'L', 'XL', 'XXL']" 
-                                class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition-colors cursor-pointer">
-                            Semua Size
-                        </button>
-                    </div>
-                </div>
+                <label class="block font-semibold text-slate-700 text-xs">
+                    Ukuran
+                </label>
                 <div class="flex flex-wrap gap-2">
                     @foreach (['S', 'M', 'L', 'XL', 'XXL'] as $u)
                         <label class="inline-flex items-center justify-center w-14 h-10 rounded-xl border text-xs font-bold cursor-pointer select-none transition-all tabular-nums"
@@ -393,18 +345,18 @@
                 </div>
             </div>
 
-            {{-- Langkah 3: Rincian Stok Fisik per Varian --}}
+            {{-- Rincian Stok Fisik per Varian --}}
             <div class="pt-3 border-t border-slate-100 space-y-3" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
                     <span class="text-xs text-slate-600 font-semibold">
-                        Set Stok Sekaligus:
+                        Set Stok:
                     </span>
                     <div class="flex items-center gap-1.5 flex-wrap">
-                        <button type="button" @click="setAllStok(0)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer shadow-2xs active:scale-95 transition-all">Nol (0)</button>
-                        <button type="button" @click="setAllStok(1)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">1 Unit</button>
-                        <button type="button" @click="setAllStok(3)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">3 Unit</button>
-                        <button type="button" @click="setAllStok(5)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">5 Unit</button>
-                        <button type="button" @click="setAllStok(10)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">10 Unit</button>
+                        <button type="button" @click="setAllStok(0)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer shadow-2xs active:scale-95 transition-all">0</button>
+                        <button type="button" @click="setAllStok(1)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">1</button>
+                        <button type="button" @click="setAllStok(3)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">3</button>
+                        <button type="button" @click="setAllStok(5)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">5</button>
+                        <button type="button" @click="setAllStok(10)" class="px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all">10</button>
                     </div>
                 </div>
 
@@ -418,16 +370,10 @@
                                     <div class="flex items-center gap-2.5 min-w-0">
                                         <span class="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 shadow-2xs" 
                                               :style="'background-color: ' + (warnaColors[w] || '#334155')"></span>
-                                        <div class="min-w-0">
-                                            <div class="font-bold text-xs text-slate-900 truncate flex items-center gap-1.5">
-                                                <span x-text="w"></span>
-                                                <span class="text-slate-300">·</span>
-                                                <span class="text-slate-600 font-semibold" x-text="'Size ' + u"></span>
-                                            </div>
-                                            <div class="text-[11px] mt-0.5">
-                                                <span x-show="getStok(w, u) > 0" class="text-emerald-600 font-medium" x-text="getStok(w, u) + ' unit di rak fisik'"></span>
-                                                <span x-show="getStok(w, u) === 0" class="text-rose-500 font-medium">Stok habis (0)</span>
-                                            </div>
+                                        <div class="font-bold text-xs text-slate-900 truncate">
+                                            <span x-text="w"></span>
+                                            <span class="text-slate-300 mx-1">·</span>
+                                            <span class="text-slate-600 font-semibold" x-text="'Size ' + u"></span>
                                         </div>
                                     </div>
 
@@ -458,15 +404,9 @@
 
                 {{-- Summary Footer --}}
                 <div class="flex items-center justify-between px-1 text-xs text-slate-500">
-                    <span x-text="totalKombinasi + ' kombinasi varian'"></span>
-                    <span>Total stok fisik: <strong class="text-slate-900 font-bold tabular-nums" x-text="totalUnitFisik + ' unit'"></strong></span>
+                    <span x-text="totalKombinasi + ' kombinasi'"></span>
+                    <span>Total stok: <strong class="text-slate-900 font-bold tabular-nums" x-text="totalUnitFisik + ' unit'"></strong></span>
                 </div>
-            </div>
-
-            {{-- Hint saat belum pilih warna/ukuran --}}
-            <div x-show="warnas.length === 0 || ukurans.length === 0" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-xs flex items-center gap-2">
-                <i class="fa-solid fa-circle-info text-blue-500 text-xs shrink-0"></i>
-                <span>Pilih minimal 1 warna dan 1 ukuran di atas untuk mengatur stok fisik helm.</span>
             </div>
         </div>
 
@@ -478,9 +418,8 @@
                 Batal
             </a>
             <button type="submit" 
-                    class="h-10 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center justify-center gap-2">
-                <i class="fa-solid fa-check text-xs"></i>
-                <span>Simpan Perubahan</span>
+                    class="h-10 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center justify-center">
+                Simpan
             </button>
         </div>
     </form>
