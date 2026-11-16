@@ -68,12 +68,12 @@ class DashboardController extends Controller
         $pesanan_pickup = Pesanan::with(['pelanggan', 'details.helm.merk'])
             ->whereIn('status', ['ready', 'unpaid_pickup'])
             ->orderBy('created_at', 'desc')
-            ->take(6)
+            ->take(12)
             ->get();
 
         $pesanan_terbaru = Pesanan::with(['pelanggan', 'details.helm.merk'])
             ->orderBy('created_at', 'desc')
-            ->take(8)
+            ->take(12)
             ->get();
 
         // 4. Financial & Analytics Data (Exclusively computed for Owner)

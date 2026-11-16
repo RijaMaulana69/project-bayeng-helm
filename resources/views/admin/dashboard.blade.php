@@ -290,10 +290,177 @@
 {{-- B. TAMPILAN KHUSUS OWNER (Pemilik Toko - Financial & Executive Control)    --}}
 {{-- ========================================================================= --}}
 @else
+<script>
+    (function() {
+        window.dashboardChartData = {
+            monthly: {
+                labels: {!! json_encode($chart_labels) !!},
+                omzet: {!! json_encode($chart_values) !!},
+                orders: {!! json_encode($chart_orders) !!},
+            },
+            daily: {
+                labels: {!! json_encode($daily_labels) !!},
+                omzet: {!! json_encode($daily_values) !!},
+                orders: {!! json_encode($daily_orders) !!},
+            }
+        };
+
+        window.dashboardHub = function() {
+            return {
+                activeMetric: 'omzet',
+                activeTimeframe: 'monthly',
+                chartInstance: null,
+                chartData: window.dashboardChartData,
+
+                init() {
+                    this.$nextTick(() => {
+                        this.initChart();
+                    });
+                },
+
+                destroy() {
+                    if (this.chartInstance) {
+                        this.chartInstance.destroy();
+                        this.chartInstance = null;
+                    }
+                },
+
+                initChart() {
+                    const canvas = document.getElementById('salesChart');
+                    if (!canvas || typeof Chart === 'undefined') return;
+
+                    const existingChart = Chart.getChart(canvas);
+                    if (existingChart) {
+                        existingChart.destroy();
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    const initialDataset = this.getCurrentDataset();
+
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: initialDataset.labels,
+                            datasets: [{
+                                label: initialDataset.label,
+                                data: initialDataset.data,
+                                backgroundColor: initialDataset.bgColor,
+                                hoverBackgroundColor: initialDataset.hoverColor,
+                                borderRadius: 6,
+                                maxBarThickness: 32,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 300,
+                                easing: 'easeOutQuart'
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#0f172a',
+                                    titleFont: { size: 12, weight: 'bold', family: "'Inter', sans-serif" },
+                                    bodyFont: { size: 12, family: "'Inter', sans-serif" },
+                                    padding: 10,
+                                    cornerRadius: 8,
+                                    callbacks: {
+                                        label: (context) => {
+                                            const val = context.raw || 0;
+                                            if (this.activeMetric === 'omzet') {
+                                                return 'Omzet: Rp ' + Number(val).toLocaleString('id-ID');
+                                            }
+                                            return 'Pesanan: ' + Number(val).toLocaleString('id-ID') + ' transaksi';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        font: { size: 11, family: "'Inter', sans-serif" },
+                                        color: '#64748b'
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(226, 232, 240, 0.7)'
+                                    },
+                                    ticks: {
+                                        font: { size: 11, family: "'Inter', sans-serif" },
+                                        color: '#64748b',
+                                        callback: (val) => {
+                                            if (this.activeMetric === 'omzet') {
+                                                if (val >= 1000000) return (val / 1000000).toFixed(0) + ' jt';
+                                                if (val >= 1000) return (val / 1000).toFixed(0) + ' rb';
+                                                return val;
+                                            }
+                                            return Number.isInteger(val) ? val : '';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+
+                getCurrentDataset() {
+                    const tf = this.chartData[this.activeTimeframe] || this.chartData.monthly;
+                    const isOmzet = this.activeMetric === 'omzet';
+
+                    return {
+                        labels: tf.labels,
+                        label: isOmzet ? 'Omzet' : 'Jumlah Pesanan',
+                        data: isOmzet ? tf.omzet : tf.orders,
+                        bgColor: isOmzet ? 'rgba(37, 99, 235, 0.85)' : 'rgba(16, 185, 129, 0.85)',
+                        hoverColor: isOmzet ? '#1d4ed8' : '#059669',
+                    };
+                },
+
+                updateChart() {
+                    if (!this.chartInstance) return;
+                    const current = this.getCurrentDataset();
+
+                    this.chartInstance.data.labels = current.labels;
+                    this.chartInstance.data.datasets[0].label = current.label;
+                    this.chartInstance.data.datasets[0].data = current.data;
+                    this.chartInstance.data.datasets[0].backgroundColor = current.bgColor;
+                    this.chartInstance.data.datasets[0].hoverBackgroundColor = current.hoverColor;
+                    this.chartInstance.update();
+                },
+
+                switchMetric(metric) {
+                    if (this.activeMetric === metric) return;
+                    this.activeMetric = metric;
+                    this.updateChart();
+                },
+
+                switchTimeframe(tf) {
+                    if (this.activeTimeframe === tf) return;
+                    this.activeTimeframe = tf;
+                    this.updateChart();
+                }
+            };
+        };
+
+        // Safety cleanup before Livewire navigates away to prevent memory leaks or canvas reuse errors
+        document.addEventListener('livewire:navigating', function cleanupChart() {
+            const canvas = document.getElementById('salesChart');
+            if (canvas && typeof Chart !== 'undefined') {
+                const c = Chart.getChart(canvas);
+                if (c) c.destroy();
+            }
+        }, { once: true });
+    })();
+</script>
+
 <div class="space-y-6" x-data="dashboardHub()">
 
     {{-- 1. Merchant Header & Period Selector --}}
-    <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
+    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <div class="flex items-center gap-2">
@@ -326,11 +493,11 @@
             </div>
         </div>
 
-        {{-- Dynamic Period Filter Tabs for Owner --}}
-        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-xs text-slate-500">
-                <span class="font-medium text-slate-400 text-[11px] uppercase tracking-wider">Filter Periode:</span>
-                <div class="inline-flex rounded-xl bg-slate-100/90 p-1 border border-slate-200/60">
+        {{-- Dynamic Period Filter Tabs for Owner (Mobile-Friendly Horizontal Scroll) --}}
+        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 text-xs text-slate-500 w-full sm:w-auto overflow-hidden">
+                <span class="font-semibold text-slate-500 text-[11px] uppercase tracking-wider shrink-0">Filter Periode:</span>
+                <div class="flex items-center gap-1 overflow-x-auto p-1 bg-slate-100/90 rounded-xl border border-slate-200/60 w-full sm:w-auto">
                     @php
                         $periods = [
                             'today'      => 'Hari Ini',
@@ -344,7 +511,7 @@
                     @foreach ($periods as $key => $label)
                         <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
                            wire:navigate
-                           class="px-2.5 py-1 rounded-lg text-xs font-medium transition-all {{ $selected_period === $key ? 'bg-white text-blue-600 font-semibold shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                           class="px-2.5 py-1 rounded-lg text-xs whitespace-nowrap transition-all shrink-0 {{ $selected_period === $key ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 font-medium' }}">
                             {{ $label }}
                         </a>
                     @endforeach
@@ -741,155 +908,3 @@
 @endif
 
 @endsection
-
-@if($isOwner)
-@push('scripts')
-<script>
-    function dashboardHub() {
-        return {
-            activeMetric: 'omzet',
-            activeTimeframe: 'monthly',
-            chartInstance: null,
-
-            chartData: {
-                monthly: {
-                    labels: {!! json_encode($chart_labels) !!},
-                    omzet: {!! json_encode($chart_values) !!},
-                    orders: {!! json_encode($chart_orders) !!},
-                },
-                daily: {
-                    labels: {!! json_encode($daily_labels) !!},
-                    omzet: {!! json_encode($daily_values) !!},
-                    orders: {!! json_encode($daily_orders) !!},
-                }
-            },
-
-            init() {
-                this.$nextTick(() => {
-                    this.initChart();
-                });
-            },
-
-            initChart() {
-                const canvas = document.getElementById('salesChart');
-                if (!canvas) return;
-
-                const existingChart = Chart.getChart(canvas);
-                if (existingChart) {
-                    existingChart.destroy();
-                }
-
-                const ctx = canvas.getContext('2d');
-                const initialDataset = this.getCurrentDataset();
-
-                this.chartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: initialDataset.labels,
-                        datasets: [{
-                            label: initialDataset.label,
-                            data: initialDataset.data,
-                            backgroundColor: initialDataset.bgColor,
-                            hoverBackgroundColor: initialDataset.hoverColor,
-                            borderRadius: 6,
-                            maxBarThickness: 32,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: {
-                            duration: 400,
-                            easing: 'easeOutQuart'
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#0f172a',
-                                titleFont: { size: 12, weight: 'bold', family: "'Inter', sans-serif" },
-                                bodyFont: { size: 12, family: "'Inter', sans-serif" },
-                                padding: 10,
-                                cornerRadius: 8,
-                                callbacks: {
-                                    label: (context) => {
-                                        const val = context.raw || 0;
-                                        if (this.activeMetric === 'omzet') {
-                                            return 'Omzet: Rp ' + Number(val).toLocaleString('id-ID');
-                                        }
-                                        return 'Pesanan: ' + Number(val).toLocaleString('id-ID') + ' transaksi';
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                ticks: {
-                                    font: { size: 11, family: "'Inter', sans-serif" },
-                                    color: '#64748b'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(226, 232, 240, 0.7)'
-                                },
-                                ticks: {
-                                    font: { size: 11, family: "'Inter', sans-serif" },
-                                    color: '#64748b',
-                                    callback: (val) => {
-                                        if (this.activeMetric === 'omzet') {
-                                            if (val >= 1000000) return (val / 1000000).toFixed(0) + ' jt';
-                                            if (val >= 1000) return (val / 1000).toFixed(0) + ' rb';
-                                            return val;
-                                        }
-                                        return Number.isInteger(val) ? val : '';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            },
-
-            getCurrentDataset() {
-                const tf = this.chartData[this.activeTimeframe] || this.chartData.monthly;
-                const isOmzet = this.activeMetric === 'omzet';
-
-                return {
-                    labels: tf.labels,
-                    label: isOmzet ? 'Omzet' : 'Jumlah Pesanan',
-                    data: isOmzet ? tf.omzet : tf.orders,
-                    bgColor: isOmzet ? 'rgba(37, 99, 235, 0.85)' : 'rgba(16, 185, 129, 0.85)',
-                    hoverColor: isOmzet ? '#1d4ed8' : '#059669',
-                };
-            },
-
-            updateChart() {
-                if (!this.chartInstance) return;
-                const current = this.getCurrentDataset();
-
-                this.chartInstance.data.labels = current.labels;
-                this.chartInstance.data.datasets[0].label = current.label;
-                this.chartInstance.data.datasets[0].data = current.data;
-                this.chartInstance.data.datasets[0].backgroundColor = current.bgColor;
-                this.chartInstance.data.datasets[0].hoverBackgroundColor = current.hoverColor;
-                this.chartInstance.update();
-            },
-
-            switchMetric(metric) {
-                if (this.activeMetric === metric) return;
-                this.activeMetric = metric;
-                this.updateChart();
-            },
-
-            switchTimeframe(tf) {
-                if (this.activeTimeframe === tf) return;
-                this.activeTimeframe = tf;
-                this.updateChart();
-            }
-        };
-    }
-</script>
-@endpush
-@endif
