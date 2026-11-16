@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Helm: ' . $produk->nama_helm)
+@section('title', 'Edit Helm')
 @section('page-title', 'Edit Helm')
 
 @section('content')
@@ -87,23 +87,18 @@
         }
      }">
 
-    {{-- 1. Top Navigation & Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <a href="{{ route('admin.produk.index') }}" 
-               wire:navigate
-               class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors mb-2">
-                <i class="fa-solid fa-arrow-left text-[10px]"></i>
-                <span>Kembali</span>
-            </a>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Edit Helm: {{ $produk->nama_helm }}
-            </h1>
-        </div>
+    {{-- 1. Top Navigation & Action --}}
+    <div class="flex items-center justify-between gap-3">
+        <a href="{{ route('admin.produk.index') }}" 
+           wire:navigate
+           class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 font-medium transition-colors">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+            <span>Kembali</span>
+        </a>
 
         <a href="{{ route('katalog.detail', $produk->id_helm) }}" 
            target="_blank"
-           class="h-8 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors self-start sm:self-auto">
+           class="h-8 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium inline-flex items-center gap-1.5 shadow-2xs transition-colors">
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
             <span>Lihat di Web</span>
         </a>

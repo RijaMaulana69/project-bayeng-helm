@@ -97,7 +97,7 @@
         <a href="{{ route('admin.produk.index', array_merge(request()->except(['tab', 'page', 'riwayat_page']), ['tab' => 'riwayat'])) }}" 
            wire:navigate
            class="py-2 text-center rounded-lg transition-all flex items-center justify-center gap-1.5 {{ $tab === 'riwayat' ? 'bg-white text-slate-900 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
-            <span>Riwayat Stok Masuk</span>
+            <span>Riwayat Stok</span>
             @if(($stok_masuks->total() ?? 0) > 0)
                 <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'riwayat' ? 'bg-slate-900 text-white' : 'bg-slate-300 text-slate-700' }}">
                     {{ $stok_masuks->total() }}
@@ -422,7 +422,7 @@
             @else
                 <div class="py-12 text-center text-slate-400 text-xs bg-white rounded-xl border border-slate-200/90 space-y-1">
                     <i class="fa-solid fa-inbox text-2xl text-slate-300 block mb-1"></i>
-                    <p class="font-medium text-slate-600 text-xs">Belum ada riwayat stok masuk</p>
+                    <p class="font-medium text-slate-600 text-xs">Belum ada riwayat stok</p>
                 </div>
             @endif
         </div>

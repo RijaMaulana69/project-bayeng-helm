@@ -300,7 +300,7 @@
                         <button type="button" 
                                 @click="notifOpen = !notifOpen" 
                                 class="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
-                                aria-label="Notifikasi Toko">
+                                aria-label="Notifikasi">
                             <i class="fa-regular fa-bell text-base"></i>
                             @if($notifTotal > 0)
                                 <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
@@ -316,8 +316,8 @@
                              x-transition:leave="transition ease-in duration-100"
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
-                             class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden z-50">
-                            <div class="p-3.5 border-b border-slate-100 flex items-center justify-between">
+                             class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-50">
+                            <div class="px-3.5 py-2.5 border-b border-slate-100 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span class="text-xs font-bold text-slate-900">Notifikasi</span>
                                     @if($notifTotal > 0)
@@ -339,10 +339,10 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
-                                                {{ $notifPickup }} Pesanan Siap Ambil
+                                                {{ $notifPickup }} Pesanan Siap Diambil
                                             </p>
                                             <p class="text-[11px] text-slate-400 mt-0.5">
-                                                Pelanggan siap mengambil paket di gerai
+                                                Menunggu pengambilan pelanggan
                                             </p>
                                         </div>
                                     </a>
@@ -355,10 +355,10 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
-                                                {{ $notifPending }} Pembayaran Menunggu
+                                                {{ $notifPending }} Menunggu Konfirmasi
                                             </p>
                                             <p class="text-[11px] text-slate-400 mt-0.5">
-                                                Bukti transfer perlu diverifikasi
+                                                Verifikasi bukti transfer
                                             </p>
                                         </div>
                                     </a>
@@ -371,20 +371,19 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <p class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
-                                                {{ $notifStock }} Varian Stok Kritis
+                                                {{ $notifStock }} Varian Perlu Restok
                                             </p>
                                             <p class="text-[11px] text-slate-400 mt-0.5">
-                                                Stok varian habis atau &le; 3 unit
+                                                Stok habis atau menipis
                                             </p>
                                         </div>
                                     </a>
                                 @endif
 
                                 @if($notifTotal === 0)
-                                    <div class="p-6 text-center">
-                                        <i class="fa-regular fa-circle-check text-2xl text-emerald-500 mb-1"></i>
-                                        <p class="text-xs font-semibold text-slate-700">Operasional Aman</p>
-                                        <p class="text-[11px] text-slate-400 mt-0.5">Semua antrean gerai terkendali.</p>
+                                    <div class="py-8 px-4 text-center">
+                                        <i class="fa-regular fa-bell-slash text-slate-300 text-lg mb-1 block"></i>
+                                        <p class="text-xs text-slate-500">Tidak ada notifikasi baru</p>
                                     </div>
                                 @endif
                             </div>
@@ -410,11 +409,8 @@
                                 <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white"></span>
                             </div>
                             <div class="hidden sm:block text-left leading-tight">
-                                <span class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors block truncate max-w-[130px]">
+                                <span class="text-xs font-semibold text-slate-800 group-hover:text-blue-600 transition-colors block truncate max-w-[140px]">
                                     {{ $authUser->nama_lengkap }}
-                                </span>
-                                <span class="text-[10px] text-slate-400 font-medium block mt-0.5">
-                                    {{ $roleLabel }}
                                 </span>
                             </div>
                             <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 group-hover:text-slate-600 transition-transform duration-200 hidden sm:block ml-0.5"
@@ -441,11 +437,6 @@
                                     <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/80 shrink-0">
                                         Online
                                     </span>
-                                </div>
-                                <div class="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">
-                                    <span class="font-medium text-slate-700">{{ $roleLabel }}</span>
-                                    <span class="text-slate-300">&bull;</span>
-                                    <span class="font-mono text-slate-400 text-[10px]">{{ '@' . $authUser->username }}</span>
                                 </div>
                             </div>
 

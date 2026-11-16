@@ -168,7 +168,7 @@ class AdminProdukTest extends TestCase
             ->get(route('admin.produk.index', ['tab' => 'riwayat']));
 
         $response->assertStatus(200);
-        $response->assertSee('Riwayat Stok Masuk');
+        $response->assertSee('Riwayat Stok');
     }
 
     public function test_admin_can_filter_by_stok_status(): void
