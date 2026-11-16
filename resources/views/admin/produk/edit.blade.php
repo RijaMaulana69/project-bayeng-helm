@@ -249,7 +249,19 @@
                                 <label class="block font-semibold text-slate-700">
                                     2. Pilihan Ukuran Helm
                                 </label>
-                                <span class="text-[11px] text-slate-400" x-text="ukurans.length > 0 ? ukurans.length + ' ukuran dipilih' : 'Pilih ukuran'"></span>
+                                <div class="flex items-center gap-1.5 text-[11px]">
+                                    <button type="button" 
+                                            @click="ukurans = ['M', 'L', 'XL']" 
+                                            class="text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
+                                        + M, L, XL
+                                    </button>
+                                    <span class="text-slate-300">·</span>
+                                    <button type="button" 
+                                            @click="ukurans = ['S', 'M', 'L', 'XL', 'XXL']" 
+                                            class="text-slate-500 hover:text-slate-800 font-medium cursor-pointer">
+                                        Semua Size
+                                    </button>
+                                </div>
                             </div>
                             <div class="flex flex-wrap gap-1.5">
                                 @foreach (['S', 'M', 'L', 'XL', 'XXL'] as $u)
