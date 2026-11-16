@@ -6,22 +6,15 @@
 @section('content')
 <div class="space-y-4">
 
-    {{-- 1. Header Ringkas (Tanpa Tombol Ambigu Laporan Penjualan) --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-            <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                Riwayat Barang Masuk
-            </h1>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Catatan log restok dan pengawasan nilai belanja modal persediaan gerai
-            </p>
-        </div>
+    {{-- 1. Header Ringkas --}}
+    <div class="flex items-center justify-between gap-3">
+        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+            Riwayat Barang Masuk
+        </h1>
 
-        <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-500 font-medium">
-                {{ $stokMasuks->total() }} Catatan Restok
-            </span>
-        </div>
+        <span class="text-xs text-slate-500 font-medium">
+            {{ $stokMasuks->total() }} riwayat
+        </span>
     </div>
 
     {{-- 2. Ringkasan Restok & Nilai Modal --}}
@@ -33,10 +26,10 @@
                 <i class="fa-solid fa-boxes-stacked text-xs text-blue-600"></i>
             </div>
             <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight tabular-nums">
-                +{{ number_format($kpi['total_unit']) }} <span class="text-xs font-normal text-slate-500">Unit</span>
+                +{{ number_format($kpi['total_unit']) }} <span class="text-xs font-normal text-slate-500">unit</span>
             </div>
-            <p class="text-[11px] text-slate-500">
-                {{ $kpi['total_frekuensi'] }} kali penerimaan
+            <p class="text-[11px] text-slate-400">
+                {{ $kpi['total_frekuensi'] }} kali restok
             </p>
         </div>
 
@@ -47,10 +40,10 @@
                 <i class="fa-solid fa-coins text-xs text-amber-600"></i>
             </div>
             <div class="text-base sm:text-xl font-bold text-slate-900 tracking-tight tabular-nums">
-                {{ number_format($kpi['total_modal'], 0, ',', '.') }}
+                Rp {{ number_format($kpi['total_modal'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-slate-500">
-                Akumulasi belanja modal
+            <p class="text-[11px] text-slate-400">
+                Biaya modal
             </p>
         </div>
 
@@ -61,10 +54,10 @@
                 <i class="fa-solid fa-tags text-xs text-indigo-600"></i>
             </div>
             <div class="text-base sm:text-xl font-bold text-indigo-700 tracking-tight tabular-nums">
-                {{ number_format($kpi['total_omzet'], 0, ',', '.') }}
+                Rp {{ number_format($kpi['total_omzet'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-slate-500">
-                Proyeksi omzet ritel
+            <p class="text-[11px] text-slate-400">
+                Nilai jual
             </p>
         </div>
 
@@ -75,10 +68,10 @@
                 <i class="fa-solid fa-chart-line text-xs text-emerald-600"></i>
             </div>
             <div class="text-base sm:text-xl font-bold text-emerald-700 tracking-tight tabular-nums">
-                +{{ number_format($kpi['potensi_margin'], 0, ',', '.') }}
+                +Rp {{ number_format($kpi['potensi_margin'], 0, ',', '.') }}
             </div>
-            <p class="text-[11px] text-slate-500">
-                Estimasi laba kotor
+            <p class="text-[11px] text-slate-400">
+                Estimasi laba
             </p>
         </div>
     </div>
@@ -153,7 +146,7 @@
                 <input type="text" 
                        name="search" 
                        value="{{ request('search') }}"
-                       placeholder="Cari helm / varian / keterangan..." 
+                       placeholder="Cari helm, varian, atau catatan..." 
                        class="w-full h-8.5 pl-8 pr-3 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-slate-400 focus:outline-none transition-colors">
             </div>
 
@@ -183,7 +176,7 @@
                 <span>Log Pencatatan Barang Masuk</span>
             </span>
             <span class="text-slate-500 font-medium text-[11px]">
-                Total Restok: +{{ number_format($kpi['total_unit']) }} Unit
+                Total: +{{ number_format($kpi['total_unit']) }} unit
             </span>
         </div>
 
@@ -221,7 +214,7 @@
                             <div class="text-[10px] sm:text-[11px] text-slate-400 truncate pt-0.5">
                                 <span>{{ $item->tgl_masuk ? $item->tgl_masuk->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}</span>
                                 <span class="text-slate-300 mx-1">·</span>
-                                <span>Penerima: {{ $item->user->nama_lengkap ?? 'Kasir' }}</span>
+                                <span>Oleh: {{ $item->user->nama_lengkap ?? 'Kasir' }}</span>
                             </div>
                         </div>
 
@@ -229,30 +222,27 @@
                         <div class="text-right shrink-0 space-y-0.5 pl-2">
                             {{-- Baris 1: Jumlah Fisik Masuk --}}
                             <div class="text-xs sm:text-sm font-bold text-emerald-600 tabular-nums">
-                                +{{ number_format($item->jumlah) }} Unit
+                                +{{ number_format($item->jumlah) }} unit
                             </div>
 
                             {{-- Baris 2: Subtotal Belanja Modal --}}
                             <div class="text-xs sm:text-sm font-bold text-slate-900 tabular-nums">
-                                {{ number_format($subtotalModal, 0, ',', '.') }}
+                                Rp {{ number_format($subtotalModal, 0, ',', '.') }}
                             </div>
 
                             {{-- Baris 3: Harga Modal Satuan vs Harga Jual --}}
                             <div class="text-[10px] sm:text-[11px] text-slate-400">
-                                <span>Modal {{ number_format($item->harga_awal, 0, ',', '.') }}</span>
-                                <span class="text-slate-300 mx-0.5">/</span>
-                                <span>Jual {{ number_format($item->harga_jual, 0, ',', '.') }}</span>
+                                <span>Modal: Rp {{ number_format($item->harga_awal, 0, ',', '.') }}</span>
+                                <span class="text-slate-300 mx-0.5">·</span>
+                                <span>Jual: Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="py-14 text-center text-slate-400 space-y-2">
-                    <div class="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
-                        <i class="fa-solid fa-boxes-stacked text-lg"></i>
-                    </div>
+                <div class="py-12 text-center text-slate-400 space-y-1">
+                    <i class="fa-solid fa-inbox text-2xl text-slate-300 block mb-1"></i>
                     <p class="text-xs font-medium text-slate-600">Tidak ada riwayat barang masuk</p>
-                    <p class="text-[11px] text-slate-400">Coba ubah filter periode atau pencarian Anda</p>
                 </div>
             @endforelse
         </div>

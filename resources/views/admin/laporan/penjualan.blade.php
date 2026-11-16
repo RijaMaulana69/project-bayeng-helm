@@ -4,7 +4,7 @@
 @section('page-title', 'Laporan Penjualan')
 
 @section('content')
-<div class="space-y-4 max-w-6xl mx-auto">
+<div class="space-y-4 w-full">
 
     @php
         $grandTotal = 0;

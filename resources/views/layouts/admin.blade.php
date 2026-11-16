@@ -479,8 +479,8 @@
             </header>
 
             {{-- Main Scrollable Content --}}
-            <main class="flex-1 overflow-y-auto bg-[#f8fafc] p-4 lg:p-8 pb-24 lg:pb-8">
-                <div class="max-w-6xl mx-auto">
+            <main class="flex-1 overflow-y-auto bg-[#f8fafc] p-4 sm:p-6 lg:p-6 pb-24 lg:pb-8">
+                <div class="w-full max-w-7xl mx-auto">
                     @yield('content')
                 </div>
             </main>

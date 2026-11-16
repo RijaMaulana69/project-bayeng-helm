@@ -8,7 +8,7 @@
     $authUser = auth('web')->user();
     $isOwner = $authUser ? $authUser->isOwner() : false;
 @endphp
-<div class="space-y-3 max-w-6xl mx-auto" 
+<div class="space-y-3.5 w-full" 
      x-data="{ 
         deleteModal: false, 
         deleteUrl: '', 
@@ -420,10 +420,9 @@
                     </div>
                 @endif
             @else
-                <div class="py-12 text-center text-slate-400 text-xs bg-white rounded-xl border border-slate-200/90">
+                <div class="py-12 text-center text-slate-400 text-xs bg-white rounded-xl border border-slate-200/90 space-y-1">
                     <i class="fa-solid fa-inbox text-2xl text-slate-300 block mb-1"></i>
-                    <p class="font-semibold text-slate-700 text-sm">Belum ada barang masuk</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Catatan stok masuk akan tersimpan otomatis saat ada restok helm.</p>
+                    <p class="font-medium text-slate-600 text-xs">Belum ada riwayat stok masuk</p>
                 </div>
             @endif
         </div>

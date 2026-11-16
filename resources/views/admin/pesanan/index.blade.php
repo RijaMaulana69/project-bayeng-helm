@@ -4,7 +4,7 @@
 @section('page-title', 'Transaksi')
 
 @section('content')
-<div class="space-y-3.5 max-w-6xl mx-auto">
+<div class="space-y-3.5 w-full">
 
     @php
         $currentStatus = request('status', 'all');

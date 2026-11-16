@@ -2,7 +2,7 @@
     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 text-xs text-slate-500">
         {{-- Counter Text --}}
         <p class="text-center sm:text-left text-[11px]">
-            Menampilkan <span class="font-semibold text-slate-800">{{ $paginator->firstItem() ?? 0 }}-{{ $paginator->lastItem() ?? 0 }}</span> dari <span class="font-semibold text-slate-800">{{ $paginator->total() }}</span> transaksi
+            Menampilkan <span class="font-semibold text-slate-800">{{ $paginator->firstItem() ?? 0 }}-{{ $paginator->lastItem() ?? 0 }}</span> dari <span class="font-semibold text-slate-800">{{ $paginator->total() }}</span> data
         </p>
 
         {{-- Pagination Buttons --}}
@@ -62,7 +62,7 @@
 @elseif($paginator->total() > 0)
     <div class="flex items-center justify-between pt-3 text-xs text-slate-500">
         <p class="text-[11px]">
-            Menampilkan <span class="font-semibold text-slate-800">1-{{ $paginator->total() }}</span> dari <span class="font-semibold text-slate-800">{{ $paginator->total() }}</span> transaksi
+            Menampilkan <span class="font-semibold text-slate-800">1-{{ $paginator->total() }}</span> dari <span class="font-semibold text-slate-800">{{ $paginator->total() }}</span> data
         </p>
     </div>
 @endif
