@@ -38,17 +38,19 @@ class ProdukController extends Controller
         $merks     = Merk::orderBy('nama_merk')->get();
         $kategoris = Kategori::orderBy('nama_kategori')->get();
         $helms     = Helm::with('varians')->orderBy('nama_helm', 'asc')->get();
+        $warnaMap  = Warna::pluck('kode_hex', 'nama_warna')->toArray();
 
         // Format data varian untuk modal restok instan
         $helm_variants = [];
         foreach ($helms as $h) {
-            $helm_variants[$h->id_helm] = $h->varians->map(function ($v) {
+            $helm_variants[$h->id_helm] = $h->varians->map(function ($v) use ($warnaMap) {
                 return [
                     'id_varian' => $v->id_varian,
                     'label'     => $v->warna . ' - ' . $v->ukuran . ' (Stok: ' . $v->stok . ')',
                     'stok'      => $v->stok,
                     'warna'     => $v->warna,
                     'ukuran'    => $v->ukuran,
+                    'kode_hex'  => $warnaMap[$v->warna] ?? '#334155',
                 ];
             })->values()->toArray();
         }

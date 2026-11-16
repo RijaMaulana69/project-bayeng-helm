@@ -8,6 +8,7 @@
      x-data="{
         warnas: {{ Js::from(old('warna', $existing_warnas ?? [])) }},
         ukurans: {{ Js::from(old('ukuran', $existing_ukurans ?? [])) }},
+        warnaColors: {{ Js::from($warnas->pluck('kode_hex', 'nama_warna')) }},
         variantData: {{ Js::from(old('variant_stok', $variant_data ?? [])) }},
         hargaAwal: '{{ old('harga_awal', $produk->harga_awal) }}',
         hargaJual: '{{ old('harga_jual', $produk->harga_jual) }}',
@@ -53,7 +54,34 @@
         },
         getStok(warna, ukuran) {
             const key = warna + '|' + ukuran;
-            return this.variantData[key] !== undefined ? this.variantData[key] : 0;
+            return this.variantData[key] !== undefined ? parseInt(this.variantData[key]) || 0 : 0;
+        },
+        setStok(warna, ukuran, val) {
+            const key = warna + '|' + ukuran;
+            this.variantData[key] = Math.max(0, parseInt(val) || 0);
+        },
+        changeStok(warna, ukuran, delta) {
+            const current = this.getStok(warna, ukuran);
+            this.setStok(warna, ukuran, current + delta);
+        },
+        setAllStok(val) {
+            this.warnas.forEach(w => {
+                this.ukurans.forEach(u => {
+                    this.setStok(w, u, val);
+                });
+            });
+        },
+        get totalUnitFisik() {
+            let sum = 0;
+            this.warnas.forEach(w => {
+                this.ukurans.forEach(u => {
+                    sum += this.getStok(w, u);
+                });
+            });
+            return sum;
+        },
+        get totalKombinasi() {
+            return this.warnas.length * this.ukurans.length;
         }
      }">
 
@@ -177,22 +205,27 @@
                     </div>
                 </div>
 
-                {{-- Blok 2: Varian Warna, Ukuran & Matriks Stok --}}
+                {{-- Blok 2: Varian Warna, Ukuran & Stepper Stok Fisik (Mobile-First Ledger) --}}
                 <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
                     <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between text-xs bg-slate-50/50">
                         <span class="font-semibold text-slate-700 flex items-center gap-2">
                             <i class="fa-solid fa-boxes-stacked text-slate-400 text-[11px]"></i>
                             <span>Varian & Stok Fisik</span>
                         </span>
-                        <span class="text-[11px] text-slate-400">Total: {{ $produk->stok }} unit</span>
+                        <span class="text-[11px] text-slate-500 font-medium" x-show="totalKombinasi > 0" x-cloak>
+                            <span class="font-bold text-slate-900 tabular-nums" x-text="totalKombinasi"></span> kombinasi · <span class="font-bold text-emerald-600 tabular-nums" x-text="totalUnitFisik"></span> unit total
+                        </span>
                     </div>
 
                     <div class="p-4 sm:p-5 space-y-4 text-xs">
                         {{-- 1. Pilihan Warna --}}
                         <div class="space-y-2">
-                            <label class="block font-semibold text-slate-700">
-                                Pilihan Warna Helm
-                            </label>
+                            <div class="flex items-center justify-between">
+                                <label class="block font-semibold text-slate-700">
+                                    1. Pilihan Warna Helm
+                                </label>
+                                <span class="text-[11px] text-slate-400" x-text="warnas.length > 0 ? warnas.length + ' warna dipilih' : 'Pilih warna'"></span>
+                            </div>
                             <div class="flex flex-wrap gap-1.5">
                                 @foreach ($warnas as $w)
                                     <label class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer select-none transition-all"
@@ -212,9 +245,12 @@
 
                         {{-- 2. Pilihan Ukuran --}}
                         <div class="space-y-2 pt-3 border-t border-slate-100">
-                            <label class="block font-semibold text-slate-700">
-                                Pilihan Ukuran Helm
-                            </label>
+                            <div class="flex items-center justify-between">
+                                <label class="block font-semibold text-slate-700">
+                                    2. Pilihan Ukuran Helm
+                                </label>
+                                <span class="text-[11px] text-slate-400" x-text="ukurans.length > 0 ? ukurans.length + ' ukuran dipilih' : 'Pilih ukuran'"></span>
+                            </div>
                             <div class="flex flex-wrap gap-1.5">
                                 @foreach (['S', 'M', 'L', 'XL', 'XXL'] as $u)
                                     <label class="inline-flex items-center justify-center w-11 h-8 rounded-lg border text-xs font-semibold cursor-pointer select-none transition-all tabular-nums"
@@ -231,42 +267,90 @@
                             </div>
                         </div>
 
-                        {{-- 3. Matriks Stok Varian (Dinamis Alpine.js) --}}
-                        <div class="pt-3 border-t border-slate-100 space-y-2.5" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-xs font-semibold text-slate-800">Penyesuaian Stok Fisik</h4>
-                                    <p class="text-[11px] text-slate-400">Nilai tersimpan mencerminkan data stok gerai saat ini</p>
+                        {{-- 3. Daftar Kartu Varian dengan Stepper Stok (Mobile-First Ledger) --}}
+                        <div class="pt-3 border-t border-slate-100 space-y-3" x-show="warnas.length > 0 && ukurans.length > 0" x-cloak>
+                            {{-- Toolbar Preset Cepat (Bulk Fill Presets) --}}
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                                <div class="text-[11px] text-slate-600 font-medium">
+                                    Set Cepat Semua Stok:
+                                </div>
+                                <div class="flex items-center gap-1 flex-wrap">
+                                    <button type="button" 
+                                            @click="setAllStok(0)" 
+                                            class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                        Nol (0)
+                                    </button>
+                                    <button type="button" 
+                                            @click="setAllStok(1)" 
+                                            class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                        Semua 1
+                                    </button>
+                                    <button type="button" 
+                                            @click="setAllStok(3)" 
+                                            class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                        Semua 3
+                                    </button>
+                                    <button type="button" 
+                                            @click="setAllStok(5)" 
+                                            class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                        Semua 5
+                                    </button>
+                                    <button type="button" 
+                                            @click="setAllStok(10)" 
+                                            class="px-2 py-1 rounded-md text-[11px] font-semibold border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                        Semua 10
+                                    </button>
                                 </div>
                             </div>
 
-                            <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-2xs">
-                                <table class="w-full text-xs text-left">
-                                    <thead>
-                                        <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-medium">
-                                            <th class="py-2.5 px-3 font-semibold text-slate-700">Varian Warna</th>
-                                            <template x-for="u in ukurans" :key="u">
-                                                <th class="py-2.5 px-3 text-center font-bold text-slate-900 tabular-nums" x-text="u"></th>
-                                            </template>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100 bg-white">
-                                        <template x-for="w in warnas" :key="w">
-                                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                                <td class="py-2.5 px-3 font-medium text-slate-800 whitespace-nowrap" x-text="w"></td>
-                                                <template x-for="u in ukurans" :key="u">
-                                                    <td class="py-2 px-3 text-center">
-                                                        <input type="number" 
-                                                               :name="'variant_stok[' + w + '|' + u + ']'" 
-                                                               :value="getStok(w, u)" 
-                                                               min="0" 
-                                                               class="w-14 h-7 text-center bg-slate-50 border border-slate-200 rounded-md text-xs font-semibold text-slate-800 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400">
-                                                    </td>
-                                                </template>
-                                            </tr>
+                            {{-- Mobile-First Variant Ledger Cards --}}
+                            <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 overflow-hidden bg-white">
+                                <template x-for="w in warnas" :key="w">
+                                    <div>
+                                        <template x-for="u in ukurans" :key="w + '|' + u">
+                                            <div class="p-3 sm:p-3.5 hover:bg-slate-50/60 transition-colors flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0">
+                                                {{-- Kolom Kiri: Info Kombinasi Warna & Ukuran --}}
+                                                <div class="flex items-center gap-2.5 min-w-0">
+                                                    <span class="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0 shadow-2xs" 
+                                                          :style="'background-color: ' + (warnaColors[w] || '#334155')"></span>
+                                                    <div class="min-w-0 truncate">
+                                                        <div class="font-semibold text-xs text-slate-900 truncate flex items-center gap-1.5">
+                                                            <span x-text="w"></span>
+                                                            <span class="text-slate-300">·</span>
+                                                            <span class="font-bold text-slate-700" x-text="'Size ' + u"></span>
+                                                        </div>
+                                                        <div class="text-[11px] text-slate-400 mt-0.5">
+                                                            <span x-show="getStok(w, u) > 0" class="text-emerald-600 font-medium" x-text="getStok(w, u) + ' unit di rak fisik'"></span>
+                                                            <span x-show="getStok(w, u) === 0" class="text-rose-500 font-medium">Stok habis (0)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Kolom Kanan: Stepper Kuantitas Touch-Friendly --}}
+                                                <div class="flex items-center gap-1 shrink-0">
+                                                    <button type="button" 
+                                                            @click="changeStok(w, u, -1)" 
+                                                            class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                                        -
+                                                    </button>
+                                                    
+                                                    <input type="number" 
+                                                           :name="'variant_stok[' + w + '|' + u + ']'" 
+                                                           :value="getStok(w, u)" 
+                                                           @input="setStok(w, u, $event.target.value)"
+                                                           min="0" 
+                                                           class="w-14 h-8 text-center bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-900 tabular-nums focus:bg-white focus:outline-none focus:border-slate-400">
+
+                                                    <button type="button" 
+                                                            @click="changeStok(w, u, 1)" 
+                                                            class="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center cursor-pointer active:scale-95 transition-transform shadow-2xs">
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </template>
-                                    </tbody>
-                                </table>
+                                    </div>
+                                </template>
                             </div>
                         </div>
 
